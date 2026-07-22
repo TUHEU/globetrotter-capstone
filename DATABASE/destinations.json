@@ -1,0 +1,414 @@
+[
+  {
+    "id": "y001",
+    "name": "Monument de la Réunification",
+    "quartier": "Ngoa-Ekelle",
+    "category": "attraction",
+    "description": "Emblème de Yaoundé : la tour spiralée célébrant la réunification du Cameroun francophone et anglophone. Incontournable pour les photos.",
+    "tags": [
+      "history",
+      "culture",
+      "photo"
+    ],
+    "image": "https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=800",
+    "avg_price_fcfa": 1000,
+    "best_time": "Journée",
+    "popularity": 90
+  },
+  {
+    "id": "y002",
+    "name": "Musée National du Cameroun",
+    "quartier": "Centre-ville",
+    "category": "museum",
+    "description": "Ancien palais présidentiel devenu musée : art, traditions et histoire des différentes régions du Cameroun.",
+    "tags": [
+      "history",
+      "culture",
+      "art"
+    ],
+    "image": "https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=800",
+    "avg_price_fcfa": 1500,
+    "best_time": "Mar - Dim, journée",
+    "popularity": 75
+  },
+  {
+    "id": "y003",
+    "name": "Basilique Marie-Reine-des-Apôtres (Mvolyé)",
+    "quartier": "Mvolyé",
+    "category": "attraction",
+    "description": "Impressionnante basilique sur la colline de Mvolyé, haut lieu spirituel avec une belle vue sur la ville.",
+    "tags": [
+      "culture",
+      "history",
+      "photo"
+    ],
+    "image": "https://images.unsplash.com/photo-1548625149-fc4a29cf7092?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Matin",
+    "popularity": 70
+  },
+  {
+    "id": "y004",
+    "name": "Cathédrale Notre-Dame-des-Victoires",
+    "quartier": "Centre-ville",
+    "category": "attraction",
+    "description": "La cathédrale du centre-ville, à l'architecture remarquable, cœur historique de la capitale.",
+    "tags": [
+      "culture",
+      "history"
+    ],
+    "image": "https://images.unsplash.com/photo-1519677100203-a0e668c92439?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 65
+  },
+  {
+    "id": "y005",
+    "name": "Mont Fébé — Belvédère",
+    "quartier": "Fébé",
+    "category": "nature",
+    "description": "Le point de vue panoramique sur toute la ville des sept collines. Idéal au coucher du soleil, avec le monastère bénédictin et son musée d'art camerounais.",
+    "tags": [
+      "nature",
+      "photo",
+      "hiking",
+      "romance"
+    ],
+    "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800",
+    "avg_price_fcfa": 1000,
+    "best_time": "16h - 18h30",
+    "popularity": 85
+  },
+  {
+    "id": "y006",
+    "name": "Zoo de Mvog-Betsi",
+    "quartier": "Mvog-Betsi",
+    "category": "nature",
+    "description": "Le jardin zoologique de Yaoundé : primates, félins et oiseaux. Parfait pour une sortie en famille.",
+    "tags": [
+      "nature",
+      "wildlife",
+      "family"
+    ],
+    "image": "https://images.unsplash.com/photo-1534567110243-8875d64ca8ff?w=800",
+    "avg_price_fcfa": 2000,
+    "best_time": "Matin",
+    "popularity": 68
+  },
+  {
+    "id": "y007",
+    "name": "Parc National de la Méfou",
+    "quartier": "Périphérie (45 min)",
+    "category": "nature",
+    "description": "Sanctuaire de primates géré par Ape Action Africa : gorilles, chimpanzés et mandrills sauvés du braconnage. Excursion d'une demi-journée depuis Yaoundé.",
+    "tags": [
+      "nature",
+      "wildlife",
+      "adventure",
+      "family"
+    ],
+    "image": "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800",
+    "avg_price_fcfa": 7500,
+    "best_time": "Matin, sur réservation",
+    "popularity": 72
+  },
+  {
+    "id": "y008",
+    "name": "Bois Sainte-Anastasie",
+    "quartier": "Centre-ville",
+    "category": "nature",
+    "description": "Parc urbain ombragé au cœur de la ville : détente, snacks et espace enfants.",
+    "tags": [
+      "nature",
+      "family",
+      "relax"
+    ],
+    "image": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
+    "avg_price_fcfa": 1000,
+    "best_time": "Après-midi",
+    "popularity": 60
+  },
+  {
+    "id": "y009",
+    "name": "Lac Municipal (Lac Central)",
+    "quartier": "Centre-ville",
+    "category": "nature",
+    "description": "Le lac du centre-ville, agréable pour une promenade et des photos en fin de journée.",
+    "tags": [
+      "nature",
+      "photo",
+      "relax",
+      "romance"
+    ],
+    "image": "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Fin d'après-midi",
+    "popularity": 55
+  },
+  {
+    "id": "y010",
+    "name": "Marché Central",
+    "quartier": "Centre-ville",
+    "category": "market",
+    "description": "Le grand marché de Yaoundé : tissus, pagnes, épices, artisanat. Ambiance garantie — venez négocier !",
+    "tags": [
+      "shopping",
+      "culture",
+      "food"
+    ],
+    "image": "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=800",
+    "avg_price_fcfa": 5000,
+    "best_time": "Matin en semaine",
+    "popularity": 78
+  },
+  {
+    "id": "y011",
+    "name": "Marché Mokolo",
+    "quartier": "Mokolo",
+    "category": "market",
+    "description": "L'un des plus grands marchés d'Afrique centrale : friperie, tissus, tout se trouve à Mokolo.",
+    "tags": [
+      "shopping",
+      "culture"
+    ],
+    "image": "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=800",
+    "avg_price_fcfa": 5000,
+    "best_time": "Matin",
+    "popularity": 70
+  },
+  {
+    "id": "y012",
+    "name": "Marché artisanal (Centre Artisanal)",
+    "quartier": "Tsinga",
+    "category": "market",
+    "description": "Sculptures, masques, bijoux et souvenirs made in Cameroon. L'endroit idéal pour les cadeaux.",
+    "tags": [
+      "shopping",
+      "art",
+      "culture"
+    ],
+    "image": "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?w=800",
+    "avg_price_fcfa": 10000,
+    "best_time": "Journée",
+    "popularity": 62
+  },
+  {
+    "id": "y013",
+    "name": "Musée La Blackitude",
+    "quartier": "Nlongkak",
+    "category": "museum",
+    "description": "Collection privée d'art traditionnel africain : trônes, masques et objets royaux.",
+    "tags": [
+      "art",
+      "culture",
+      "history"
+    ],
+    "image": "https://images.unsplash.com/photo-1594388572748-01cf0f194c98?w=800",
+    "avg_price_fcfa": 2000,
+    "best_time": "Sur rendez-vous",
+    "popularity": 50
+  },
+  {
+    "id": "y014",
+    "name": "Musée d'Art Camerounais (Monastère du Mont Fébé)",
+    "quartier": "Fébé",
+    "category": "museum",
+    "description": "Au monastère bénédictin : une des plus belles collections d'art traditionnel camerounais (bronzes, bois, perles).",
+    "tags": [
+      "art",
+      "culture",
+      "history"
+    ],
+    "image": "https://images.unsplash.com/photo-1566127992631-137a642a90f4?w=800",
+    "avg_price_fcfa": 1000,
+    "best_time": "Week-end après-midi",
+    "popularity": 48
+  },
+  {
+    "id": "y015",
+    "name": "Palais des Congrès",
+    "quartier": "Tsinga",
+    "category": "attraction",
+    "description": "Le grand centre de conférences sur la colline, siège des grands événements culturels et concerts.",
+    "tags": [
+      "culture",
+      "events"
+    ],
+    "image": "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Selon événements",
+    "popularity": 45
+  },
+  {
+    "id": "y016",
+    "name": "Stade Ahmadou Ahidjo",
+    "quartier": "Mfandena",
+    "category": "entertainment",
+    "description": "Le stade mythique de Yaoundé : matchs des Lions Indomptables et grandes rencontres du championnat.",
+    "tags": [
+      "sport",
+      "events"
+    ],
+    "image": "https://images.unsplash.com/photo-1459865264687-595d652de67e?w=800",
+    "avg_price_fcfa": 3000,
+    "best_time": "Jours de match",
+    "popularity": 66
+  },
+  {
+    "id": "y017",
+    "name": "Canal Olympia Yaoundé",
+    "quartier": "Warda",
+    "category": "entertainment",
+    "description": "Salle de cinéma et de spectacles moderne : films récents, concerts et événements.",
+    "tags": [
+      "events",
+      "family",
+      "relax"
+    ],
+    "image": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800",
+    "avg_price_fcfa": 3500,
+    "best_time": "Soirée",
+    "popularity": 64
+  },
+  {
+    "id": "y018",
+    "name": "Hilton Yaoundé",
+    "quartier": "Centre-ville",
+    "category": "hotel",
+    "description": "L'hôtel 5 étoiles de référence au centre-ville : piscine, restaurants et vue panoramique.",
+    "tags": [
+      "luxury",
+      "food",
+      "relax"
+    ],
+    "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
+    "avg_price_fcfa": 120000,
+    "best_time": "Toute l'année",
+    "popularity": 80
+  },
+  {
+    "id": "y019",
+    "name": "Hôtel Mont Fébé",
+    "quartier": "Fébé",
+    "category": "hotel",
+    "description": "Hôtel historique sur les hauteurs avec golf 9 trous, piscine et la plus belle vue de Yaoundé.",
+    "tags": [
+      "luxury",
+      "nature",
+      "relax",
+      "romance"
+    ],
+    "image": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800",
+    "avg_price_fcfa": 90000,
+    "best_time": "Toute l'année",
+    "popularity": 74
+  },
+  {
+    "id": "y020",
+    "name": "Djeuga Palace Hotel",
+    "quartier": "Centre-ville",
+    "category": "hotel",
+    "description": "Hôtel 4 étoiles apprécié des voyageurs d'affaires : restaurant, piscine et salles de réunion.",
+    "tags": [
+      "luxury",
+      "relax"
+    ],
+    "image": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800",
+    "avg_price_fcfa": 75000,
+    "best_time": "Toute l'année",
+    "popularity": 60
+  },
+  {
+    "id": "y021",
+    "name": "Boulangerie Calafatas",
+    "quartier": "Centre-ville",
+    "category": "cafe",
+    "description": "Institution de Yaoundé depuis des générations : pains, viennoiseries et pâtisseries au cœur de la ville.",
+    "tags": [
+      "food",
+      "relax"
+    ],
+    "image": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800",
+    "avg_price_fcfa": 2500,
+    "best_time": "Matin",
+    "popularity": 67
+  },
+  {
+    "id": "y022",
+    "name": "Chez Wou",
+    "quartier": "Centre-ville",
+    "category": "restaurant",
+    "description": "Le restaurant chinois historique de Yaoundé, une valeur sûre appréciée depuis des décennies.",
+    "tags": [
+      "food"
+    ],
+    "image": "https://images.unsplash.com/photo-1526318896980-cf78c088247c?w=800",
+    "avg_price_fcfa": 12000,
+    "best_time": "Déjeuner & dîner",
+    "popularity": 58
+  },
+  {
+    "id": "y023",
+    "name": "La Fourchette",
+    "quartier": "Centre-ville",
+    "category": "restaurant",
+    "description": "Table gastronomique réputée mêlant cuisine française et saveurs camerounaises.",
+    "tags": [
+      "food",
+      "luxury",
+      "romance"
+    ],
+    "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800",
+    "avg_price_fcfa": 20000,
+    "best_time": "Dîner, réserver",
+    "popularity": 63
+  },
+  {
+    "id": "y024",
+    "name": "Quartier Bastos — Restaurants & Lounges",
+    "quartier": "Bastos",
+    "category": "entertainment",
+    "description": "Le quartier diplomatique et ses nombreux restaurants, cafés et lounges : l'épicentre des sorties à Yaoundé.",
+    "tags": [
+      "food",
+      "nightlife",
+      "relax"
+    ],
+    "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800",
+    "avg_price_fcfa": 15000,
+    "best_time": "Soirée",
+    "popularity": 76
+  },
+  {
+    "id": "y025",
+    "name": "Rôtisseries de la Briqueterie",
+    "quartier": "Briqueterie",
+    "category": "restaurant",
+    "description": "Le temple du soya (brochettes) et du poisson braisé : street food authentique dans une ambiance 100% yaoundéenne.",
+    "tags": [
+      "food",
+      "culture",
+      "nightlife"
+    ],
+    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?w=800",
+    "avg_price_fcfa": 3000,
+    "best_time": "Soirée",
+    "popularity": 71
+  },
+  {
+    "id": "y026",
+    "name": "Mokolo Elobi — Poisson braisé",
+    "quartier": "Mokolo",
+    "category": "restaurant",
+    "description": "Poisson braisé, bâton de manioc et ambiance populaire : l'expérience culinaire locale par excellence.",
+    "tags": [
+      "food",
+      "culture",
+      "nightlife"
+    ],
+    "image": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=800",
+    "avg_price_fcfa": 4000,
+    "best_time": "Soirée",
+    "popularity": 59
+  }
+]
