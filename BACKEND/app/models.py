@@ -1,101 +1,54 @@
-"""
-app/models.py
-
-Data models and file I/O helpers.
-
-All persistent data is stored in JSON files under the /data directory.
-  - data/users.json       – registered users
-  - data/itineraries.json – user itineraries
-  - data/destinations.json – static destination catalogue (seed data)
-"""
-import json
-import os
-
-# Resolve the /data directory relative to this file's location so the app
-# works regardless of the current working directory.
-_BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_DIR = os.path.join(_BASE_DIR, "data")
-
-USERS_FILE = os.path.join(DATA_DIR, "users.json")
-ITINERARIES_FILE = os.path.join(DATA_DIR, "itineraries.json")
-DESTINATIONS_FILE = os.path.join(DATA_DIR, "destinations.json")
+"""GlobeTrotter Monolith - Pydantic schemas."""
+from typing import List, Optional
+from pydantic import BaseModel, EmailStr, Field
 
 
-# ---------------------------------------------------------------------------
-# Generic file I/O helpers
-# ---------------------------------------------------------------------------
-
-def _read_json(filepath: str) -> list:
-    """Read a JSON file and return its contents as a Python list.
-
-    Returns an empty list if the file does not exist or is empty.
-    """
-    if not os.path.exists(filepath):
-        return []
-    with open(filepath, "r", encoding="utf-8") as fh:
-        content = fh.read().strip()
-        if not content:
-            return []
-        return json.loads(content)
+# ---------- Auth ----------
+class RegisterRequest(BaseModel):
+    full_name: str = Field(min_length=2, max_length=80)
+    email: EmailStr
+    password: str = Field(min_length=6)
+    preferences: List[str] = []  # e.g. ["beach", "culture", "adventure"]
 
 
-def _write_json(filepath: str, data: list) -> None:
-    """Serialise *data* and write it to *filepath* (pretty-printed)."""
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    with open(filepath, "w", encoding="utf-8") as fh:
-        json.dump(data, fh, indent=2)
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
 
 
-# ---------------------------------------------------------------------------
-# User helpers
-# ---------------------------------------------------------------------------
-
-def get_all_users() -> list:
-    """Return all registered users."""
-    return _read_json(USERS_FILE)
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: dict
 
 
-def get_user_by_username(username: str) -> dict | None:
-    """Return the user dict for *username*, or None if not found."""
-    users = get_all_users()
-    for user in users:
-        if user.get("username") == username:
-            return user
-    return None
+class UserPublic(BaseModel):
+    id: str
+    full_name: str
+    email: EmailStr
+    preferences: List[str] = []
 
 
-def save_user(user: dict) -> None:
-    """Append *user* to the users store."""
-    users = get_all_users()
-    users.append(user)
-    _write_json(USERS_FILE, users)
+# ---------- Itineraries ----------
+class ItineraryStop(BaseModel):
+    destination_id: str
+    day: int = 1
+    notes: Optional[str] = None
 
 
-# ---------------------------------------------------------------------------
-# Destination helpers
-# ---------------------------------------------------------------------------
-
-def get_all_destinations() -> list:
-    """Return all destinations from the static catalogue."""
-    return _read_json(DESTINATIONS_FILE)
-
-
-# ---------------------------------------------------------------------------
-# Itinerary helpers
-# ---------------------------------------------------------------------------
-
-def get_all_itineraries() -> list:
-    """Return all itineraries across all users."""
-    return _read_json(ITINERARIES_FILE)
+class ItineraryCreate(BaseModel):
+    title: str = Field(min_length=2, max_length=120)
+    description: Optional[str] = None
+    start_date: Optional[str] = None  # ISO date string
+    end_date: Optional[str] = None
+    stops: List[ItineraryStop] = []
+    shared_with: List[str] = []  # emails of friends/family
 
 
-def get_itineraries_for_user(username: str) -> list:
-    """Return itineraries that belong to *username*."""
-    return [it for it in get_all_itineraries() if it.get("username") == username]
-
-
-def save_itinerary(itinerary: dict) -> None:
-    """Append *itinerary* to the itineraries store."""
-    itineraries = get_all_itineraries()
-    itineraries.append(itinerary)
-    _write_json(ITINERARIES_FILE, itineraries)
+class ItineraryUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+    stops: Optional[List[ItineraryStop]] = None
+    shared_with: Optional[List[str]] = None

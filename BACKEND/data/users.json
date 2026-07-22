@@ -1,0 +1,24 @@
+[
+  {
+    "id": "deecfaf108f2",
+    "full_name": "FAHDIL",
+    "email": "nadaljunior999@gmail.com",
+    "password_hash": "$2b$12$COzPpGZ5PQ/HV.BxdI9v9escFIxkE8xW8UNx1DvVpzqPgjv1tonne",
+    "preferences": [
+      "food",
+      "photo"
+    ]
+  },
+  {
+    "id": "0799b176f7b8",
+    "full_name": "Fahdil",
+    "email": "nadaljunior96@gmail.com",
+    "password_hash": "$2b$12$yvjMFOCoSgETMElvVcWkWegaZgQeG0PsYVpvUWlOykiZdZr8wSu5W",
+    "preferences": [
+      "food",
+      "sport",
+      "family",
+      "luxury"
+    ]
+  }
+]
