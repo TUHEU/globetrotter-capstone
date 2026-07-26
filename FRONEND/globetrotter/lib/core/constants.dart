@@ -24,8 +24,7 @@ class ApiConstants {
     if (kReleaseMode) return prodUrl;
 
     // Mode développement (flutter run) :
-    if (lanIp.isNotEmpty)
-      return 'http://$lanIp:4200'; // backend local sur ton PC
+    if (lanIp.isNotEmpty) return 'http://$lanIp:4200'; // backend local sur ton PC
     return prodUrl; // par défaut : dev tape aussi sur le VPS en ligne
   }
 }
@@ -33,22 +32,9 @@ class ApiConstants {
 /// Interests used for personalized recommendations (registration + explore filters).
 class PreferenceTags {
   static const List<String> all = [
-    'food',
-    'culture',
-    'nature',
-    'history',
-    'art',
-    'shopping',
-    'nightlife',
-    'family',
-    'relax',
-    'romance',
-    'photo',
-    'sport',
-    'wildlife',
-    'hiking',
-    'luxury',
-    'events',
+    'food', 'culture', 'nature', 'history', 'art', 'shopping',
+    'nightlife', 'family', 'relax', 'romance', 'photo', 'sport',
+    'wildlife', 'hiking', 'luxury', 'events',
   ];
 }
 

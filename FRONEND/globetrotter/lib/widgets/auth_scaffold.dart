@@ -1,5 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/settings_provider.dart';
 
 /// Shared premium background + glass card used by Login and Register screens.
 /// - Mobile: single column, glass card over the scenery
@@ -28,25 +30,15 @@ class AuthScaffold extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF0E5428),
-                  Color(0xFF123B24),
-                  Color(0xFF0F2418),
-                ],
+                colors: [Color(0xFF0E5428), Color(0xFF123B24), Color(0xFF0F2418)],
               ),
             ),
           ),
           // Soft decorative glows
-          const Positioned(
-            top: -90,
-            right: -60,
-            child: _Glow(color: Color(0xFFFCD116), size: 320),
-          ),
-          const Positioned(
-            bottom: 120,
-            left: -80,
-            child: _Glow(color: Color(0xFFCE1126), size: 260),
-          ),
+          const Positioned(top: -90, right: -60, child: _Glow(color: Color(0xFFFCD116), size: 320)),
+          const Positioned(bottom: 120, left: -80, child: _Glow(color: Color(0xFFCE1126), size: 260)),
+          // Sélecteur de langue (visible avant même la connexion)
+          const Positioned(top: 16, right: 16, child: SafeArea(child: _LanguageToggle())),
           // Yaoundé hills silhouette
           Positioned(
             bottom: 0,
@@ -61,13 +53,7 @@ class AuthScaffold extends StatelessWidget {
             child: wide
                 ? Row(
                     children: [
-                      Expanded(
-                        child: _BrandPanel(
-                          title: title,
-                          subtitle: subtitle,
-                          large: true,
-                        ),
-                      ),
+                      Expanded(child: _BrandPanel(title: title, subtitle: subtitle, large: true)),
                       Expanded(
                         child: Center(
                           child: SingleChildScrollView(
@@ -84,11 +70,7 @@ class AuthScaffold extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          _BrandPanel(
-                            title: title,
-                            subtitle: subtitle,
-                            large: false,
-                          ),
+                          _BrandPanel(title: title, subtitle: subtitle, large: false),
                           const SizedBox(height: 28),
                           _GlassCard(child: form),
                         ],
@@ -106,11 +88,7 @@ class _BrandPanel extends StatelessWidget {
   final String title;
   final String subtitle;
   final bool large;
-  const _BrandPanel({
-    required this.title,
-    required this.subtitle,
-    required this.large,
-  });
+  const _BrandPanel({required this.title, required this.subtitle, required this.large});
 
   @override
   Widget build(BuildContext context) {
@@ -120,10 +98,7 @@ class _BrandPanel extends StatelessWidget {
       curve: Curves.easeOutCubic,
       builder: (context, t, child) => Opacity(
         opacity: t,
-        child: Transform.translate(
-          offset: Offset(0, 24 * (1 - t)),
-          child: child,
-        ),
+        child: Transform.translate(offset: Offset(0, 24 * (1 - t)), child: child),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -146,11 +121,8 @@ class _BrandPanel extends StatelessWidget {
                 ),
               ],
             ),
-            child: Icon(
-              Icons.travel_explore,
-              size: large ? 64 : 48,
-              color: const Color(0xFF0F2418),
-            ),
+            child: Icon(Icons.travel_explore,
+                size: large ? 64 : 48, color: const Color(0xFF0F2418)),
           ),
           const SizedBox(height: 20),
           Text(
@@ -182,18 +154,9 @@ class _BrandPanel extends StatelessWidget {
               spacing: 10,
               alignment: WrapAlignment.center,
               children: const [
-                _FeaturePill(
-                  icon: Icons.place_outlined,
-                  label: "26+ lieux à Yaoundé",
-                ),
-                _FeaturePill(
-                  icon: Icons.auto_awesome,
-                  label: "Recos personnalisées",
-                ),
-                _FeaturePill(
-                  icon: Icons.map_outlined,
-                  label: "Sorties partagées",
-                ),
+                _FeaturePill(icon: Icons.place_outlined, label: "26+ lieux à Yaoundé"),
+                _FeaturePill(icon: Icons.auto_awesome, label: "Recos personnalisées"),
+                _FeaturePill(icon: Icons.map_outlined, label: "Sorties partagées"),
               ],
             ),
           ],
@@ -217,17 +180,12 @@ class _FeaturePill extends StatelessWidget {
         borderRadius: BorderRadius.circular(30),
         border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: const Color(0xFFFCD116)),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(color: Colors.white, fontSize: 13),
-          ),
-        ],
-      ),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        Icon(icon, size: 16, color: const Color(0xFFFCD116)),
+        const SizedBox(width: 6),
+        Text(label,
+            style: const TextStyle(color: Colors.white, fontSize: 13)),
+      ]),
     );
   }
 }
@@ -256,10 +214,7 @@ class _GlassCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(28),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.20),
-                width: 1.2,
-              ),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.20), width: 1.2),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.35),
@@ -269,6 +224,69 @@ class _GlassCard extends StatelessWidget {
               ],
             ),
             child: child,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LanguageToggle extends StatelessWidget {
+  const _LanguageToggle();
+
+  @override
+  Widget build(BuildContext context) {
+    final settings = context.watch<SettingsProvider>();
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.20)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _LangButton(
+            label: 'FR',
+            selected: settings.languageCode == 'fr',
+            onTap: () => settings.setLanguage('fr'),
+          ),
+          _LangButton(
+            label: 'EN',
+            selected: settings.languageCode == 'en',
+            onTap: () => settings.setLanguage('en'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LangButton extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  const _LangButton({required this.label, required this.selected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? const Color(0xFFFCD116) : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: selected ? const Color(0xFF0F2418) : Colors.white,
+            fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
+            fontSize: 12.5,
           ),
         ),
       ),
@@ -290,10 +308,7 @@ class _Glow extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: RadialGradient(
-            colors: [
-              color.withValues(alpha: 0.35),
-              color.withValues(alpha: 0.0),
-            ],
+            colors: [color.withValues(alpha: 0.35), color.withValues(alpha: 0.0)],
           ),
         ),
       ),
@@ -306,10 +321,8 @@ class _HillsPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
-    final back = Paint()
-      ..color = const Color(0xFF1B7A3D).withValues(alpha: 0.35);
-    final front = Paint()
-      ..color = const Color(0xFF0A1A10).withValues(alpha: 0.9);
+    final back = Paint()..color = const Color(0xFF1B7A3D).withValues(alpha: 0.35);
+    final front = Paint()..color = const Color(0xFF0A1A10).withValues(alpha: 0.9);
 
     final p1 = Path()
       ..moveTo(0, h * 0.55)
@@ -337,12 +350,8 @@ class _HillsPainter extends CustomPainter {
 }
 
 /// Shared glass-style input decoration for auth forms.
-InputDecoration glassInput(
-  BuildContext context, {
-  required String label,
-  required IconData icon,
-  Widget? suffix,
-}) {
+InputDecoration glassInput(BuildContext context,
+    {required String label, required IconData icon, Widget? suffix}) {
   return InputDecoration(
     labelText: label,
     labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.85)),
@@ -407,9 +416,7 @@ class GradientButton extends StatelessWidget {
           shadowColor: Colors.transparent,
           foregroundColor: const Color(0xFF0F2418),
           minimumSize: const Size(double.infinity, 54),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
         ),
         onPressed: loading ? null : onPressed,
@@ -418,20 +425,11 @@ class GradientButton extends StatelessWidget {
                 height: 22,
                 width: 22,
                 child: CircularProgressIndicator(
-                  strokeWidth: 2.4,
-                  color: Color(0xFF0F2418),
-                ),
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (icon != null) ...[
-                    Icon(icon, size: 20),
-                    const SizedBox(width: 8),
-                  ],
-                  Text(label),
-                ],
-              ),
+                    strokeWidth: 2.4, color: Color(0xFF0F2418)))
+            : Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                if (icon != null) ...[Icon(icon, size: 20), const SizedBox(width: 8)],
+                Text(label),
+              ]),
       ),
     );
   }

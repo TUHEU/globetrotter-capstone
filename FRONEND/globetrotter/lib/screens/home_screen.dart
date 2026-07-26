@@ -4,10 +4,12 @@ import '../core/constants.dart';
 import '../providers/auth_provider.dart';
 import '../providers/destination_provider.dart';
 import '../providers/itinerary_provider.dart';
+import '../providers/settings_provider.dart';
 import '../widgets/destination_card.dart';
 import 'create_itinerary_screen.dart';
 import 'destination_detail_screen.dart';
 import 'login_screen.dart';
+import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -31,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.watch<SettingsProvider>().s;
     final pages = const [
       _ExploreTab(),
       _RecommendationsTab(),
@@ -46,15 +49,15 @@ class _HomeScreenState extends State<HomeScreen> {
             selectedIndex: _index,
             onDestinationSelected: (i) => setState(() => _index = i),
             labelType: NavigationRailLabelType.all,
-            destinations: const [
+            destinations: [
               NavigationRailDestination(
-                  icon: Icon(Icons.explore_outlined), label: Text('Explore')),
+                  icon: const Icon(Icons.explore_outlined), label: Text(s.navExplore)),
               NavigationRailDestination(
-                  icon: Icon(Icons.auto_awesome_outlined), label: Text('For you')),
+                  icon: const Icon(Icons.auto_awesome_outlined), label: Text(s.navForYou)),
               NavigationRailDestination(
-                  icon: Icon(Icons.map_outlined), label: Text('My trips')),
+                  icon: const Icon(Icons.map_outlined), label: Text(s.navTrips)),
               NavigationRailDestination(
-                  icon: Icon(Icons.person_outline), label: Text('Profile')),
+                  icon: const Icon(Icons.person_outline), label: Text(s.navProfile)),
             ],
           ),
         Expanded(child: pages[_index]),
@@ -64,25 +67,137 @@ class _HomeScreenState extends State<HomeScreen> {
           : NavigationBar(
               selectedIndex: _index,
               onDestinationSelected: (i) => setState(() => _index = i),
-              destinations: const [
+              destinations: [
                 NavigationDestination(
-                    icon: Icon(Icons.explore_outlined), label: 'Explore'),
+                    icon: const Icon(Icons.explore_outlined), label: s.navExplore),
                 NavigationDestination(
-                    icon: Icon(Icons.auto_awesome_outlined), label: 'For you'),
+                    icon: const Icon(Icons.auto_awesome_outlined), label: s.navForYou),
                 NavigationDestination(
-                    icon: Icon(Icons.map_outlined), label: 'My trips'),
+                    icon: const Icon(Icons.map_outlined), label: s.navTrips),
                 NavigationDestination(
-                    icon: Icon(Icons.person_outline), label: 'Profile'),
+                    icon: const Icon(Icons.person_outline), label: s.navProfile),
               ],
             ),
       floatingActionButton: _index == 2
           ? FloatingActionButton.extended(
               icon: const Icon(Icons.add),
-              label: const Text('New trip'),
+              label: Text(s.newTrip),
               onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                   builder: (_) => const CreateItineraryScreen())),
             )
           : null,
+    );
+  }
+}
+
+// ---------------- Dashboard header (Explore tab) ----------------
+class _DashboardHeader extends StatelessWidget {
+  const _DashboardHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final s = context.watch<SettingsProvider>().s;
+    final user = context.watch<AuthProvider>().user;
+    final destCount = context.watch<DestinationProvider>().destinations.length;
+    final tripCount = context.watch<ItineraryProvider>().itineraries.length;
+    final firstName = (user?.fullName ?? '').split(' ').first;
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDark
+              ? [const Color(0xFF15351F), const Color(0xFF0F2418)]
+              : [theme.colorScheme.primary, theme.colorScheme.primary.withValues(alpha: 0.85)],
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      s.greeting(firstName.isEmpty ? '' : firstName),
+                      style: theme.textTheme.titleLarge?.copyWith(
+                          color: Colors.white, fontWeight: FontWeight.w800),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      s.dashSubtitle,
+                      style: theme.textTheme.bodySmall
+                          ?.copyWith(color: Colors.white.withValues(alpha: 0.85)),
+                    ),
+                  ],
+                ),
+              ),
+              CircleAvatar(
+                radius: 22,
+                backgroundColor: Colors.white.withValues(alpha: 0.18),
+                child: Text(
+                  user?.fullName.isNotEmpty == true
+                      ? user!.fullName[0].toUpperCase()
+                      : '?',
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Row(
+            children: [
+              _StatPill(icon: Icons.place_outlined, value: '$destCount', label: s.statPlaces),
+              const SizedBox(width: 10),
+              _StatPill(
+                  icon: Icons.category_outlined,
+                  value: '${PlaceCategories.all.length}',
+                  label: s.statCategories),
+              const SizedBox(width: 10),
+              _StatPill(icon: Icons.map_outlined, value: '$tripCount', label: s.statTrips),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatPill extends StatelessWidget {
+  final IconData icon;
+  final String value;
+  final String label;
+  const _StatPill({required this.icon, required this.value, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.14),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: Colors.white, size: 18),
+            const SizedBox(height: 4),
+            Text(value,
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
+            Text(label,
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.85), fontSize: 10.5)),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -101,13 +216,15 @@ class _ExploreTabState extends State<_ExploreTab> {
   @override
   Widget build(BuildContext context) {
     final p = context.watch<DestinationProvider>();
+    final s = context.watch<SettingsProvider>().s;
     return SafeArea(
       child: Column(children: [
+        const _DashboardHeader(),
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
           child: SearchBar(
             controller: _search,
-            hintText: 'Rechercher un lieu, un quartier...',
+            hintText: s.searchHint,
             leading: const Icon(Icons.search),
             onSubmitted: (q) => p.search(q: q),
             trailing: [
@@ -146,7 +263,7 @@ class _ExploreTabState extends State<_ExploreTab> {
               : p.error != null
                   ? _ErrorView(message: p.error!, onRetry: () => p.search(q: ''))
                   : p.destinations.isEmpty
-                      ? const Center(child: Text('No destinations found.'))
+                      ? Center(child: Text(s.noResults))
                       : RefreshIndicator(
                           onRefresh: () => p.search(),
                           child: ListView.builder(
@@ -174,6 +291,7 @@ class _RecommendationsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.watch<DestinationProvider>();
     final user = context.watch<AuthProvider>().user;
+    final s = context.watch<SettingsProvider>().s;
     return SafeArea(
       child: p.loadingRecos
           ? const Center(child: CircularProgressIndicator())
@@ -183,7 +301,7 @@ class _RecommendationsTab extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
-                    child: Text('Made for you, ${user?.fullName.split(' ').first ?? ''} ✈️',
+                    child: Text(s.madeFor(user?.fullName.split(' ').first ?? ''),
                         style: Theme.of(context)
                             .textTheme
                             .headlineSmall
@@ -191,15 +309,14 @@ class _RecommendationsTab extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                        'Selon vos centres d\'intérêt, vos sorties passées et les lieux préférés des Yaoundéens.',
+                    child: Text(s.recoSubtitle,
                         style: Theme.of(context).textTheme.bodySmall),
                   ),
                   const SizedBox(height: 8),
                   if (p.recommendations.isEmpty)
-                    const Padding(
-                        padding: EdgeInsets.all(32),
-                        child: Center(child: Text('No recommendations yet.'))),
+                    Padding(
+                        padding: const EdgeInsets.all(32),
+                        child: Center(child: Text(s.noRecos))),
                   ...p.recommendations.map((d) => DestinationCard(
                         destination: d,
                         showReasons: true,
@@ -222,16 +339,15 @@ class _TripsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.watch<ItineraryProvider>();
     final destProvider = context.watch<DestinationProvider>();
+    final s = context.watch<SettingsProvider>().s;
     return SafeArea(
       child: p.loading
           ? const Center(child: CircularProgressIndicator())
           : p.itineraries.isEmpty
-              ? const Center(
+              ? Center(
                   child: Padding(
-                    padding: EdgeInsets.all(32),
-                    child: Text(
-                        'Aucune sortie planifiée.\nAppuyez sur "New trip" pour organiser votre première visite de Yaoundé !',
-                        textAlign: TextAlign.center),
+                    padding: const EdgeInsets.all(32),
+                    child: Text(s.tripsEmpty, textAlign: TextAlign.center),
                   ),
                 )
               : RefreshIndicator(
@@ -251,9 +367,9 @@ class _TripsTab extends StatelessWidget {
                           subtitle: Text([
                             if (it.startDate != null)
                               '${it.startDate} → ${it.endDate ?? "?"}',
-                            '${it.stops.length} stop(s)',
+                            s.stops(it.stops.length),
                             if (it.sharedWith.isNotEmpty)
-                              'shared with ${it.sharedWith.length}',
+                              s.sharedWith(it.sharedWith.length),
                           ].join(' · ')),
                           children: [
                             if (it.description != null)
@@ -264,22 +380,22 @@ class _TripsTab extends StatelessWidget {
                                     alignment: Alignment.centerLeft,
                                     child: Text(it.description!)),
                               ),
-                            ...it.stops.map((s) {
-                              final d = destProvider.byId(s.destinationId);
+                            ...it.stops.map((stop) {
+                              final d = destProvider.byId(stop.destinationId);
                               return ListTile(
                                 dense: true,
                                 leading: CircleAvatar(
-                                    radius: 13, child: Text('${s.day}')),
-                                title: Text(d?.name ?? s.destinationId),
+                                    radius: 13, child: Text('${stop.day}')),
+                                title: Text(d?.name ?? stop.destinationId),
                                 subtitle:
-                                    s.notes != null ? Text(s.notes!) : null,
+                                    stop.notes != null ? Text(stop.notes!) : null,
                               );
                             }),
                             Align(
                               alignment: Alignment.centerRight,
                               child: TextButton.icon(
                                 icon: const Icon(Icons.delete_outline),
-                                label: const Text('Delete'),
+                                label: Text(s.delete),
                                 onPressed: () async {
                                   final err = await p.delete(it.id);
                                   if (err != null && context.mounted) {
@@ -307,31 +423,31 @@ class _ProfileTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final user = auth.user;
+    final s = context.watch<SettingsProvider>().s;
+    final theme = Theme.of(context);
+
     return SafeArea(
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           CircleAvatar(
             radius: 44,
+            backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.15),
             child: Text(
               user?.fullName.isNotEmpty == true
                   ? user!.fullName[0].toUpperCase()
                   : '?',
-              style: const TextStyle(fontSize: 32),
+              style: TextStyle(fontSize: 32, color: theme.colorScheme.primary),
             ),
           ),
           const SizedBox(height: 12),
           Text(user?.fullName ?? '',
               textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.w700)),
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
           Text(user?.email ?? '',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium),
+              textAlign: TextAlign.center, style: theme.textTheme.bodyMedium),
           const SizedBox(height: 24),
-          Text('Travel interests', style: Theme.of(context).textTheme.titleSmall),
+          Text(s.interests, style: theme.textTheme.titleSmall),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -340,10 +456,20 @@ class _ProfileTab extends StatelessWidget {
                 .map((t) => Chip(label: Text(t)))
                 .toList(),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 20),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.settings_outlined),
+              title: Text(s.settings),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
+            ),
+          ),
+          const SizedBox(height: 20),
           OutlinedButton.icon(
             icon: const Icon(Icons.logout),
-            label: const Text('Log out'),
+            label: Text(s.logout),
             onPressed: () async {
               await auth.logout();
               if (context.mounted) {
@@ -366,6 +492,7 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.watch<SettingsProvider>().s;
     return Center(
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         const Icon(Icons.cloud_off, size: 48),
@@ -375,7 +502,7 @@ class _ErrorView extends StatelessWidget {
           child: Text(message, textAlign: TextAlign.center),
         ),
         const SizedBox(height: 12),
-        FilledButton(onPressed: onRetry, child: const Text('Retry')),
+        FilledButton(onPressed: onRetry, child: Text(s.retry)),
       ]),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/settings_provider.dart';
 import '../widgets/auth_scaffold.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
@@ -38,6 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+    final s = context.watch<SettingsProvider>().s;
     return AuthScaffold(
       title: "GlobeTrotter Yaoundé",
       subtitle: "Discover Yaoundé smarter. Travel better. 🇨🇲",
@@ -47,16 +49,16 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              "Bon retour ! 👋",
-              style: TextStyle(
+            Text(
+              s.welcomeBack,
+              style: const TextStyle(
                   color: Colors.white,
                   fontSize: 22,
                   fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 4),
             Text(
-              "Connectez-vous pour retrouver vos sorties",
+              s.loginSubtitle,
               style:
                   TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 13.5),
             ),
@@ -67,10 +69,9 @@ class _LoginScreenState extends State<LoginScreen> {
               style: const TextStyle(color: Colors.white),
               cursorColor: const Color(0xFFFCD116),
               decoration: glassInput(context,
-                  label: "Email", icon: Icons.mail_outline),
-              validator: (v) => v != null && v.contains("@")
-                  ? null
-                  : "Entrez un email valide",
+                  label: s.email, icon: Icons.mail_outline),
+              validator: (v) =>
+                  v != null && v.contains("@") ? null : s.invalidEmail,
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -80,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
               cursorColor: const Color(0xFFFCD116),
               decoration: glassInput(
                 context,
-                label: "Mot de passe",
+                label: s.password,
                 icon: Icons.lock_outline,
                 suffix: IconButton(
                   icon: Icon(
@@ -92,14 +93,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               validator: (v) =>
-                  v != null && v.length >= 6 ? null : "6 caractères minimum",
+                  v != null && v.length >= 6 ? null : s.min6chars,
               onFieldSubmitted: (_) => _submit(),
             ),
             const SizedBox(height: 26),
             GradientButton(
               onPressed: _submit,
               loading: auth.loading,
-              label: "Se connecter",
+              label: s.login,
               icon: Icons.login,
             ),
             const SizedBox(height: 18),
@@ -107,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.2))),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text("ou",
+                child: Text(s.or,
                     style: TextStyle(color: Colors.white.withValues(alpha: 0.6))),
               ),
               Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.2))),
@@ -123,8 +124,8 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const RegisterScreen())),
-              child: const Text("Créer un compte gratuitement",
-                  style: TextStyle(fontWeight: FontWeight.w600)),
+              child: Text(s.createAccountFree,
+                  style: const TextStyle(fontWeight: FontWeight.w600)),
             ),
           ],
         ),
