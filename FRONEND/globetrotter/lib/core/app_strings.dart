@@ -81,6 +81,8 @@ class AppStrings {
   String get createMyAccount => isFr ? 'Créer mon compte' : 'Create my account';
   String get invalidEmail => isFr ? 'Entrez un email valide' : 'Enter a valid email';
   String get min6chars => isFr ? '6 caractères minimum' : 'Minimum 6 characters';
+  String get enterName => isFr ? 'Entrez votre nom' : 'Enter your name';
+
   // ---------- Erreurs réseau ----------
   String get cannotReachServer => isFr
       ? 'Impossible de contacter le serveur. Vérifiez votre connexion.'

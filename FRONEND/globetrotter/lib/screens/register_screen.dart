@@ -24,18 +24,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     final auth = context.read<AuthProvider>();
+    final s = context.read<SettingsProvider>().s;
     final ok = await auth.register(
-        _name.text.trim(), _email.text.trim(), _password.text, _selected.toList());
+      _name.text.trim(),
+      _email.text.trim(),
+      _password.text,
+      _selected.toList(),
+    );
     if (!mounted) return;
     if (ok) {
       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const HomeScreen()), (_) => false);
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        (_) => false,
+      );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(auth.errorMessage(s) ?? s.registerFailed),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: const Color(0xFFB3261E),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(auth.errorMessage(s) ?? s.registerFailed),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: const Color(0xFFB3261E),
+        ),
+      );
     }
   }
 
@@ -52,29 +61,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(children: [
-              IconButton(
-                onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                s.createAccount,
-                style: const TextStyle(
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  s.createAccount,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 22,
-                    fontWeight: FontWeight.w800),
-              ),
-            ]),
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 22),
             TextFormField(
               controller: _name,
               style: const TextStyle(color: Colors.white),
               cursorColor: const Color(0xFFFCD116),
-              decoration: glassInput(context,
-                  label: s.fullName, icon: Icons.person_outline),
+              decoration: glassInput(
+                context,
+                label: s.fullName,
+                icon: Icons.person_outline,
+              ),
               validator: (v) =>
                   v != null && v.trim().length >= 2 ? null : s.enterName,
             ),
@@ -84,8 +99,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
               keyboardType: TextInputType.emailAddress,
               style: const TextStyle(color: Colors.white),
               cursorColor: const Color(0xFFFCD116),
-              decoration:
-                  glassInput(context, label: s.email, icon: Icons.mail_outline),
+              decoration: glassInput(
+                context,
+                label: s.email,
+                icon: Icons.mail_outline,
+              ),
               validator: (v) =>
                   v != null && v.contains("@") ? null : s.invalidEmail,
             ),
@@ -101,27 +119,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 icon: Icons.lock_outline,
                 suffix: IconButton(
                   icon: Icon(
-                    _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    _obscure
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
                     color: Colors.white.withValues(alpha: 0.7),
                     size: 21,
                   ),
                   onPressed: () => setState(() => _obscure = !_obscure),
                 ),
               ),
-              validator: (v) =>
-                  v != null && v.length >= 6 ? null : s.min6chars,
+              validator: (v) => v != null && v.length >= 6 ? null : s.min6chars,
             ),
             const SizedBox(height: 22),
             Text(
               s.interestsQuestion,
               style: const TextStyle(
-                  color: Colors.white, fontSize: 15, fontWeight: FontWeight.w700),
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               s.interestsHint,
               style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.7), fontSize: 12.5),
+                color: Colors.white.withValues(alpha: 0.7),
+                fontSize: 12.5,
+              ),
             ),
             const SizedBox(height: 12),
             Wrap(
@@ -133,7 +157,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   label: t,
                   selected: sel,
                   onTap: () => setState(
-                      () => sel ? _selected.remove(t) : _selected.add(t)),
+                    () => sel ? _selected.remove(t) : _selected.add(t),
+                  ),
                 );
               }).toList(),
             ),
@@ -199,7 +224,11 @@ class _InterestChip extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (selected) ...[
-                const Icon(Icons.check_rounded, size: 16, color: Color(0xFF0F2418)),
+                const Icon(
+                  Icons.check_rounded,
+                  size: 16,
+                  color: Color(0xFF0F2418),
+                ),
                 const SizedBox(width: 5),
               ],
               Text(
