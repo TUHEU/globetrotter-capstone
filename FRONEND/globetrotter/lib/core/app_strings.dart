@@ -81,5 +81,28 @@ class AppStrings {
   String get createMyAccount => isFr ? 'Créer mon compte' : 'Create my account';
   String get invalidEmail => isFr ? 'Entrez un email valide' : 'Enter a valid email';
   String get min6chars => isFr ? '6 caractères minimum' : 'Minimum 6 characters';
-  String get enterName => isFr ? 'Entrez votre nom' : 'Enter your name';
+  // ---------- Erreurs réseau ----------
+  String get cannotReachServer => isFr
+      ? 'Impossible de contacter le serveur. Vérifiez votre connexion.'
+      : 'Cannot reach the server. Please check your connection.';
+  String get somethingWrong =>
+      isFr ? 'Une erreur est survenue. Réessayez.' : 'Something went wrong. Please try again.';
+  String get invalidCredentials =>
+      isFr ? 'Email ou mot de passe invalide' : 'Invalid email or password';
+  String get emailAlreadyRegistered =>
+      isFr ? 'Cet email est déjà utilisé' : 'Email already registered';
+  String get loginFailed => isFr ? 'Connexion impossible' : 'Login failed';
+  String get registerFailed => isFr ? 'Inscription impossible' : 'Registration failed';
+
+  // ---------- Panneau de marque (branding) ----------
+  String get authTagline =>
+      isFr ? 'Découvrez Yaoundé plus intelligemment. Voyagez mieux. 🇨🇲'
+           : 'Discover Yaoundé smarter. Travel better. 🇨🇲';
+  String get registerTitle => isFr ? 'Rejoignez l\'aventure' : 'Join the adventure';
+  String get registerSubtitle => isFr
+      ? 'Créez votre compte et explorez Yaoundé autrement ✨'
+      : 'Create your account and explore Yaoundé differently ✨';
+  String get featurePlaces => isFr ? '26+ lieux à Yaoundé' : '26+ places in Yaoundé';
+  String get featureRecos => isFr ? 'Recos personnalisées' : 'Personalized recos';
+  String get featureTrips => isFr ? 'Sorties partagées' : 'Shared trips';
 }

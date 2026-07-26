@@ -49,6 +49,11 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
 
+  # Génère automatiquement l'icône de l'app pour Android, iOS, Web et Windows
+  # à partir des images dans assets/icon/. Voir la config "flutter_launcher_icons"
+  # tout en bas de ce fichier, et assets/icon/INSTALL_ICON.md pour la commande à lancer.
+  flutter_launcher_icons: ^0.14.3
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -70,6 +75,8 @@ flutter:
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
+  assets:
+    - assets/icon/
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
@@ -90,3 +97,25 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# ============================================================
+# Config de flutter_launcher_icons — génère l'icône native pour
+# Android (classique + adaptative), iOS, Web et Windows en une
+# seule commande : flutter pub run flutter_launcher_icons
+# ============================================================
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#0F5A2E"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+  web:
+    generate: true
+    image_path: "assets/icon/app_icon.png"
+    background_color: "#0F5A2E"
+    theme_color: "#0F5A2E"
+  windows:
+    generate: true
+    image_path: "assets/icon/app_icon.png"
+    icon_size: 256

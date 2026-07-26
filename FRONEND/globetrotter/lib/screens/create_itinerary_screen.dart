@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../core/api_client.dart';
 import '../models/destination.dart';
 import '../models/itinerary.dart';
 import '../providers/destination_provider.dart';
 import '../providers/itinerary_provider.dart';
+import '../providers/settings_provider.dart';
 
 class CreateItineraryScreen extends StatefulWidget {
   final Destination? preselected;
@@ -106,13 +108,15 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
           sharedWith: shared,
         );
     if (!mounted) return;
+    final s = context.read<SettingsProvider>().s;
     setState(() => _saving = false);
     if (err == null) {
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Itinerary created!')));
+          .showSnackBar(SnackBar(content: Text(s.isFr ? 'Sortie créée !' : 'Trip created!')));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(ApiClient.errorMessage(err, s))));
     }
   }
 

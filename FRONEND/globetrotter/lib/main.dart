@@ -70,8 +70,7 @@ class _BootstrapState extends State<_Bootstrap> {
       builder: (context, snap) {
         if (snap.connectionState != ConnectionState.done) {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
+              body: Center(child: CircularProgressIndicator()));
         }
         return snap.data == true ? const HomeScreen() : const LoginScreen();
       },

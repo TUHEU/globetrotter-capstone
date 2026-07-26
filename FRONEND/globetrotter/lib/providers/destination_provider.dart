@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../core/api_client.dart';
+import '../core/app_strings.dart';
 import '../models/destination.dart';
 
 class DestinationProvider extends ChangeNotifier {
@@ -7,14 +8,18 @@ class DestinationProvider extends ChangeNotifier {
   List<Destination> recommendations = [];
   bool loading = false;
   bool loadingRecos = false;
-  String? error;
+  Object? _lastException;
   String query = '';
   String? activeTag;
   String? activeCategory;
 
+  bool get hasError => _lastException != null;
+  String? errorMessage(AppStrings s) =>
+      _lastException == null ? null : ApiClient.errorMessage(_lastException!, s);
+
   Future<void> search({String? q, String? tag, String? category}) async {
     loading = true;
-    error = null;
+    _lastException = null;
     query = q ?? query;
     activeTag = tag;
     activeCategory = category;
@@ -27,7 +32,7 @@ class DestinationProvider extends ChangeNotifier {
       });
       destinations = (res.data['results'] as List).map((j) => Destination.fromJson(j)).toList();
     } catch (e) {
-      error = ApiClient.errorMessage(e);
+      _lastException = e;
     } finally {
       loading = false;
       notifyListeners();
@@ -41,7 +46,7 @@ class DestinationProvider extends ChangeNotifier {
       final res = await ApiClient.instance.dio.get('/recommendations', queryParameters: {'limit': 10});
       recommendations = (res.data['results'] as List).map((j) => Destination.fromJson(j)).toList();
     } catch (e) {
-      error = ApiClient.errorMessage(e);
+      _lastException = e;
     } finally {
       loadingRecos = false;
       notifyListeners();

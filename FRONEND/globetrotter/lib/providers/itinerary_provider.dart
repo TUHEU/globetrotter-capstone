@@ -1,28 +1,35 @@
 import 'package:flutter/foundation.dart';
 import '../core/api_client.dart';
+import '../core/app_strings.dart';
 import '../models/itinerary.dart';
 
 class ItineraryProvider extends ChangeNotifier {
   List<Itinerary> itineraries = [];
   bool loading = false;
-  String? error;
+  Object? _lastException;
+
+  bool get hasError => _lastException != null;
+  String? errorMessage(AppStrings s) =>
+      _lastException == null ? null : ApiClient.errorMessage(_lastException!, s);
 
   Future<void> load() async {
     loading = true;
-    error = null;
+    _lastException = null;
     notifyListeners();
     try {
       final res = await ApiClient.instance.dio.get('/itineraries');
       itineraries = (res.data['results'] as List).map((j) => Itinerary.fromJson(j)).toList();
     } catch (e) {
-      error = ApiClient.errorMessage(e);
+      _lastException = e;
     } finally {
       loading = false;
       notifyListeners();
     }
   }
 
-  Future<String?> create({
+  /// Retourne l'exception brute en cas d'échec (null si succès).
+  /// L'appelant la convertit en message localisé via ApiClient.errorMessage(e, s).
+  Future<Object?> create({
     required String title,
     String? description,
     String? startDate,
@@ -42,18 +49,18 @@ class ItineraryProvider extends ChangeNotifier {
       await load();
       return null;
     } catch (e) {
-      return ApiClient.errorMessage(e);
+      return e;
     }
   }
 
-  Future<String?> delete(String id) async {
+  Future<Object?> delete(String id) async {
     try {
       await ApiClient.instance.dio.delete('/itineraries/$id');
       itineraries.removeWhere((i) => i.id == id);
       notifyListeners();
       return null;
     } catch (e) {
-      return ApiClient.errorMessage(e);
+      return e;
     }
   }
 }

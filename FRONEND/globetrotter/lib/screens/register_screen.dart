@@ -32,7 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           MaterialPageRoute(builder: (_) => const HomeScreen()), (_) => false);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(auth.error ?? "Inscription impossible"),
+        content: Text(auth.errorMessage(s) ?? s.registerFailed),
         behavior: SnackBarBehavior.floating,
         backgroundColor: const Color(0xFFB3261E),
       ));
@@ -44,8 +44,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final auth = context.watch<AuthProvider>();
     final s = context.watch<SettingsProvider>().s;
     return AuthScaffold(
-      title: "Rejoignez l'aventure",
-      subtitle: "Créez votre compte et explorez Yaoundé autrement ✨",
+      title: s.registerTitle,
+      subtitle: s.registerSubtitle,
       form: Form(
         key: _formKey,
         child: Column(

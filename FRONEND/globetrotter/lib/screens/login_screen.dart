@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
           MaterialPageRoute(builder: (_) => const HomeScreen()));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(auth.error ?? "Connexion impossible"),
+        content: Text(auth.errorMessage(s) ?? s.loginFailed),
         behavior: SnackBarBehavior.floating,
         backgroundColor: const Color(0xFFB3261E),
       ));
@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final s = context.watch<SettingsProvider>().s;
     return AuthScaffold(
       title: "GlobeTrotter Yaoundé",
-      subtitle: "Discover Yaoundé smarter. Travel better. 🇨🇲",
+      subtitle: s.authTagline,
       form: Form(
         key: _formKey,
         child: Column(

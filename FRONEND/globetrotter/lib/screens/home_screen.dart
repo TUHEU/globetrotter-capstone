@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../core/api_client.dart';
 import '../core/constants.dart';
 import '../providers/auth_provider.dart';
 import '../providers/destination_provider.dart';
@@ -260,8 +261,8 @@ class _ExploreTabState extends State<_ExploreTab> {
         Expanded(
           child: p.loading
               ? const Center(child: CircularProgressIndicator())
-              : p.error != null
-                  ? _ErrorView(message: p.error!, onRetry: () => p.search(q: ''))
+              : p.hasError
+                  ? _ErrorView(message: p.errorMessage(s)!, onRetry: () => p.search(q: ''))
                   : p.destinations.isEmpty
                       ? Center(child: Text(s.noResults))
                       : RefreshIndicator(
@@ -400,7 +401,7 @@ class _TripsTab extends StatelessWidget {
                                   final err = await p.delete(it.id);
                                   if (err != null && context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text(err)));
+                                        SnackBar(content: Text(ApiClient.errorMessage(err, s))));
                                   }
                                 },
                               ),

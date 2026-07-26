@@ -150,15 +150,18 @@ class _BrandPanel extends StatelessWidget {
           ),
           if (large) ...[
             const SizedBox(height: 28),
-            Wrap(
-              spacing: 10,
-              alignment: WrapAlignment.center,
-              children: const [
-                _FeaturePill(icon: Icons.place_outlined, label: "26+ lieux à Yaoundé"),
-                _FeaturePill(icon: Icons.auto_awesome, label: "Recos personnalisées"),
-                _FeaturePill(icon: Icons.map_outlined, label: "Sorties partagées"),
-              ],
-            ),
+                Builder(builder: (context) {
+                  final s = context.watch<SettingsProvider>().s;
+                  return Wrap(
+                    spacing: 10,
+                    alignment: WrapAlignment.center,
+                    children: [
+                      _FeaturePill(icon: Icons.place_outlined, label: s.featurePlaces),
+                      _FeaturePill(icon: Icons.auto_awesome, label: s.featureRecos),
+                      _FeaturePill(icon: Icons.map_outlined, label: s.featureTrips),
+                    ],
+                  );
+                }),
           ],
         ],
       ),
