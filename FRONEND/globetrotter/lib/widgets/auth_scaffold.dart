@@ -103,16 +103,11 @@ class _BrandPanel extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Logo badge
+          // Logo badge — vraie icône de l'app
           Container(
-            padding: const EdgeInsets.all(22),
+            padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFCD116), Color(0xFFF0A500)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
               boxShadow: [
                 BoxShadow(
                   color: const Color(0xFFFCD116).withValues(alpha: 0.45),
@@ -121,8 +116,28 @@ class _BrandPanel extends StatelessWidget {
                 ),
               ],
             ),
-            child: Icon(Icons.travel_explore,
-                size: large ? 64 : 48, color: const Color(0xFF0F2418)),
+            child: ClipOval(
+              child: Image.asset(
+                'assets/icon/app_icon.png',
+                width: large ? 108 : 84,
+                height: large ? 108 : 84,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  width: large ? 108 : 84,
+                  height: large ? 108 : 84,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [Color(0xFFFCD116), Color(0xFFF0A500)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Icon(Icons.travel_explore,
+                      size: large ? 64 : 48, color: const Color(0xFF0F2418)),
+                ),
+              ),
+            ),
           ),
           const SizedBox(height: 20),
           Text(
