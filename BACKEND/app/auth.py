@@ -20,9 +20,7 @@ from app.models import get_user_by_username, save_user
 auth_bp = Blueprint("auth", __name__)
 
 
-# ---------------------------------------------------------------------------
-# Helper – JWT utilities
-# ---------------------------------------------------------------------------
+
 
 def create_token(username: str, secret: str) -> str:
     """Return a signed JWT for *username* valid for 24 hours."""
@@ -57,9 +55,7 @@ def get_current_user(request_obj) -> str | None:
         return None
 
 
-# ---------------------------------------------------------------------------
-# Routes
-# ---------------------------------------------------------------------------
+
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
