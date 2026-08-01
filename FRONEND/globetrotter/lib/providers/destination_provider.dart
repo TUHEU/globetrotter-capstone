@@ -60,4 +60,18 @@ class DestinationProvider extends ChangeNotifier {
       return null;
     }
   }
+
+  /// Va chercher une destination précise par son id directement à l'API,
+  /// utile quand on affiche un itinéraire sans être passé par l'écran de
+  /// recherche (donc sans que `destinations` soit déjà rempli).
+  Future<Destination?> fetchById(String id) async {
+    final cached = byId(id);
+    if (cached != null) return cached;
+    try {
+      final res = await ApiClient.instance.dio.get('/destinations/$id');
+      return Destination.fromJson(res.data);
+    } catch (_) {
+      return null;
+    }
+  }
 }

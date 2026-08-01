@@ -8,8 +8,11 @@ import '../providers/itinerary_provider.dart';
 import '../providers/settings_provider.dart';
 import '../widgets/destination_card.dart';
 import 'create_itinerary_screen.dart';
+import 'assistant_screen.dart';
 import 'destination_detail_screen.dart';
+import 'itinerary_map_screen.dart';
 import 'login_screen.dart';
+import 'reviews_screen.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -392,19 +395,29 @@ class _TripsTab extends StatelessWidget {
                                     stop.notes != null ? Text(stop.notes!) : null,
                               );
                             }),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton.icon(
-                                icon: const Icon(Icons.delete_outline),
-                                label: Text(s.delete),
-                                onPressed: () async {
-                                  final err = await p.delete(it.id);
-                                  if (err != null && context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text(ApiClient.errorMessage(err, s))));
-                                  }
-                                },
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                if (it.stops.isNotEmpty)
+                                  TextButton.icon(
+                                    icon: const Icon(Icons.map_outlined),
+                                    label: const Text('Voir sur la carte'),
+                                    onPressed: () => Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (_) => ItineraryMapScreen(itinerary: it))),
+                                  ),
+                                TextButton.icon(
+                                  icon: const Icon(Icons.delete_outline),
+                                  label: Text(s.delete),
+                                  onPressed: () async {
+                                    final err = await p.delete(it.id);
+                                    if (err != null && context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text(ApiClient.errorMessage(err, s))));
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -465,6 +478,27 @@ class _ProfileTab extends StatelessWidget {
               trailing: const Icon(Icons.chevron_right),
               onTap: () => Navigator.of(context)
                   .push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.auto_awesome_outlined),
+              title: const Text('Assistant IA'),
+              subtitle: const Text('Discutez et obtenez des suggestions'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const AssistantScreen())),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.star_outline),
+              title: const Text('Noter l\'application'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const ReviewsScreen())),
             ),
           ),
           const SizedBox(height: 20),

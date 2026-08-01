@@ -37,6 +37,26 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _submitGoogle() async {
+    final auth = context.read<AuthProvider>();
+    final s = context.read<SettingsProvider>().s;
+    final ok = await auth.loginWithGoogle();
+    if (!mounted) return;
+    if (ok) {
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()));
+    } else if (auth.hasError) {
+      // hasError == false veut dire que l'utilisateur a juste fermé la
+      // fenêtre Google sans choisir de compte — pas la peine d'afficher
+      // une erreur pour une simple annulation.
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(auth.errorMessage(s) ?? s.loginFailed),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: const Color(0xFFB3261E),
+      ));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
@@ -115,6 +135,20 @@ class _LoginScreenState extends State<LoginScreen> {
               Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.2))),
             ]),
             const SizedBox(height: 14),
+            OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 50),
+                foregroundColor: Colors.white,
+                side: BorderSide(color: Colors.white.withValues(alpha: 0.35)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
+              ),
+              icon: const _GoogleLogo(),
+              label: Text(s.continueWithGoogle,
+                  style: const TextStyle(fontWeight: FontWeight.w600)),
+              onPressed: auth.loading ? null : _submitGoogle,
+            ),
+            const SizedBox(height: 10),
             OutlinedButton(
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
@@ -133,4 +167,51 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+}
+
+/// Petit logo Google en 4 couleurs, dessiné directement (pas besoin
+/// d'importer un fichier image juste pour un bouton).
+class _GoogleLogo extends StatelessWidget {
+  const _GoogleLogo();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 18,
+      height: 18,
+      child: CustomPaint(painter: _GoogleGPainter()),
+    );
+  }
+}
+
+class _GoogleGPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final r = size.width / 2;
+    final center = Offset(r, r);
+    final stroke = r * 0.62;
+
+    void arc(double startDeg, double sweepDeg, Color color) {
+      final paint = Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = stroke
+        ..strokeCap = StrokeCap.butt;
+      canvas.drawArc(
+        Rect.fromCircle(radius: r - stroke / 2, center: center),
+        startDeg * 3.1415926535 / 180,
+        sweepDeg * 3.1415926535 / 180,
+        false,
+        paint,
+      );
+    }
+
+    arc(-45, -90, const Color(0xFFEA4335));   // rouge
+    arc(-135, -90, const Color(0xFF4285F4));  // bleu
+    arc(135, -90, const Color(0xFF34A853));   // vert
+    arc(45, -90, const Color(0xFFFBBC05));    // jaune
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
