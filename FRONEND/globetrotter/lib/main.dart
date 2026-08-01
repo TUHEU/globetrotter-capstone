@@ -5,6 +5,8 @@ import 'providers/auth_provider.dart';
 import 'providers/destination_provider.dart';
 import 'providers/itinerary_provider.dart';
 import 'providers/settings_provider.dart';
+import 'providers/review_provider.dart';
+import 'providers/assistant_provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 
@@ -23,6 +25,8 @@ class GlobeTrotterApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => DestinationProvider()),
         ChangeNotifierProvider(create: (_) => ItineraryProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ChangeNotifierProvider(create: (_) => ReviewProvider()),
+        ChangeNotifierProvider(create: (_) => AssistantProvider()),
       ],
       child: Consumer<SettingsProvider>(
         builder: (context, settings, _) {
