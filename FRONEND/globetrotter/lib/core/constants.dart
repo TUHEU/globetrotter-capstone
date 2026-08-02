@@ -15,8 +15,9 @@ class ApiConstants {
   /// Pour tester sur un téléphone physique en dev LOCAL
   /// (backend lancé sur ton PC, pas sur le VPS) :
   /// mets l'IP LAN de ton PC (ipconfig), ex: '192.168.1.20'
+  /// Pour tester dans Chrome sur CE PC (flutter run -d chrome), mets 'localhost'.
   /// Laisse vide pour toujours utiliser prodUrl, même en dev.
-  static const String lanIp = '';
+  static const String lanIp = 'localhost';
 
   static String get baseUrl {
     // Builds de production (flutter build apk/web/windows --release)
@@ -24,17 +25,42 @@ class ApiConstants {
     if (kReleaseMode) return prodUrl;
 
     // Mode développement (flutter run) :
-    if (lanIp.isNotEmpty) return 'http://$lanIp:4200'; // backend local sur ton PC
+    // Port 8000 = celui de l'api-gateway (docker compose), pas 4200.
+    if (lanIp.isNotEmpty) return 'http://$lanIp:8000';
     return prodUrl; // par défaut : dev tape aussi sur le VPS en ligne
   }
+
+  /// ======================= GOOGLE SIGN-IN =======================
+  /// Le Client ID OAuth "Web" créé sur Google Cloud Console
+  /// (console.cloud.google.com -> APIs & Services -> Identifiants).
+  /// Nécessaire UNIQUEMENT pour la version Web (Android/iOS s'en passent).
+  /// Format : "123456-abc.apps.googleusercontent.com"
+  /// Laisse vide tant que tu n'as pas créé ce Client ID — le bouton
+  /// "Continuer avec Google" reste alors désactivé proprement, sans crash.
+  /// ================================================================
+  static const String googleWebClientId =
+      '73728796488-gqeqqmhbp26j8amg3m75lqkvi9h323a9.apps.googleusercontent.com';
 }
 
 /// Interests used for personalized recommendations (registration + explore filters).
 class PreferenceTags {
   static const List<String> all = [
-    'food', 'culture', 'nature', 'history', 'art', 'shopping',
-    'nightlife', 'family', 'relax', 'romance', 'photo', 'sport',
-    'wildlife', 'hiking', 'luxury', 'events',
+    'food',
+    'culture',
+    'nature',
+    'history',
+    'art',
+    'shopping',
+    'nightlife',
+    'family',
+    'relax',
+    'romance',
+    'photo',
+    'sport',
+    'wildlife',
+    'hiking',
+    'luxury',
+    'events',
   ];
 }
 
