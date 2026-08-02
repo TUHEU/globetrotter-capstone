@@ -62,7 +62,7 @@ services:
   api-gateway:
     build: ./api-gateway
     ports:
-      - "127.0.0.1:8000:8000"   # localhost uniquement — Nginx fait le pont vers l'extérieur
+      - "127.0.0.1:4200:8000"   # 4200 = ce que Nginx attend déjà (site "fahglobe") ; 8000 = port interne du conteneur, inchangé
     environment:
       USER_SERVICE_URL: http://user-service:8001
       ITINERARY_SERVICE_URL: http://itinerary-service:8002
