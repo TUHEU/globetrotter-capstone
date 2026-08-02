@@ -33,7 +33,7 @@ def ask_openrouter(system_instruction: str, history: List[Dict[str, str]], messa
                 "Content-Type": "application/json",
                 # Recommandé par OpenRouter pour l'attribution des requêtes -
                 # n'affecte pas la réponse, purement informatif côté OpenRouter.
-                "X-Title": "GlobeTrotter Yaoundé",
+                "X-Title": "GlobeTrotter Yaounde",
             },
             json={"model": OPENROUTER_MODEL, "messages": messages, "max_tokens": 500},
             timeout=20.0,
