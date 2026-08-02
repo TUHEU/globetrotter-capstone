@@ -26,7 +26,7 @@ class ApiConstants {
 
     // Mode développement (flutter run) :
     // Port 8000 = celui de l'api-gateway (docker compose), pas 4200.
-    if (lanIp.isNotEmpty) return 'http://$lanIp:8000';
+    if (lanIp.isNotEmpty) return 'http://$lanIp:4200';
     return prodUrl; // par défaut : dev tape aussi sur le VPS en ligne
   }
 
@@ -45,9 +45,22 @@ class ApiConstants {
 /// Interests used for personalized recommendations (registration + explore filters).
 class PreferenceTags {
   static const List<String> all = [
-    'food', 'culture', 'nature', 'history', 'art', 'shopping',
-    'nightlife', 'family', 'relax', 'romance', 'photo', 'sport',
-    'wildlife', 'hiking', 'luxury', 'events',
+    'food',
+    'culture',
+    'nature',
+    'history',
+    'art',
+    'shopping',
+    'nightlife',
+    'family',
+    'relax',
+    'romance',
+    'photo',
+    'sport',
+    'wildlife',
+    'hiking',
+    'luxury',
+    'events',
   ];
 }
 
