@@ -1,135 +1,88 @@
-# GlobeTrotter – Travel Assistant
+# GlobeTrotter Yaoundé — Projet complet (Phase 2 : Microservices)
 
-GlobeTrotter is a **monolithic Flask application** that serves as the starting point for a semester-long capstone project.  
-Students build the monolith first, then refactor it into microservices, and finally deploy it to the cloud with resilience patterns using Docker, Kubernetes, and cloud-native tooling.
+Projet capstone CS 4122 (Distributed Systems) — The ICT University
 
----
-
-## Project Structure
+## Structure
 
 ```
-.
-├── app/
-│   ├── __init__.py         # Flask app factory
-│   ├── models.py           # Data models and JSON file I/O
-│   ├── auth.py             # Registration, login, JWT handling
-│   ├── destinations.py     # Destination search endpoint
-│   ├── recommendations.py  # Personalised recommendations endpoint
-│   ├── itineraries.py      # Create / list itineraries
-│   └── main.py             # App entry point
-├── data/
-│   ├── destinations.json   # Static destination catalogue (seed data)
-│   ├── users.json          # Created at runtime
-│   └── itineraries.json    # Created at runtime
-├── tests/                  # Placeholder for future tests
-├── Dockerfile
-├── docker-compose.yml
-├── requirements.txt
-└── README.md
+GlobeTrotter_Phase2_Complete/
+├── backend/                      4 microservices + API Gateway
+│   ├── api-gateway/                port 8000 — SEUL point d'entrée public
+│   ├── user-service/                port 8001 — comptes, JWT, préférences
+│   ├── itinerary-service/           port 8002 — sorties, appelle Recommendation Service
+│   ├── recommendation-service/      port 8003 — recos, appelle User + Itinerary Service
+│   ├── docker-compose.yml          lance les 4 services ensemble
+│   └── README.md                   explication détaillée de l'architecture
+│
+├── frontend/                     App Flutter (Web + Android + Windows) — inchangée
+│   ├── lib/
+│   ├── assets/icon/
+│   └── pubspec.yaml
+│
+└── database/                     Vue isolée du stockage par service (Phase 2 — JSON)
+    ├── user-service/               users.json + storage.py
+    ├── itinerary-service/          itineraries.json + storage.py
+    └── recommendation-service/     destinations.json + storage.py
 ```
 
----
+## ⚠️ État actuel — important
 
-## REST API
+- **Le backend Phase 2 a été testé de bout en bout** (register → login →
+  recherche → création de sortie → recommandations croisées) et fonctionne
+  réellement : les services s'appellent entre eux en HTTP, pas juste en façade.
+- **Le frontend pointe TOUJOURS vers le monolithe Phase 1** en production
+  (`https://fahglobe.duckdns.org`, encore en ligne sur ton VPS). Ce zip ne
+  change PAS `prodUrl` automatiquement, pour ne rien casser tant que la
+  Phase 2 n'est pas déployée sur le VPS.
+- Pour basculer le frontend sur la Phase 2 une fois déployée : une seule
+  ligne à changer dans `frontend/lib/core/constants.dart` → `prodUrl` doit
+  pointer vers l'URL publique de l'**API Gateway** (port 8000 en interne),
+  jamais directement vers un des 3 services.
 
-| Method | Endpoint            | Auth required | Description                              |
-|--------|---------------------|---------------|------------------------------------------|
-| POST   | `/register`         | No            | Register a new user                      |
-| POST   | `/login`            | No            | Authenticate and receive a JWT token     |
-| GET    | `/destinations`     | No            | Search the destination catalogue         |
-| GET    | `/recommendations`  | Yes (JWT)     | Get personalised recommendations        |
-| POST   | `/itineraries`      | Yes (JWT)     | Create a new itinerary                   |
-| GET    | `/itineraries`      | Yes (JWT)     | List all itineraries for the logged-in user |
+## Toujours en JSON (comme la Phase 1)
 
-Protected routes expect the header:  
-`Authorization: Bearer <your-token>`
+Chaque service a son propre fichier JSON isolé — ça respecte le principe du
+diagramme (chaque service possède ses données, personne d'autre n'y touche
+directement), mais ce n'est pas encore du MySQL. Si la spec de cours exige
+une vraie base de données à cette phase, dis-le : la conversion est plus
+simple maintenant que les services sont déjà séparés.
 
-### Example requests
+## Lancer en local (sans Docker) — 4 terminaux
 
 ```bash
-# Register
-curl -X POST http://localhost:5000/register \
-  -H "Content-Type: application/json" \
-  -d '{"username": "alice", "password": "s3cr3t", "preferences": ["beach", "food"]}'
+cd backend/user-service && pip install -r requirements.txt --break-system-packages
+uvicorn main:app --reload --port 8001
 
-# Login
-curl -X POST http://localhost:5000/login \
-  -H "Content-Type: application/json" \
-  -d '{"username": "alice", "password": "s3cr3t"}'
-# Save the returned token: TOKEN=<value from .token field>
+cd backend/itinerary-service && pip install -r requirements.txt --break-system-packages
+RECOMMENDATION_SERVICE_URL=http://127.0.0.1:8003 uvicorn main:app --reload --port 8002
 
-# Search destinations
-curl "http://localhost:5000/destinations?tag=beach&max_cost=100"
+cd backend/recommendation-service && pip install -r requirements.txt --break-system-packages
+USER_SERVICE_URL=http://127.0.0.1:8001 ITINERARY_SERVICE_URL=http://127.0.0.1:8002 uvicorn main:app --reload --port 8003
 
-# Personalised recommendations
-curl http://localhost:5000/recommendations \
-  -H "Authorization: Bearer $TOKEN"
-
-# Create an itinerary
-curl -X POST http://localhost:5000/itineraries \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TOKEN" \
-  -d '{"title": "Beach Escape", "destinations": ["Bali"], "start_date": "2025-07-01", "end_date": "2025-07-14"}'
-
-# List itineraries
-curl http://localhost:5000/itineraries \
-  -H "Authorization: Bearer $TOKEN"
+cd backend/api-gateway && pip install -r requirements.txt --break-system-packages
+USER_SERVICE_URL=http://127.0.0.1:8001 ITINERARY_SERVICE_URL=http://127.0.0.1:8002 RECOMMENDATION_SERVICE_URL=http://127.0.0.1:8003 uvicorn main:app --reload --port 8000
 ```
 
----
+Teste tout via la Gateway (jamais les ports 8001-8003 directement, sauf
+pour consulter leur `/docs` en debug) : `http://localhost:8000`.
 
-## Running Locally
-
-### Prerequisites
-- Python 3.9+
-- pip
+## Lancer avec Docker Compose (le livrable "single VM" de la slide)
 
 ```bash
-# 1. Install dependencies
-pip install -r requirements.txt
-
-# 2. Start the server
-python app/main.py
+cd backend
+docker compose up --build
 ```
 
-The API will be available at `http://localhost:5000`.
+## Ce qui manque encore (documenté, pas oublié)
 
----
+- Communication asynchrone (RabbitMQ/SQS) — volontairement absente à ce
+  stade, mentionnée dans `backend/README.md`
+- Vraie base de données par service (actuellement JSON)
+- Service discovery, tracing distribué — prévus Phase 3/4
 
-## Running with Docker
+## Prochaine décision à prendre ensemble
 
-```bash
-# Build and start
-docker-compose up --build
-
-# Stop
-docker-compose down
-```
-
-The `data/` directory is mounted into the container, so JSON files persist between runs.
-
----
-
-## Data Storage
-
-All data is persisted in plain JSON files inside the `data/` directory:
-
-| File                    | Purpose                              |
-|-------------------------|--------------------------------------|
-| `data/destinations.json`| Static catalogue of travel destinations (seed data) |
-| `data/users.json`       | Registered users (created at runtime) |
-| `data/itineraries.json` | User itineraries (created at runtime) |
-
-> **Note:** `data/*.json` (except `destinations.json`) are excluded from version control via `.gitignore`.
-
----
-
-## Configuration
-
-| Environment Variable | Default                              | Description           |
-|----------------------|--------------------------------------|-----------------------|
-| `SECRET_KEY`         | `globetrotter-secret-change-in-prod` | JWT signing key – **must be overridden in production** |
-| `FLASK_DEBUG`        | `0`                                  | Set to `1` to enable Flask debug mode (development only) |
-| `PORT`               | `5000`                               | Port the app listens on |
-
-> **Important:** Always set `SECRET_KEY` to a long, random value in production (e.g. `python -c "import secrets; print(secrets.token_hex(32))"`).
+1. Garde-t-on JSON ou passe-t-on à MySQL par service maintenant ?
+2. Déploie-t-on ces 4 services sur le VPS (à côté du monolithe ou en
+   remplacement) ?
+3. Une fois déployé, on bascule `prodUrl` du frontend vers la Gateway.
