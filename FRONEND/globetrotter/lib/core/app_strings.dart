@@ -95,6 +95,10 @@ class AppStrings {
       isFr ? 'Cet email est déjà utilisé' : 'Email already registered';
   String get loginFailed => isFr ? 'Connexion impossible' : 'Login failed';
   String get registerFailed => isFr ? 'Inscription impossible' : 'Registration failed';
+  String get continueWithGoogle => isFr ? 'Continuer avec Google' : 'Continue with Google';
+  String get googleNotConfigured => isFr
+      ? 'Google Sign-In pas encore configuré pour cette app'
+      : 'Google Sign-In not configured for this app yet';
 
   // ---------- Panneau de marque (branding) ----------
   String get authTagline =>
