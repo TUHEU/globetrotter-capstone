@@ -45,12 +45,7 @@ class AuthProvider extends ChangeNotifier {
     return _authCall('/login', {'email': email, 'password': password});
   }
 
-  Future<bool> register(
-    String fullName,
-    String email,
-    String password,
-    List<String> preferences,
-  ) async {
+  Future<bool> register(String fullName, String email, String password, List<String> preferences) async {
     return _authCall('/register', {
       'full_name': fullName,
       'email': email,
@@ -110,10 +105,9 @@ class AuthProvider extends ChangeNotifier {
         throw Exception('Google n\'a renvoyé aucun jeton d\'identité.');
       }
 
-      final res = await ApiClient.instance.dio.post(
-        '/auth/google',
-        data: {'id_token': idToken},
-      );
+      final res = await ApiClient.instance.dio.post('/auth/google', data: {
+        'id_token': idToken,
+      });
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', res.data['access_token']);
       user = User.fromJson(res.data['user']);
