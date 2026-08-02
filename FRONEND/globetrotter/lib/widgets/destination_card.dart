@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../core/constants.dart';
 import '../models/destination.dart';
+import '../providers/favorites_provider.dart';
+import 'network_image_safe.dart';
 
 class DestinationCard extends StatelessWidget {
   final Destination destination;
@@ -17,6 +20,8 @@ class DestinationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final favorites = context.watch<FavoritesProvider>();
+    final isFav = favorites.isFavorite(destination.id);
     final catIcon =
         PlaceCategories.all[destination.category] ?? Icons.place_outlined;
     final catLabel =
@@ -32,15 +37,13 @@ class DestinationCard extends StatelessWidget {
             Stack(children: [
               AspectRatio(
                 aspectRatio: 16 / 8,
-                child: Image.network(
-                  destination.image,
+                child: NetworkImageSafe(
+                  url: destination.image,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  placeholder: (_) => Container(
                     color: theme.colorScheme.primaryContainer,
                     child: Center(child: Icon(catIcon, size: 48)),
                   ),
-                  loadingBuilder: (context, child, progress) =>
-                      progress == null ? child : Container(color: Colors.grey.shade200),
                 ),
               ),
               Positioned(
@@ -52,6 +55,26 @@ class DestinationCard extends StatelessWidget {
                   visualDensity: VisualDensity.compact,
                   backgroundColor:
                       theme.colorScheme.surface.withValues(alpha: 0.9),
+                ),
+              ),
+              Positioned(
+                top: 6,
+                right: 6,
+                child: Material(
+                  color: theme.colorScheme.surface.withValues(alpha: 0.9),
+                  shape: const CircleBorder(),
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    onTap: () => favorites.toggle(destination.id),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Icon(
+                        isFav ? Icons.favorite : Icons.favorite_border,
+                        size: 20,
+                        color: isFav ? Colors.redAccent : theme.colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ]),

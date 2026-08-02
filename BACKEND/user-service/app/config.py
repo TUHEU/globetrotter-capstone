@@ -25,3 +25,4 @@ GOOGLE_CLIENT_IDS = [
 
 USERS_FILE = DATA_DIR / "users.json"
 REVIEWS_FILE = DATA_DIR / "reviews.json"
+FAVORITES_FILE = DATA_DIR / "favorites.json"

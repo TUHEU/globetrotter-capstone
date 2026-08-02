@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import '../core/constants.dart';
 import '../models/destination.dart';
 import '../services/weather_service.dart';
+import '../widgets/network_image_safe.dart';
 import 'create_itinerary_screen.dart';
 
 class DestinationDetailScreen extends StatefulWidget {
@@ -45,11 +46,10 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
               title: Text(destination.name,
                   style: const TextStyle(
                       shadows: [Shadow(blurRadius: 8, color: Colors.black54)])),
-              background: Image.network(
-                destination.image,
+              background: NetworkImageSafe(
+                url: destination.image,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) =>
-                    Container(color: theme.colorScheme.primaryContainer),
+                placeholder: (_) => Container(color: theme.colorScheme.primaryContainer),
               ),
             ),
           ),

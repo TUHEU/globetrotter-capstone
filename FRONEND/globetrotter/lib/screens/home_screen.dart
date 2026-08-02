@@ -4,12 +4,14 @@ import '../core/api_client.dart';
 import '../core/constants.dart';
 import '../providers/auth_provider.dart';
 import '../providers/destination_provider.dart';
+import '../providers/favorites_provider.dart';
 import '../providers/itinerary_provider.dart';
 import '../providers/settings_provider.dart';
 import '../widgets/destination_card.dart';
 import 'create_itinerary_screen.dart';
 import 'assistant_screen.dart';
 import 'destination_detail_screen.dart';
+import 'favorites_screen.dart';
 import 'itinerary_map_screen.dart';
 import 'login_screen.dart';
 import 'reviews_screen.dart';
@@ -32,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context.read<DestinationProvider>().search(q: '');
       context.read<DestinationProvider>().loadRecommendations();
       context.read<ItineraryProvider>().load();
+      context.read<FavoritesProvider>().load();
     });
   }
 
@@ -47,25 +50,40 @@ class _HomeScreenState extends State<HomeScreen> {
     final wide = MediaQuery.of(context).size.width >= 760;
 
     return Scaffold(
-      body: Row(children: [
-        if (wide)
-          NavigationRail(
-            selectedIndex: _index,
-            onDestinationSelected: (i) => setState(() => _index = i),
-            labelType: NavigationRailLabelType.all,
-            destinations: [
-              NavigationRailDestination(
-                  icon: const Icon(Icons.explore_outlined), label: Text(s.navExplore)),
-              NavigationRailDestination(
-                  icon: const Icon(Icons.auto_awesome_outlined), label: Text(s.navForYou)),
-              NavigationRailDestination(
-                  icon: const Icon(Icons.map_outlined), label: Text(s.navTrips)),
-              NavigationRailDestination(
-                  icon: const Icon(Icons.person_outline), label: Text(s.navProfile)),
-            ],
+      body: Stack(
+        children: [
+          Row(children: [
+            if (wide)
+              NavigationRail(
+                selectedIndex: _index,
+                onDestinationSelected: (i) => setState(() => _index = i),
+                labelType: NavigationRailLabelType.all,
+                destinations: [
+                  NavigationRailDestination(
+                      icon: const Icon(Icons.explore_outlined), label: Text(s.navExplore)),
+                  NavigationRailDestination(
+                      icon: const Icon(Icons.auto_awesome_outlined), label: Text(s.navForYou)),
+                  NavigationRailDestination(
+                      icon: const Icon(Icons.map_outlined), label: Text(s.navTrips)),
+                  NavigationRailDestination(
+                      icon: const Icon(Icons.person_outline), label: Text(s.navProfile)),
+                ],
+              ),
+            Expanded(child: pages[_index]),
+          ]),
+          // Bulle IA flottante, visible sur TOUS les onglets (pas seulement
+          // dans le profil) — accès direct à l'assistant en un tap, où que
+          // l'utilisateur se trouve dans l'app.
+          Positioned(
+            right: 16,
+            bottom: 16,
+            child: _AssistantBubble(
+              onTap: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const AssistantScreen())),
+            ),
           ),
-        Expanded(child: pages[_index]),
-      ]),
+        ],
+      ),
       bottomNavigationBar: wide
           ? null
           : NavigationBar(
@@ -83,13 +101,41 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
       floatingActionButton: _index == 2
-          ? FloatingActionButton.extended(
-              icon: const Icon(Icons.add),
-              label: Text(s.newTrip),
-              onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => const CreateItineraryScreen())),
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 64),
+              child: FloatingActionButton.extended(
+                icon: const Icon(Icons.add),
+                label: Text(s.newTrip),
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => const CreateItineraryScreen())),
+              ),
             )
           : null,
+    );
+  }
+}
+
+/// Bulle IA flottante (façon "chat widget") — icône ronde toujours visible,
+/// ouvre l'écran de l'assistant en un tap.
+class _AssistantBubble extends StatelessWidget {
+  final VoidCallback onTap;
+  const _AssistantBubble({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+      color: scheme.secondary,
+      shape: const CircleBorder(),
+      elevation: 4,
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Icon(Icons.smart_toy_outlined, color: scheme.onSecondary, size: 26),
+        ),
+      ),
     );
   }
 }
@@ -460,7 +506,27 @@ class _ProfileTab extends StatelessWidget {
               style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
           Text(user?.email ?? '',
               textAlign: TextAlign.center, style: theme.textTheme.bodyMedium),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              _ProfileStat(
+                icon: Icons.map_outlined,
+                value: '${context.watch<ItineraryProvider>().itineraries.length}',
+                label: 'Itinéraires',
+              ),
+              _ProfileStat(
+                icon: Icons.place_outlined,
+                value: 'Yaoundé',
+                label: 'Région',
+              ),
+              _ProfileStat(
+                icon: Icons.favorite_outline,
+                value: '${context.watch<FavoritesProvider>().count}',
+                label: 'Favoris',
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
           Text(s.interests, style: theme.textTheme.titleSmall),
           const SizedBox(height: 8),
           Wrap(
@@ -478,6 +544,17 @@ class _ProfileTab extends StatelessWidget {
               trailing: const Icon(Icons.chevron_right),
               onTap: () => Navigator.of(context)
                   .push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.favorite_outline),
+              title: const Text('Favoris'),
+              subtitle: const Text('Destinations sauvegardées'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const FavoritesScreen())),
             ),
           ),
           const SizedBox(height: 12),
@@ -508,6 +585,7 @@ class _ProfileTab extends StatelessWidget {
             onPressed: () async {
               await auth.logout();
               if (context.mounted) {
+                context.read<FavoritesProvider>().clear();
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (_) => const LoginScreen()),
                     (_) => false);
@@ -539,6 +617,28 @@ class _ErrorView extends StatelessWidget {
         const SizedBox(height: 12),
         FilledButton(onPressed: onRetry, child: Text(s.retry)),
       ]),
+    );
+  }
+}
+
+class _ProfileStat extends StatelessWidget {
+  final IconData icon;
+  final String value;
+  final String label;
+  const _ProfileStat({required this.icon, required this.value, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Expanded(
+      child: Column(
+        children: [
+          Icon(icon, color: theme.colorScheme.secondary),
+          const SizedBox(height: 4),
+          Text(value, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+          Text(label, style: theme.textTheme.labelSmall),
+        ],
+      ),
     );
   }
 }

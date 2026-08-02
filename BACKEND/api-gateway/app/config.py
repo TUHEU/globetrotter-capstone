@@ -14,6 +14,7 @@ ROUTES = [
     ("/auth", USER_SERVICE_URL),          # /auth/google (Google Sign-In)
     ("/me", USER_SERVICE_URL),
     ("/reviews", USER_SERVICE_URL),        # avis sur l'application
+    ("/favorites", USER_SERVICE_URL),      # destinations sauvegardées
     ("/itineraries", ITINERARY_SERVICE_URL),
     ("/recommendations", RECOMMENDATION_SERVICE_URL),
     ("/destinations", RECOMMENDATION_SERVICE_URL),

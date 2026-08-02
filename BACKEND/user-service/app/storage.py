@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional
 
 from datetime import datetime, timezone
 
-from .config import USERS_FILE, REVIEWS_FILE, DATA_DIR
+from .config import USERS_FILE, REVIEWS_FILE, FAVORITES_FILE, DATA_DIR
 
 _lock = threading.Lock()
 
@@ -143,3 +143,37 @@ def delete_review(user_id: str) -> bool:
             return False
         _write(REVIEWS_FILE, remaining)
         return True
+
+
+# ---------------- Favoris (destinations sauvegardées par l'utilisateur) ----
+
+def get_favorites(user_id: str) -> List[str]:
+    """Liste des destination_id favoris d'un utilisateur, stockés comme
+    {"user_id": [...destination_ids]} pour un accès O(1) par utilisateur."""
+    all_favs = _read(FAVORITES_FILE)
+    if isinstance(all_favs, list):
+        # fichier vide/neuf initialisé comme [] par erreur -> normaliser
+        return []
+    return all_favs.get(user_id, [])
+
+
+def add_favorite(user_id: str, destination_id: str) -> List[str]:
+    with _lock:
+        raw = _read(FAVORITES_FILE)
+        all_favs = raw if isinstance(raw, dict) else {}
+        current = all_favs.get(user_id, [])
+        if destination_id not in current:
+            current.append(destination_id)
+        all_favs[user_id] = current
+        _write(FAVORITES_FILE, all_favs)
+        return current
+
+
+def remove_favorite(user_id: str, destination_id: str) -> List[str]:
+    with _lock:
+        raw = _read(FAVORITES_FILE)
+        all_favs = raw if isinstance(raw, dict) else {}
+        current = [d for d in all_favs.get(user_id, []) if d != destination_id]
+        all_favs[user_id] = current
+        _write(FAVORITES_FILE, all_favs)
+        return current
