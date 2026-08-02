@@ -1,0 +1,76 @@
+# Matches the slide's Phase 2 deliverable: "Three independent services
+# communicating via REST APIs, with an API Gateway, deployed on a single
+# VM or Docker Compose." Each service is its own container; only the
+# gateway is meant to be reachable from outside this docker network.
+#
+# PRODUCTION HARDENING (VPS) :
+# - user-service / itinerary-service / recommendation-service n'ont AUCUN
+#   port publié vers l'hôte : ils ne communiquent qu'entre eux via le
+#   réseau Docker interne (par leur nom de service, ex: http://user-service:8001).
+# - api-gateway est publié UNIQUEMENT sur 127.0.0.1:8000, jamais 0.0.0.0.
+#   Important : Docker modifie iptables directement et CONTOURNE ufw par
+#   défaut — un simple "8000:8000" rendrait la Gateway accessible depuis
+#   Internet même avec ufw configuré. "127.0.0.1:8000:8000" force le trafic
+#   à passer par Nginx (reverse proxy + HTTPS), seul point d'entrée public.
+services:
+  user-service:
+    build: ./user-service
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-globetrotter-phase2-secret-change-me}
+      GOOGLE_CLIENT_IDS: ${GOOGLE_CLIENT_IDS:-}
+    volumes:
+      - ./user-service/data:/app/data
+    restart: unless-stopped
+
+  itinerary-service:
+    build: ./itinerary-service
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-globetrotter-phase2-secret-change-me}
+      RECOMMENDATION_SERVICE_URL: http://recommendation-service:8003
+    volumes:
+      - ./itinerary-service/data:/app/data
+    restart: unless-stopped
+
+  recommendation-service:
+    build: ./recommendation-service
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-globetrotter-phase2-secret-change-me}
+      USER_SERVICE_URL: http://user-service:8001
+      ITINERARY_SERVICE_URL: http://itinerary-service:8002
+    volumes:
+      - ./recommendation-service/data:/app/data
+    depends_on:
+      - user-service
+      - itinerary-service
+    restart: unless-stopped
+
+  ai-service:
+    build: ./ai-service
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-globetrotter-phase2-secret-change-me}
+      RECOMMENDATION_SERVICE_URL: http://recommendation-service:8003
+      ITINERARY_SERVICE_URL: http://itinerary-service:8002
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-openrouter/free}
+    depends_on:
+      - recommendation-service
+      - itinerary-service
+    restart: unless-stopped
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "127.0.0.1:8000:8000"   # localhost uniquement — Nginx fait le pont vers l'extérieur
+    environment:
+      USER_SERVICE_URL: http://user-service:8001
+      ITINERARY_SERVICE_URL: http://itinerary-service:8002
+      RECOMMENDATION_SERVICE_URL: http://recommendation-service:8003
+      AI_SERVICE_URL: http://ai-service:8004
+    depends_on:
+      - user-service
+      - itinerary-service
+      - recommendation-service
+      - ai-service
+    restart: unless-stopped
