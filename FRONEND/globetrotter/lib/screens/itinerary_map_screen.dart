@@ -3,10 +3,13 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
+import 'package:geolocator/geolocator.dart' as geo;
+
 import '../models/destination.dart';
 import '../models/itinerary.dart';
 import '../providers/destination_provider.dart';
 import '../services/directions_service.dart';
+import '../services/location_service.dart';
 import '../services/weather_service.dart';
 
 /// Affiche un itinéraire sur une carte OpenStreetMap (gratuite, sans clé API) :
@@ -34,11 +37,16 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
   RouteResult? _route;
   bool _loading = true;
   String? _error;
+  geo.Position? _myPosition;
 
   @override
   void initState() {
     super.initState();
     _load();
+    LocationService.getCurrentPosition().then((pos) {
+      if (!mounted || pos == null) return;
+      setState(() => _myPosition = pos);
+    });
   }
 
   Future<void> _load() async {
@@ -136,6 +144,25 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
                                   height: 40,
                                   child: _StopMarker(index: i + 1, color: scheme.primary),
                                 ),
+                              // Point bleu "vous êtes ici" — porté de la
+                              // fonctionnalité "Show my location (live)" du
+                              // monolithe Phase 1.
+                              if (_myPosition != null)
+                                Marker(
+                                  point: LatLng(_myPosition!.latitude, _myPosition!.longitude),
+                                  width: 22,
+                                  height: 22,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: Colors.white, width: 3),
+                                      boxShadow: const [
+                                        BoxShadow(color: Colors.black38, blurRadius: 4)
+                                      ],
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
                         ],
@@ -172,7 +199,9 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
                                 child: Text('${i + 1}'),
                               ),
                               title: Text(p.destination.name),
-                              subtitle: Text('${p.destination.quartier} · Jour ${p.stop.day}'),
+                              subtitle: Text(_myPosition != null
+                                  ? '${p.destination.quartier} · Jour ${p.stop.day} · à ${LocationService.formatKm(LocationService.haversineKm(_myPosition!.latitude, _myPosition!.longitude, p.destination.lat, p.destination.lng))} de vous'
+                                  : '${p.destination.quartier} · Jour ${p.stop.day}'),
                               trailing: p.weather != null
                                   ? Column(
                                       mainAxisAlignment: MainAxisAlignment.center,

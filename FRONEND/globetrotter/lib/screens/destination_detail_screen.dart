@@ -3,7 +3,10 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../core/constants.dart';
 import '../models/destination.dart';
+import '../services/location_service.dart';
 import '../services/weather_service.dart';
+import '../widgets/destination_reviews_section.dart';
+import '../widgets/nearby_places_section.dart';
 import '../widgets/network_image_safe.dart';
 import 'create_itinerary_screen.dart';
 
@@ -18,6 +21,7 @@ class DestinationDetailScreen extends StatefulWidget {
 class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
   WeatherInfo? _weather;
   bool _weatherLoading = true;
+  double? _distanceKm;
 
   @override
   void initState() {
@@ -27,6 +31,15 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
       setState(() {
         _weather = w;
         _weatherLoading = false;
+      });
+    });
+    // Distance calculée localement (haversine) une fois la position connue -
+    // pas besoin d'attendre le serveur pour un simple calcul de distance.
+    LocationService.getCurrentPosition().then((pos) {
+      if (!mounted || pos == null) return;
+      setState(() {
+        _distanceKm = LocationService.haversineKm(
+            pos.latitude, pos.longitude, widget.destination.lat, widget.destination.lng);
       });
     });
   }
@@ -63,6 +76,15 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                     Icon(Icons.place, size: 18, color: theme.colorScheme.secondary),
                     const SizedBox(width: 6),
                     Text(destination.quartier, style: theme.textTheme.titleMedium),
+                    if (_distanceKm != null) ...[
+                      const SizedBox(width: 10),
+                      Chip(
+                        avatar: const Icon(Icons.near_me, size: 14),
+                        label: Text('à ${LocationService.formatKm(_distanceKm!)} de vous'),
+                        visualDensity: VisualDensity.compact,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ],
                   ]),
                   const SizedBox(height: 16),
                   Row(children: [
@@ -134,7 +156,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton.icon(
@@ -145,6 +167,10 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                               CreateItineraryScreen(preselected: destination))),
                     ),
                   ),
+                  const SizedBox(height: 28),
+                  NearbyPlacesSection(destinationId: destination.id),
+                  const SizedBox(height: 28),
+                  DestinationReviewsSection(destinationId: destination.id),
                 ],
               ),
             ),
