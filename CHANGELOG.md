@@ -4,7 +4,129 @@ Projet capstone CS 4122 (Distributed Systems) — The ICT University
 Superviseur : Eng. Mughe Godlove · Équipe : Fahdil, Nsangou Hamed Mochtar Ben Bilal
 
 Ce changelog couvre tout le travail réalisé depuis le lancement du projet,
-de la Phase 1 (Monolithe) jusqu'à la mise en production.
+de la Phase 1 (Monolithe) jusqu'à la Phase 2 (Microservices) en production.
+
+---
+
+## [2.5.0] — Bulle de langue déplaçable & corrections diverses
+### Ajouté
+- Sélecteur de langue transformé en bulle flottante déplaçable (icône globe
+  de l'app + badge FR/EN) : un appui simple bascule la langue, un glisser la
+  repositionne n'importe où à l'écran — remplace l'ancien sélecteur fixe en
+  haut à droite, difficile à toucher précisément sur mobile (chevauchait
+  souvent la zone de l'encoche/barre d'état)
+
+### Corrigé
+- Build Flutter Web servi dans un sous-dossier (`/app/`) : ajout de
+  `--base-href /app/` au build, corrigeant un écran blanc/vide (l'app
+  cherchait ses fichiers à la racine du domaine au lieu du bon sous-chemin)
+- En-tête HTTP non-ASCII (`X-Title: "GlobeTrotter Yaoundé"`) faisant planter
+  le repli OpenRouter avec une `UnicodeEncodeError` — accent retiré
+
+---
+
+## [2.4.0] — Fonctionnalités communautaires (portées du Monolithe Phase 1)
+### Ajouté
+- **Avis publics sur une destination** (note 1-5 + commentaire), indépendants
+  des avis sur l'application elle-même — `GET/POST /destinations/{id}/reviews`
+  (recommendation-service), section dédiée sur la fiche de chaque lieu
+- **Lieux à proximité** — `GET /destinations/{id}/nearby`, distance à vol
+  d'oiseau (formule de haversine) portée telle quelle depuis le monolithe,
+  carrousel "À proximité" sur la fiche lieu
+- **Localisation en direct** (`geolocator`) : point bleu "vous êtes ici" sur
+  la carte d'itinéraire, badge "à X km de vous" sur la fiche lieu et dans la
+  liste des arrêts d'un itinéraire
+- Coordonnées lat/lng ajoutées aux 26 destinations de Yaoundé (nécessaires
+  pour la carte, la météo et les distances — absentes du jeu de données
+  initial de la Phase 1)
+
+---
+
+## [2.3.0] — Assistant IA conversationnel
+### Ajouté
+- Nouveau microservice `ai-service` (FastAPI, sans état), appelant l'API
+  Gemini (gratuite, `gemini-2.5-flash`), avec le contexte réel de l'app
+  (destinations populaires, itinéraires de l'utilisateur) injecté dans
+  chaque requête pour éviter les réponses hors-sujet ou inventées
+- **Repli automatique et silencieux vers OpenRouter** (`openrouter/free`) en
+  cas d'indisponibilité de Gemini (ex : blocage `403 PERMISSION_DENIED`
+  connu et documenté sur les projets Google Cloud tout neufs) — transparent
+  pour l'utilisateur, qui ne voit jamais quel fournisseur a répondu
+- Écran de discussion (`AssistantScreen`) avec bulle flottante accessible
+  depuis n'importe quel onglet de l'app, suggestions de questions au
+  premier lancement
+
+---
+
+## [2.2.0] — Favoris
+### Ajouté
+- `GET/POST/DELETE /favorites` (user-service), stockage `{user_id: [destination_ids]}`
+- Icône cœur sur chaque carte destination (mise à jour optimiste, pas
+  d'attente réseau perceptible), écran **Favoris** dédié
+- Statistiques de profil enrichies (Itinéraires / Région / Favoris)
+
+---
+
+## [2.1.0] — Carte, météo, itinéraires piétons, connexion Google, avis sur l'app
+### Ajouté
+- Carte interactive (`flutter_map` + OpenStreetMap, gratuite, sans clé API)
+  affichant les arrêts d'un itinéraire, avec tracé de trajet à pied
+  (OSRM, gratuit) et distance/durée estimée
+- Météo en direct par destination (Open-Meteo, gratuite, sans clé API)
+- **Connexion Google** (Web + Android) : Client ID OAuth créé sur Google
+  Cloud Console, backend `POST /auth/google` vérifiant le jeton et émettant
+  le même JWT que la connexion classique
+- **Avis sur l'application** (étoiles + commentaire), distincts des avis sur
+  les destinations ci-dessus — `POST/GET /reviews` (user-service)
+
+### Modifié
+- Migration de `google_sign_in` v6 → v7 (changement d'API cassant :
+  singleton `GoogleSignIn.instance`, `initialize()`, `authenticate()`,
+  `.authentication` désormais synchrone)
+- Images de destinations (Wikimedia Commons) rendues via une balise HTML
+  `<img>` native sur le Web (`HtmlElementView`) plutôt que via le canvas
+  CanvasKit, qui exige des en-têtes CORS que Wikimedia n'envoie pas
+  systématiquement
+
+---
+
+## [2.0.0] — Phase 2 : Microservices
+### Ajouté
+- Décomposition du monolithe en **5 services indépendants** :
+  `user-service`, `itinerary-service`, `recommendation-service`,
+  `ai-service`, `api-gateway` — chacun avec son propre stockage JSON et
+  son propre conteneur Docker
+- Orchestration via **Docker Compose**, déploiement identique en local et
+  sur le VPS
+- Nouveau `update.sh` adapté à Docker Compose (sauvegarde des données,
+  `git pull`, `docker compose up --build -d`, vérification de santé) —
+  remplace l'ancien script Phase 1 (venv + systemd)
+
+### Modifié
+- **Migration complète du VPS** : arrêt et désactivation du service
+  systemd `fahglobe` (Phase 1), passerelle Docker publiée sur le même
+  port `4200` pour rester compatible avec la configuration Nginx
+  existante sans aucune modification de celle-ci côté domaine public
+- Configuration Nginx (`sites-enabled/fahglobe`) mise à jour pour
+  proxifier les nouvelles routes Phase 2 (`/auth`, `/reviews`,
+  `/favorites`, `/assistant`, `/health`) vers l'API — les anciennes règles
+  ne couvraient que les routes historiques de la Phase 1
+- Migration des données réelles de production (25 comptes utilisateurs,
+  5 itinéraires) vers la nouvelle structure par service
+
+### Corrigé
+- Cycle de dépendances circulaire dans `docker-compose.yml`
+  (`itinerary-service` ↔ `recommendation-service`) empêchant le démarrage
+- Dépendance manquante (`requests`) dans `user-service`, requise par
+  `google-auth` pour la vérification des jetons Google
+
+### Sécurité
+- **Historique Git nettoyé** (`git filter-repo`) : suppression rétroactive
+  des fichiers `users.json`, `reviews.json`, `favorites.json`,
+  `itineraries.json` accidentellement committés avec des données réelles
+  d'utilisateurs (emails, hachages de mots de passe) dans un dépôt public —
+  ces fichiers sont désormais exclus via `.gitignore` et ne vivent que
+  sur le VPS (montage Docker), jamais dans le code source
 
 ---
 
@@ -127,9 +249,9 @@ de la Phase 1 (Monolithe) jusqu'à la mise en production.
 
 | Phase | Statut | Contenu |
 |---|---|---|
-| **Phase 1 — Monolithe** | ✅ Complétée et déployée en production | API REST unique, stockage JSON, Flutter multi-plateforme |
-| Phase 2 — Microservices | À venir | Décomposition en services, introduction de MySQL |
-| Phase 3 — Déploiement cloud | À venir | Conteneurisation, load balancing, auto-scaling |
+| **Phase 1 — Monolithe** | ✅ Complétée | API REST unique, stockage JSON, Flutter multi-plateforme |
+| **Phase 2 — Microservices** | ✅ Complétée et déployée en production | 5 services (user, itinerary, recommendation, ai, api-gateway), Docker Compose, connexion Google, assistant IA, carte, météo, avis, favoris, localisation |
+| Phase 3 — Déploiement cloud | À venir | Conteneurisation avancée, load balancing, auto-scaling |
 | Phase 4 — Résilience | À venir | Cache, files de messages, circuit breakers |
 
 ---
@@ -138,9 +260,12 @@ de la Phase 1 (Monolithe) jusqu'à la mise en production.
 
 | Composant | Emplacement | Détails |
 |---|---|---|
-| Backend API | VPS Ubuntu, service systemd `fahglobe` | Gunicorn + Uvicorn workers, port interne 4200 |
-| Reverse proxy | Nginx | HTTPS (Let's Encrypt), routage API + site statique |
+| API Gateway | VPS Ubuntu, Docker Compose | `api-gateway`, port interne 4200 (inchangé depuis la Phase 1 pour compatibilité Nginx) |
+| Microservices | Docker Compose (même hôte) | `user-service` (8001), `itinerary-service` (8002), `recommendation-service` (8003), `ai-service` (8004) |
+| Assistant IA | `ai-service` | Gemini 2.5 Flash (gratuit), repli automatique vers OpenRouter (`openrouter/free`) |
+| Reverse proxy | Nginx | HTTPS (Let's Encrypt), routage API + site statique, règles étendues aux routes Phase 2 |
 | Domaine | `fahglobe.duckdns.org` | DNS dynamique DuckDNS |
-| Site + téléchargements | `/var/www/GLOBE` | Vitrine, hub de téléchargement, app Flutter Web |
-| Sauvegardes | `/root/BACKEND-GLOBE/backups/` | Automatiques à chaque `update.sh`, 10 dernières conservées |
-| Dépôt de code (backend) | GitHub (`TUHEU/BACKEND-GLOBE`) | Permet `git pull` automatique via `update.sh` |
+| Site + téléchargements | `/var/www/GLOBE` | Vitrine, hub de téléchargement, app Flutter Web (dépôt Git séparé `TUHEU/GLOBE`) |
+| Sauvegardes backend | `~/BACKEND-GLOBE-V2/backups/` | Automatiques à chaque `update.sh`, 10 dernières conservées |
+| Dépôt de code (backend) | GitHub (`TUHEU/BACKEND-GLOBE`) | Historique nettoyé (`git filter-repo`) ; `git pull` automatique via `update.sh` |
+| Dépôt de code (site) | GitHub (`TUHEU/GLOBE`) | Build Flutter Web + APK + zip Windows, mis à jour via son propre `update.sh` |

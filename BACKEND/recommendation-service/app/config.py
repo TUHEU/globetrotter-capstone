@@ -9,6 +9,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "globetrotter-phase2-secret-change-me")
 ALGORITHM = "HS256"
 
 DESTINATIONS_FILE = DATA_DIR / "destinations.json"
+DESTINATION_REVIEWS_FILE = DATA_DIR / "destination_reviews.json"
 
 # This service is the "hub": it calls BOTH other services to build a
 # recommendation (preferences from User Service, past trips from
