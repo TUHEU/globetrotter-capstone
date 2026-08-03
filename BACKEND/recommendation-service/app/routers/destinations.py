@@ -12,7 +12,7 @@ from ..security import get_current_user
 
 router = APIRouter(tags=["Destinations"])
 
-CATEGORIES = ["attraction", "museum", "nature", "market", "restaurant", "cafe", "hotel", "entertainment", "education", "sports", "supermarket"]
+CATEGORIES = ["attraction", "museum", "nature", "market", "restaurant", "cafe", "hotel", "entertainment", "education", "sports", "supermarket", "administrative"]
 
 
 class DestinationReviewRequest(BaseModel):

@@ -19,16 +19,41 @@ class _LoginScreenState extends State<LoginScreen> {
   final _password = TextEditingController();
   bool _obscure = true;
 
+  @override
+  void initState() {
+    super.initState();
+    // Sur Web, le bouton Google officiel (rendu par le SDK, pas par notre
+    // code) ne renvoie aucune valeur directe : la connexion aboutit via le
+    // flux authenticationEvents dans AuthProvider, de façon complètement
+    // asynchrone. On écoute donc les changements de isLoggedIn ici plutôt
+    // que de dépendre uniquement du retour de _submitGoogle().
+    context.read<AuthProvider>().addListener(_onAuthChanged);
+  }
+
+  @override
+  void dispose() {
+    context.read<AuthProvider>().removeListener(_onAuthChanged);
+    super.dispose();
+  }
+
+  void _onAuthChanged() {
+    if (!mounted) return;
+    if (context.read<AuthProvider>().isLoggedIn) {
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()));
+    }
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     final auth = context.read<AuthProvider>();
     final s = context.read<SettingsProvider>().s;
     final ok = await auth.login(_email.text.trim(), _password.text);
     if (!mounted) return;
-    if (ok) {
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()));
-    } else {
+    // La navigation en cas de succès est gérée par _onAuthChanged ci-dessus
+    // (centralisé pour les 3 chemins de connexion : email/mdp, Google
+    // mobile, Google web) — ici on ne gère que l'affichage d'une erreur.
+    if (!ok) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(auth.errorMessage(s) ?? s.loginFailed),
         behavior: SnackBarBehavior.floating,
@@ -42,10 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final s = context.read<SettingsProvider>().s;
     final ok = await auth.loginWithGoogle();
     if (!mounted) return;
-    if (ok) {
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()));
-    } else if (auth.hasError) {
+    if (!ok && auth.hasError) {
       // hasError == false veut dire que l'utilisateur a juste fermé la
       // fenêtre Google sans choisir de compte — pas la peine d'afficher
       // une erreur pour une simple annulation.
@@ -124,30 +146,38 @@ class _LoginScreenState extends State<LoginScreen> {
               label: s.login,
               icon: Icons.login,
             ),
-            const SizedBox(height: 18),
-            Row(children: [
-              Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.2))),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text(s.or,
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.6))),
-              ),
-              Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.2))),
-            ]),
-            const SizedBox(height: 14),
-            OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 50),
-                foregroundColor: Colors.white,
-                side: BorderSide(color: Colors.white.withValues(alpha: 0.35)),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
-              ),
-              icon: const _GoogleLogo(),
-              label: Text(s.continueWithGoogle,
-                  style: const TextStyle(fontWeight: FontWeight.w600)),
-              onPressed: auth.loading ? null : _submitGoogle,
-            ),
+            if (auth.isGoogleSignInAvailable) ...[
+              const SizedBox(height: 18),
+              Row(children: [
+                Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.2))),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Text(s.or,
+                      style: TextStyle(color: Colors.white.withValues(alpha: 0.6))),
+                ),
+                Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.2))),
+              ]),
+              const SizedBox(height: 14),
+              // Sur Web, Google EXIGE son propre bouton rendu par son SDK
+              // (contrainte anti-popup-blocker) — impossible d'utiliser notre
+              // bouton "maison" là-bas, contrairement à Android où ça marche.
+              if (auth.supportsGoogleButtonTap)
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 50),
+                    foregroundColor: Colors.white,
+                    side: BorderSide(color: Colors.white.withValues(alpha: 0.35)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
+                  ),
+                  icon: const _GoogleLogo(),
+                  label: Text(s.continueWithGoogle,
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
+                  onPressed: auth.loading ? null : _submitGoogle,
+                )
+              else
+                Center(child: auth.buildWebGoogleButton()),
+            ],
             const SizedBox(height: 10),
             OutlinedButton(
               style: OutlinedButton.styleFrom(

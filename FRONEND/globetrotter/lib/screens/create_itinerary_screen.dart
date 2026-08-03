@@ -49,11 +49,16 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
   Future<void> _pickDate(bool isStart) async {
+    // BUG CORRIGÉ : firstDate soustrayait 1 jour, autorisant hier (et
+    // laissait même parfois sélectionner des dates plus anciennes selon
+    // l'heure locale). On tronque "aujourd'hui" à minuit pour que la date
+    // du jour reste sélectionnable tout en bloquant strictement le passé.
+    final today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
     final picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now().subtract(const Duration(days: 1)),
-      lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
+      initialDate: today,
+      firstDate: today,
+      lastDate: today.add(const Duration(days: 365 * 2)),
     );
     if (picked != null) setState(() => isStart ? _start = picked : _end = picked);
   }
@@ -81,9 +86,10 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
+    final s0 = context.read<SettingsProvider>().s;
     if (_stops.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Add at least one destination')));
+          SnackBar(content: Text(s0.atLeastOneDestination)));
       return;
     }
     setState(() => _saving = true);
@@ -122,8 +128,9 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.watch<SettingsProvider>().s;
     return Scaffold(
-      appBar: AppBar(title: const Text('New itinerary')),
+      appBar: AppBar(title: Text(s.newItineraryTitle)),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 560),
@@ -134,25 +141,25 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
               children: [
                 TextFormField(
                   controller: _title,
-                  decoration: const InputDecoration(
-                      labelText: 'Trip title', prefixIcon: Icon(Icons.title)),
+                  decoration: InputDecoration(
+                      labelText: s.tripTitleLabel, prefixIcon: const Icon(Icons.title)),
                   validator: (v) =>
-                      v != null && v.trim().length >= 2 ? null : 'Give it a title',
+                      v != null && v.trim().length >= 2 ? null : s.giveItATitle,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _description,
                   maxLines: 2,
-                  decoration: const InputDecoration(
-                      labelText: 'Description (optional)',
-                      prefixIcon: Icon(Icons.notes)),
+                  decoration: InputDecoration(
+                      labelText: s.descriptionOptional,
+                      prefixIcon: const Icon(Icons.notes)),
                 ),
                 const SizedBox(height: 16),
                 Row(children: [
                   Expanded(
                     child: OutlinedButton.icon(
                       icon: const Icon(Icons.calendar_today, size: 16),
-                      label: Text(_start == null ? 'Start date' : _fmt(_start!)),
+                      label: Text(_start == null ? s.startDate : _fmt(_start!)),
                       onPressed: () => _pickDate(true),
                     ),
                   ),
@@ -160,7 +167,7 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
                   Expanded(
                     child: OutlinedButton.icon(
                       icon: const Icon(Icons.event, size: 16),
-                      label: Text(_end == null ? 'End date' : _fmt(_end!)),
+                      label: Text(_end == null ? s.endDate : _fmt(_end!)),
                       onPressed: () => _pickDate(false),
                     ),
                   ),
@@ -168,24 +175,24 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _sharedWith,
-                  decoration: const InputDecoration(
-                    labelText: 'Share with (emails, comma separated)',
-                    prefixIcon: Icon(Icons.group_outlined),
-                    helperText: 'Friends & family will see this trip',
+                  decoration: InputDecoration(
+                    labelText: s.shareWithLabel,
+                    prefixIcon: const Icon(Icons.group_outlined),
+                    helperText: s.shareWithHelper,
                   ),
                 ),
                 const SizedBox(height: 24),
                 Row(children: [
-                  Text('Stops', style: Theme.of(context).textTheme.titleMedium),
+                  Text(s.stopsLabel, style: Theme.of(context).textTheme.titleMedium),
                   const Spacer(),
                   TextButton.icon(
                       onPressed: _addStop,
                       icon: const Icon(Icons.add),
-                      label: const Text('Add stop')),
+                      label: Text(s.addStop)),
                 ]),
                 ..._stops.asMap().entries.map((entry) {
                   final i = entry.key;
-                  final s = entry.value;
+                  final stop = entry.value;
                   return Card(
                     child: Padding(
                       padding: const EdgeInsets.all(12),
@@ -195,15 +202,15 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
                           const SizedBox(width: 10),
                           Expanded(
                               child: Text(
-                                  '${s.destination.name} — ${s.destination.quartier}',
+                                  '${stop.destination.name} — ${stop.destination.quartier}',
                                   style: Theme.of(context).textTheme.titleSmall)),
                           DropdownButton<int>(
-                            value: s.day,
+                            value: stop.day,
                             items: List.generate(30, (d) => d + 1)
                                 .map((d) => DropdownMenuItem(
-                                    value: d, child: Text('Day $d')))
+                                    value: d, child: Text(s.dayLabel(d))))
                                 .toList(),
-                            onChanged: (v) => setState(() => s.day = v ?? 1),
+                            onChanged: (v) => setState(() => stop.day = v ?? 1),
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete_outline),
@@ -211,9 +218,9 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
                           ),
                         ]),
                         TextField(
-                          controller: s.notes,
-                          decoration: const InputDecoration(
-                              hintText: 'Notes (optional)', isDense: true),
+                          controller: stop.notes,
+                          decoration: InputDecoration(
+                              hintText: s.notesOptional, isDense: true),
                         ),
                       ]),
                     ),
@@ -226,7 +233,7 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
                       ? const SizedBox(
                           height: 20, width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Text('Create itinerary'),
+                      : Text(s.createItinerary),
                   onPressed: _saving ? null : _save,
                 ),
               ],

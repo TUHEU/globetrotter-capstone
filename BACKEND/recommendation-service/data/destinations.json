@@ -10,7 +10,7 @@
       "culture",
       "photo"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Monument_de_la_r%C3%A9unification_Yaound%C3%A9_01.JPG",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Monument_de_la_r%C3%A9unification_Yaound%C3%A9_01.JPG?width=800",
     "avg_price_fcfa": 1000,
     "best_time": "Journée",
     "popularity": 90,
@@ -536,13 +536,13 @@
       "events",
       "landmark"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Stade_omnisport_Ahmadou_Ahidjo.jpg?width=800",
+    "image": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800",
     "avg_price_fcfa": 2000,
     "best_time": "Jour de match",
     "popularity": 65,
-    "image_source": "Wikimedia Commons",
-    "lat": 3.8752,
-    "lng": 11.518
+    "image_source": "Unsplash (placeholder générique - pas le vrai stade)",
+    "lat": 3.88556,
+    "lng": 11.54056
   },
   {
     "id": "y030",
@@ -598,5 +598,75 @@
     "image_source": "Unsplash (placeholder générique - pas le vrai magasin)",
     "lat": 3.867,
     "lng": 11.5175
+  },
+  {
+    "id": "y033",
+    "name": "Bibliothèque Nationale du Cameroun",
+    "quartier": "Ngoa-Ekelle",
+    "category": "education",
+    "description": "Principale bibliothèque publique de Yaoundé, collections nationales et espace de lecture calme.",
+    "tags": [
+      "education",
+      "culture"
+    ],
+    "image": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Journée (jours ouvrés)",
+    "popularity": 35,
+    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "lat": 3.864,
+    "lng": 11.51
+  },
+  {
+    "id": "y034",
+    "name": "Librairie des Éditions CLE",
+    "quartier": "Centre-ville",
+    "category": "education",
+    "description": "Librairie historique de Yaoundé, ouvrages camerounais et africains, manuels scolaires et universitaires.",
+    "tags": [
+      "education",
+      "shopping"
+    ],
+    "image": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 30,
+    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "lat": 3.8668,
+    "lng": 11.5178
+  },
+  {
+    "id": "y035",
+    "name": "Préfecture du Mfoundi",
+    "quartier": "Centre-ville",
+    "category": "administrative",
+    "description": "Siège administratif du département du Mfoundi — démarches officielles, actes administratifs, autorisations.",
+    "tags": [
+      "administrative"
+    ],
+    "image": "https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Matinée (jours ouvrés)",
+    "popularity": 25,
+    "image_source": "Unsplash (placeholder générique - pas le vrai bâtiment)",
+    "lat": 3.869,
+    "lng": 11.5165
+  },
+  {
+    "id": "y036",
+    "name": "Centre des Impôts de Yaoundé",
+    "quartier": "Centre-ville",
+    "category": "administrative",
+    "description": "Services fiscaux pour les démarches d'immatriculation et de déclaration.",
+    "tags": [
+      "administrative"
+    ],
+    "image": "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Matinée (jours ouvrés)",
+    "popularity": 22,
+    "image_source": "Unsplash (placeholder générique - pas le vrai bâtiment)",
+    "lat": 3.8675,
+    "lng": 11.5145
   }
 ]

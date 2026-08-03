@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in_web/web_only.dart' as google_web;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/api_client.dart';
 import '../core/app_strings.dart';
@@ -55,6 +58,38 @@ class AuthProvider extends ChangeNotifier {
   }
 
   bool _googleInitialized = false;
+  StreamSubscription<GoogleSignInAuthenticationEvent>? _googleEventsSub;
+
+  /// true sur Android/iOS/desktop (bouton "maison" + authenticate() marche) ;
+  /// false sur Flutter Web, où Google EXIGE que le bouton soit dessiné par
+  /// son propre SDK (contrainte anti-popup-blocker des navigateurs) - dans
+  /// ce cas l'UI doit afficher [buildWebGoogleButton] à la place d'un bouton
+  /// personnalisé, et le résultat arrive via authenticationEvents plutôt
+  /// qu'en valeur de retour.
+  ///
+  /// IMPORTANT : sur Windows, il n'existe AUCUNE implémentation de
+  /// google_sign_in du tout (contrairement au Web, qui a une implémentation
+  /// qui répond juste "non supporté") - appeler supportsAuthenticate() ou
+  /// initialize() y lève une exception plutôt que de renvoyer false. On
+  /// protège donc cet accès pour ne jamais planter l'écran de connexion.
+  bool get supportsGoogleButtonTap {
+    try {
+      return GoogleSignIn.instance.supportsAuthenticate();
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// true uniquement sur les plateformes où une forme de Google Sign-In est
+  /// réellement disponible (Web ou Android/iOS) - false sur Windows/Linux/
+  /// macOS desktop, où le paquet n'a aucune implémentation native. Sert à
+  /// masquer complètement le bloc Google Sign-In sur ces plateformes plutôt
+  /// que d'afficher un bouton qui plantera au clic.
+  bool get isGoogleSignInAvailable {
+    if (kIsWeb) return true;
+    return defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS;
+  }
 
   /// v7 de google_sign_in impose un singleton (`GoogleSignIn.instance`) qui
   /// DOIT être initialisé une seule fois avant tout appel — contrairement à
@@ -75,43 +110,71 @@ class AuthProvider extends ChangeNotifier {
           : null,
     );
     _googleInitialized = true;
+
+    // Sur le Web, le bouton est dessiné par le SDK Google lui-même (pas par
+    // notre code) - on ne reçoit donc JAMAIS de valeur de retour d'un appel
+    // direct. Le résultat de la connexion arrive uniquement via ce flux
+    // d'événements, qu'on écoute une seule fois ici, dès l'initialisation.
+    _googleEventsSub?.cancel();
+    _googleEventsSub = GoogleSignIn.instance.authenticationEvents.listen(
+      (event) {
+        if (event is GoogleSignInAuthenticationEventSignIn) {
+          _completeGoogleLogin(event.user);
+        }
+      },
+      onError: (Object e) {
+        _lastException = e;
+        loading = false;
+        notifyListeners();
+      },
+    );
   }
 
-  /// Connexion via Google Sign-In. Ouvre le sélecteur de compte natif,
-  /// récupère le idToken signé par Google, et l'envoie au backend
-  /// (POST /auth/google) qui le vérifie et renvoie NOTRE propre JWT —
-  /// exactement comme après un login classique. Le reste de l'app ne
-  /// voit aucune différence entre un compte Google et un compte email/mdp.
-  Future<bool> loginWithGoogle() async {
+  /// Widget du bouton Google officiel, à utiliser UNIQUEMENT quand
+  /// [supportsGoogleButtonTap] est false (Web). Le résultat du clic sur ce
+  /// bouton remonte via authenticationEvents, pas via une valeur de retour -
+  /// voir _ensureGoogleInitialized ci-dessus. API confirmée depuis la doc
+  /// officielle du paquet (pub.dev/documentation/google_sign_in_web).
+  Widget buildWebGoogleButton() {
+    if (!kIsWeb) return const SizedBox.shrink();
+    return google_web.renderButton();
+  }
+
+  Future<void> _completeGoogleLogin(GoogleSignInAccount account) async {
     loading = true;
     _lastException = null;
     notifyListeners();
     try {
-      await _ensureGoogleInitialized();
-
-      // NOTE plateforme : sur Flutter Web, Google exige que le flux de
-      // connexion soit déclenché par un bouton dessiné par leur propre SDK
-      // (contrainte anti-popup-blocker du navigateur), pas un bouton
-      // "maison" comme le nôtre. authenticate() reste néanmoins l'API
-      // correcte à appeler ; si jamais le popup ne s'ouvre pas sur Web,
-      // ce sera le signe qu'il faut migrer vers leur bouton natif — à
-      // surveiller lors des tests, pas bloquant pour Android.
-      final account = await GoogleSignIn.instance.authenticate();
-
-      // .authentication est maintenant une propriété SYNCHRONE (plus un
-      // Future) depuis v7 — plus de `await` ici.
       final idToken = account.authentication.idToken;
       if (idToken == null) {
         throw Exception('Google n\'a renvoyé aucun jeton d\'identité.');
       }
-
       final res = await ApiClient.instance.dio.post('/auth/google', data: {
         'id_token': idToken,
       });
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', res.data['access_token']);
       user = User.fromJson(res.data['user']);
-      return true;
+    } catch (e) {
+      _lastException = e;
+    } finally {
+      loading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Connexion via Google Sign-In sur les plateformes où un bouton "maison"
+  /// + authenticate() fonctionne (Android, iOS). Sur Web, utiliser
+  /// [buildWebGoogleButton] à la place - voir supportsGoogleButtonTap.
+  Future<bool> loginWithGoogle() async {
+    loading = true;
+    _lastException = null;
+    notifyListeners();
+    try {
+      await _ensureGoogleInitialized();
+      final account = await GoogleSignIn.instance.authenticate();
+      await _completeGoogleLogin(account);
+      return _lastException == null;
     } on GoogleSignInException catch (e) {
       if (e.code == GoogleSignInExceptionCode.canceled) {
         // L'utilisateur a fermé la fenêtre Google sans choisir de compte —
@@ -153,5 +216,11 @@ class AuthProvider extends ChangeNotifier {
     await prefs.remove('token');
     user = null;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _googleEventsSub?.cancel();
+    super.dispose();
   }
 }

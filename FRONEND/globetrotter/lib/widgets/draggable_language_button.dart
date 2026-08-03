@@ -61,9 +61,13 @@ class _DraggableLanguageButtonState extends State<DraggableLanguageButton> {
           });
         },
         onPanEnd: (_) {
-          // Si le doigt a très peu bougé, on considère que c'était un
-          // appui simple plutôt qu'un glissement — bascule la langue.
-          if (_dragAccum.distance < 6) {
+          // Seuil plus généreux qu'au clavier/souris : sur un écran tactile,
+          // même un simple tap du doigt bouge naturellement de quelques
+          // pixels (contact plus large qu'un curseur de souris) — un seuil
+          // trop bas faisait que ça marchait à la souris (PC) mais jamais
+          // au doigt (téléphone), le geste étant presque toujours détecté
+          // comme un glissement au lieu d'un appui.
+          if (_dragAccum.distance < 18) {
             settings.setLanguage(isFr ? 'en' : 'fr');
           }
         },
