@@ -68,24 +68,56 @@ class _DraggableLanguageButtonState extends State<DraggableLanguageButton> {
           }
         },
         child: Material(
-          color: Colors.white.withValues(alpha: 0.14),
+          color: Colors.transparent,
           shape: const CircleBorder(),
-          elevation: 4,
+          elevation: 6,
           child: Container(
             width: bubbleSize,
             height: bubbleSize,
-            alignment: Alignment.center,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withValues(alpha: 0.28)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.35), width: 1.4),
+              boxShadow: const [BoxShadow(color: Colors.black38, blurRadius: 8, offset: Offset(0, 3))],
             ),
-            child: Text(
-              isFr ? 'FR' : 'EN',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w800,
-                fontSize: 14,
-              ),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                ClipOval(
+                  child: Image.asset(
+                    'assets/icon/app_icon.png',
+                    width: bubbleSize,
+                    height: bubbleSize,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      color: const Color(0xFF0F2418),
+                      alignment: Alignment.center,
+                      child: const Icon(Icons.public, color: Colors.white70, size: 24),
+                    ),
+                  ),
+                ),
+                // Petit badge FR/EN superposé en bas du globe, plutôt que du
+                // texte brut plein cadre — garde l'icône reconnaissable.
+                Positioned(
+                  bottom: -2,
+                  right: -2,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFCD116),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFF0F2418), width: 1.2),
+                    ),
+                    child: Text(
+                      isFr ? 'FR' : 'EN',
+                      style: const TextStyle(
+                        color: Color(0xFF0F2418),
+                        fontWeight: FontWeight.w800,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

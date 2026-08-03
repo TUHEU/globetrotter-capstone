@@ -10,7 +10,7 @@
       "culture",
       "photo"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Monument_de_la_r%C3%A9unification_Yaound%C3%A9_01.JPG?width=800",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Monument_de_la_r%C3%A9unification_Yaound%C3%A9_01.JPG",
     "avg_price_fcfa": 1000,
     "best_time": "Journée",
     "popularity": 90,
@@ -239,11 +239,11 @@
       "culture",
       "history"
     ],
-    "image": "https://images.unsplash.com/photo-1594388572748-01cf0f194c98?w=800",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/BLackitude%20Museum.jpg?width=800",
     "avg_price_fcfa": 2000,
     "best_time": "Sur rendez-vous",
     "popularity": 50,
-    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "image_source": "Wikimedia Commons (via Wikidata Q15961646)",
     "lat": 3.875,
     "lng": 11.52
   },
@@ -258,11 +258,11 @@
       "culture",
       "history"
     ],
-    "image": "https://images.unsplash.com/photo-1566127992631-137a642a90f4?w=800",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Monast%C3%A8re%20b%C3%A9n%C3%A9dictin%20du%20Mont%20F%C3%A9b%C3%A9.jpg?width=800",
     "avg_price_fcfa": 1000,
     "best_time": "Week-end après-midi",
     "popularity": 48,
-    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "image_source": "Wikimedia Commons (Monastère bénédictin du Mont Fébé)",
     "lat": 3.8945,
     "lng": 11.5227
   },
@@ -488,5 +488,115 @@
     "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
     "lat": 3.8745,
     "lng": 11.504
+  },
+  {
+    "id": "y027",
+    "name": "Université de Yaoundé I",
+    "quartier": "Ngoa-Ekelle",
+    "category": "education",
+    "description": "La plus ancienne et plus grande université du Cameroun, sur les hauteurs de Ngoa-Ekelle. Campus historique avec vue sur la ville.",
+    "tags": [
+      "education",
+      "history",
+      "landmark"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Universit%C3%A9_de_Yaound%C3%A9_I.jpg?width=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Journée (jours ouvrés)",
+    "popularity": 55,
+    "image_source": "Wikimedia Commons",
+    "lat": 3.8628,
+    "lng": 11.5083
+  },
+  {
+    "id": "y028",
+    "name": "ICT University",
+    "quartier": "Mendong",
+    "category": "education",
+    "description": "Établissement d'enseignement supérieur privé à Yaoundé, spécialisé dans les technologies de l'information et le management.",
+    "tags": [
+      "education"
+    ],
+    "image": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Journée (jours ouvrés)",
+    "popularity": 40,
+    "image_source": "Unsplash (placeholder générique - pas le vrai campus)",
+    "lat": 3.839,
+    "lng": 11.475
+  },
+  {
+    "id": "y029",
+    "name": "Stade Omnisports Ahmadou Ahidjo",
+    "quartier": "Mfandena",
+    "category": "sports",
+    "description": "Principal stade de Yaoundé, haut lieu du football camerounais et des grands événements sportifs et culturels.",
+    "tags": [
+      "sport",
+      "events",
+      "landmark"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Stade_omnisport_Ahmadou_Ahidjo.jpg?width=800",
+    "avg_price_fcfa": 2000,
+    "best_time": "Jour de match",
+    "popularity": 65,
+    "image_source": "Wikimedia Commons",
+    "lat": 3.8752,
+    "lng": 11.518
+  },
+  {
+    "id": "y030",
+    "name": "Grillades de la Briqueterie",
+    "quartier": "Briqueterie",
+    "category": "restaurant",
+    "description": "Le haut lieu du poisson braisé et des grillades de rue à Yaoundé, animé jusque tard le soir. Ambiance conviviale et prix très abordables.",
+    "tags": [
+      "food",
+      "nightlife",
+      "affordable"
+    ],
+    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?w=800",
+    "avg_price_fcfa": 3000,
+    "best_time": "Soirée",
+    "popularity": 70,
+    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "lat": 3.885,
+    "lng": 11.5085
+  },
+  {
+    "id": "y031",
+    "name": "Supermarché Santa Lucia",
+    "quartier": "Bastos",
+    "category": "supermarket",
+    "description": "Chaîne de supermarchés camerounaise bien fournie, produits locaux et importés. L'un des repères pratiques du quartier Bastos.",
+    "tags": [
+      "shopping",
+      "family"
+    ],
+    "image": "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 45,
+    "image_source": "Unsplash (placeholder générique - pas le vrai magasin)",
+    "lat": 3.888,
+    "lng": 11.5195
+  },
+  {
+    "id": "y032",
+    "name": "Supermarché Dovv",
+    "quartier": "Centre-ville",
+    "category": "supermarket",
+    "description": "Chaîne de supermarchés camerounaise parmi les plus connues du pays, plusieurs rayons et produits du quotidien.",
+    "tags": [
+      "shopping",
+      "family"
+    ],
+    "image": "https://images.unsplash.com/photo-1601599963565-b7f49deb2fca?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 42,
+    "image_source": "Unsplash (placeholder générique - pas le vrai magasin)",
+    "lat": 3.867,
+    "lng": 11.5175
   }
 ]

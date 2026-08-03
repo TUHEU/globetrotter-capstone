@@ -92,12 +92,29 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
     });
 
     // Centre la carte pour englober tous les arrêts.
-    if (_points.isNotEmpty) {
+    // IMPORTANT : LatLngBounds.fromPoints() sur un seul point (bornes de
+    // largeur/hauteur nulles) peut faire planter fitCamera() dans certaines
+    // versions de flutter_map — plusieurs de vos vrais itinéraires n'ont
+    // qu'UN seul arrêt, donc ce cas arrive en pratique, pas juste en théorie.
+    if (_points.length >= 2) {
       final bounds = LatLngBounds.fromPoints(
         _points.map((p) => LatLng(p.destination.lat, p.destination.lng)).toList(),
       );
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _mapController.fitCamera(CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(56)));
+        if (!mounted) return;
+        try {
+          _mapController.fitCamera(CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(56)));
+        } catch (_) {
+          // En dernier recours, centre simplement sur le premier arrêt
+          // plutôt que de laisser une exception remonter et planter l'écran.
+          _mapController.move(LatLng(_points.first.destination.lat, _points.first.destination.lng), 13);
+        }
+      });
+    } else if (_points.length == 1) {
+      // Un seul arrêt : pas de "bounds" à calculer, juste centrer dessus.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _mapController.move(LatLng(_points.first.destination.lat, _points.first.destination.lng), 14);
       });
     }
   }

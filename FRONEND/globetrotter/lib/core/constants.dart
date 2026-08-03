@@ -45,9 +45,22 @@ class ApiConstants {
 /// Interests used for personalized recommendations (registration + explore filters).
 class PreferenceTags {
   static const List<String> all = [
-    'food', 'culture', 'nature', 'history', 'art', 'shopping',
-    'nightlife', 'family', 'relax', 'romance', 'photo', 'sport',
-    'wildlife', 'hiking', 'luxury', 'events',
+    'food',
+    'culture',
+    'nature',
+    'history',
+    'art',
+    'shopping',
+    'nightlife',
+    'family',
+    'relax',
+    'romance',
+    'photo',
+    'sport',
+    'wildlife',
+    'hiking',
+    'luxury',
+    'events',
   ];
 }
 
@@ -62,6 +75,9 @@ class PlaceCategories {
     'cafe': Icons.local_cafe_outlined,
     'hotel': Icons.hotel_outlined,
     'entertainment': Icons.celebration_outlined,
+    'education': Icons.school_outlined,
+    'sports': Icons.stadium_outlined,
+    'supermarket': Icons.shopping_cart_outlined,
   };
 
   static const Map<String, String> labels = {
@@ -73,6 +89,9 @@ class PlaceCategories {
     'cafe': 'Cafés',
     'hotel': 'Hôtels',
     'entertainment': 'Sorties',
+    'education': 'Écoles & Universités',
+    'sports': 'Sport',
+    'supermarket': 'Supermarchés',
   };
 }
 
