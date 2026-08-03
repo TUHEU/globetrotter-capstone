@@ -2,12 +2,18 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:google_sign_in_web/web_only.dart' as google_web;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/api_client.dart';
 import '../core/app_strings.dart';
 import '../core/constants.dart';
 import '../models/user.dart';
+// Import conditionnel : sur le Web (dart.library.html disponible), utilise
+// la vraie implémentation avec google_sign_in_web ; sur TOUTE autre
+// plateforme (Android, Windows, iOS), utilise le stub à la place. Sans ça,
+// Android/Windows ne compilent plus du tout - c'était le bug qui a cassé
+// `flutter build apk` et `flutter build windows`.
+import '../services/google_web_button_stub.dart'
+    if (dart.library.html) '../services/google_web_button_web.dart' as google_web;
 
 class AuthProvider extends ChangeNotifier {
   User? user;
@@ -137,7 +143,7 @@ class AuthProvider extends ChangeNotifier {
   /// officielle du paquet (pub.dev/documentation/google_sign_in_web).
   Widget buildWebGoogleButton() {
     if (!kIsWeb) return const SizedBox.shrink();
-    return google_web.renderButton();
+    return google_web.renderGoogleWebButton();
   }
 
   Future<void> _completeGoogleLogin(GoogleSignInAccount account) async {
