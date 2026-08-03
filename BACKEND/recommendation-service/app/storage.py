@@ -4,7 +4,7 @@ import threading
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from .config import DESTINATIONS_FILE, DESTINATION_REVIEWS_FILE, DATA_DIR
+from .config import DESTINATIONS_FILE, DESTINATION_REVIEWS_FILE, POPULARITY_FILE, DATA_DIR
 
 _lock = threading.Lock()
 
@@ -28,7 +28,23 @@ def _write(path: Path, data: List[Dict[str, Any]]) -> None:
 
 
 def get_destinations() -> List[Dict[str, Any]]:
-    return _read(DESTINATIONS_FILE)
+    dests = _read(DESTINATIONS_FILE)
+    overrides = _read_popularity_overrides()
+    if overrides:
+        for d in dests:
+            if d["id"] in overrides:
+                d["popularity"] = overrides[d["id"]]
+    return dests
+
+
+def _read_popularity_overrides() -> Dict[str, int]:
+    if not POPULARITY_FILE.exists():
+        return {}
+    with POPULARITY_FILE.open("r", encoding="utf-8") as f:
+        try:
+            return json.load(f)
+        except json.JSONDecodeError:
+            return {}
 
 
 def find_destination(dest_id: str) -> Optional[Dict[str, Any]]:
@@ -36,12 +52,19 @@ def find_destination(dest_id: str) -> Optional[Dict[str, Any]]:
 
 
 def increment_popularity(dest_id: str) -> None:
+    """Écrit UNIQUEMENT dans popularity_overrides.json (gitignoré) -
+    destinations.json (suivi par git) n'est plus jamais modifié au
+    runtime, ce qui élimine les conflits `git pull` sur le VPS."""
     with _lock:
-        dests = get_destinations()
-        for d in dests:
-            if d["id"] == dest_id:
-                d["popularity"] = d.get("popularity", 0) + 1
-        _write(DESTINATIONS_FILE, dests)
+        overrides = _read_popularity_overrides()
+        base = next((d for d in _read(DESTINATIONS_FILE) if d["id"] == dest_id), None)
+        current = overrides.get(dest_id, base.get("popularity", 0) if base else 0)
+        overrides[dest_id] = current + 1
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        tmp = POPULARITY_FILE.with_suffix(".tmp")
+        with tmp.open("w", encoding="utf-8") as f:
+            json.dump(overrides, f, indent=2, ensure_ascii=False)
+        tmp.replace(POPULARITY_FILE)
 
 
 # ---------------- Avis sur une destination (place reviews) -----------------
