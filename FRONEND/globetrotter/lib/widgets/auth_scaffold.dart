@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
+import 'draggable_language_button.dart';
 
 /// Shared premium background + glass card used by Login and Register screens.
 /// - Mobile: single column, glass card over the scenery
@@ -37,8 +38,10 @@ class AuthScaffold extends StatelessWidget {
           // Soft decorative glows
           const Positioned(top: -90, right: -60, child: _Glow(color: Color(0xFFFCD116), size: 320)),
           const Positioned(bottom: 120, left: -80, child: _Glow(color: Color(0xFFCE1126), size: 260)),
-          // Sélecteur de langue (visible avant même la connexion)
-          const Positioned(top: 16, right: 16, child: SafeArea(child: _LanguageToggle())),
+          // Sélecteur de langue flottant et déplaçable (appui = changer de
+          // langue, glisser = repositionner) — remplace l'ancien bouton
+          // fixe en haut à droite, difficile à toucher sur mobile.
+          const DraggableLanguageButton(),
           // Yaoundé hills silhouette
           Positioned(
             bottom: 0,
@@ -242,69 +245,6 @@ class _GlassCard extends StatelessWidget {
               ],
             ),
             child: child,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _LanguageToggle extends StatelessWidget {
-  const _LanguageToggle();
-
-  @override
-  Widget build(BuildContext context) {
-    final settings = context.watch<SettingsProvider>();
-    return Container(
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.20)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _LangButton(
-            label: 'FR',
-            selected: settings.languageCode == 'fr',
-            onTap: () => settings.setLanguage('fr'),
-          ),
-          _LangButton(
-            label: 'EN',
-            selected: settings.languageCode == 'en',
-            onTap: () => settings.setLanguage('en'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _LangButton extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-  const _LangButton({required this.label, required this.selected, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 160),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: selected ? const Color(0xFFFCD116) : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: selected ? const Color(0xFF0F2418) : Colors.white,
-            fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
-            fontSize: 12.5,
           ),
         ),
       ),
