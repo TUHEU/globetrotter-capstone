@@ -1,0 +1,20 @@
+# ⚠️ CE FICHIER NE DOIT JAMAIS S'APPELER "docker-compose.override.yml" ⚠️
+# Docker Compose charge CE nom automatiquement et silencieusement dès qu'il
+# est présent, sans qu'on ait besoin de le demander. Comme update.sh fait
+# "git pull" PUIS "docker compose up --build -d" directement sur le VPS
+# (voir update.sh), un fichier nommé "override.yml" committé dans git
+# atterrirait automatiquement sur le VPS au prochain déploiement et
+# republierait la gateway sur le port 8000 — cassant silencieusement la
+# prod, puisque Nginx, lui, continue de pointer vers le port 4200.
+#
+# En le nommant différemment, Docker Compose l'ignore complètement par
+# défaut. Il faut le passer EXPLICITEMENT pour qu'il s'applique :
+#
+#   docker compose -f docker-compose.yml -f docker-compose.local.yml up --build
+#
+# Ce qui ne peut jamais arriver par accident via update.sh ou un simple
+# "docker compose up" sur le VPS.
+services:
+  api-gateway:
+    ports:
+      - "127.0.0.1:8000:8000"
