@@ -125,7 +125,7 @@ class _BrandPanel extends StatelessWidget {
                 width: large ? 108 : 84,
                 height: large ? 108 : 84,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (_, _, _) => Container(
                   width: large ? 108 : 84,
                   height: large ? 108 : 84,
                   decoration: const BoxDecoration(

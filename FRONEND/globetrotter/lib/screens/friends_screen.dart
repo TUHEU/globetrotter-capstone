@@ -23,7 +23,10 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    Future.microtask(() => context.read<FriendsProvider>().loadFollowLists());
+    Future.microtask(() {
+      if (!mounted) return;
+      context.read<FriendsProvider>().loadFollowLists();
+    });
   }
 
   @override

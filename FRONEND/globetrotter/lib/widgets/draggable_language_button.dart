@@ -104,7 +104,7 @@ class _DraggableLanguageButtonState extends State<DraggableLanguageButton> {
                     width: bubbleSize,
                     height: bubbleSize,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                    errorBuilder: (_, _, _) => Container(
                       color: const Color(0xFF0F2418),
                       alignment: Alignment.center,
                       child: const Icon(Icons.public, color: Colors.white70, size: 24),

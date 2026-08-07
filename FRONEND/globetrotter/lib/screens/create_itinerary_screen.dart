@@ -41,6 +41,7 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
     }
     // make sure destinations are loaded for the picker
     Future.microtask(() {
+      if (!mounted) return;
       final p = context.read<DestinationProvider>();
       if (p.destinations.isEmpty) p.search(q: '');
     });

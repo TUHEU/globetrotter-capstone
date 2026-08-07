@@ -21,7 +21,10 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => context.read<ReviewProvider>().load());
+    Future.microtask(() {
+      if (!mounted) return;
+      context.read<ReviewProvider>().load();
+    });
   }
 
   @override

@@ -24,7 +24,7 @@ class ApiClient {
     ));
 
   /// Convertit une exception réseau en message localisé (FR/EN).
-  /// [s] vient de context.read<SettingsProvider>().s au moment de l'affichage,
+  /// [s] vient de `context.read<SettingsProvider>().s` au moment de l'affichage,
   /// jamais mémorisé à l'avance, pour toujours refléter la langue actuelle.
   static String errorMessage(Object e, AppStrings s) {
     if (e is DioException) {

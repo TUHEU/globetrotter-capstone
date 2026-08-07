@@ -50,12 +50,12 @@ class Map3DViewState extends State<Map3DView> {
   }
 
   @override
-  void didUpdateWidget(covariant Map3DView old) {
-    super.didUpdateWidget(old);
+  void didUpdateWidget(covariant Map3DView oldWidget) {
+    super.didUpdateWidget(oldWidget);
     if (_controller != null &&
-        (old.stops != widget.stops ||
-            old.routePolyline != widget.routePolyline ||
-            old.myPosition != widget.myPosition)) {
+        (oldWidget.stops != widget.stops ||
+            oldWidget.routePolyline != widget.routePolyline ||
+            oldWidget.myPosition != widget.myPosition)) {
       _drawAnnotations();
     }
   }

@@ -138,7 +138,7 @@ class _DirectionsScreenState extends State<DirectionsScreen> {
                         child: ListView.separated(
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           itemCount: _route!.steps.length,
-                          separatorBuilder: (_, __) => const Divider(height: 1),
+                          separatorBuilder: (_, _) => const Divider(height: 1),
                           itemBuilder: (_, i) {
                             final step = _route!.steps[i];
                             return ListTile(

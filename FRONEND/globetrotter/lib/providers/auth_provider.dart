@@ -30,7 +30,7 @@ class AuthProvider extends ChangeNotifier {
   bool get hasError => _lastException != null;
 
   /// Message d'erreur localisé pour la dernière tentative échouée.
-  /// Appeler avec context.watch<SettingsProvider>().s au moment de l'affichage.
+  /// Appeler avec `context.watch<SettingsProvider>().s` au moment de l'affichage.
   String? errorMessage(AppStrings s) {
     if (_lastException == null) return null;
     return ApiClient.errorMessage(_lastException!, s);

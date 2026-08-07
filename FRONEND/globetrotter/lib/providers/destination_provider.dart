@@ -27,8 +27,8 @@ class DestinationProvider extends ChangeNotifier {
     try {
       final res = await ApiClient.instance.dio.get('/destinations', queryParameters: {
         if (query.isNotEmpty) 'q': query,
-        if (tag != null) 'tag': tag,
-        if (category != null) 'category': category,
+        'tag': ?tag,
+        'category': ?category,
       });
       destinations = (res.data['results'] as List).map((j) => Destination.fromJson(j)).toList();
     } catch (e) {

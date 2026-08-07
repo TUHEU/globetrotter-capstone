@@ -7,7 +7,7 @@ import '../providers/settings_provider.dart';
 
 /// Avis publics sur UNE destination — indépendant des avis sur
 /// l'application (voir ReviewsScreen). Porté depuis le pattern
-/// "GET/POST /destinations/<id>/reviews" du monolithe Phase 1.
+/// "GET/POST /destinations/`<id>`/reviews" du monolithe Phase 1.
 class DestinationReviewsSection extends StatefulWidget {
   final String destinationId;
   const DestinationReviewsSection({super.key, required this.destinationId});

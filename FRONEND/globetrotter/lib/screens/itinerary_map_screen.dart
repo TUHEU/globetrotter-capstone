@@ -161,7 +161,7 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
                         child: ListView.separated(
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           itemCount: _route!.steps.length,
-                          separatorBuilder: (_, __) => const Divider(height: 1),
+                          separatorBuilder: (_, _) => const Divider(height: 1),
                           itemBuilder: (_, i) {
                             final step = _route!.steps[i];
                             return ListTile(
@@ -179,7 +179,7 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
                       child: ListView.separated(
                         padding: const EdgeInsets.all(12),
                         itemCount: _points.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 8),
+                        separatorBuilder: (_, _) => const SizedBox(height: 8),
                         itemBuilder: (context, i) {
                           final p = _points[i];
                           return Card(

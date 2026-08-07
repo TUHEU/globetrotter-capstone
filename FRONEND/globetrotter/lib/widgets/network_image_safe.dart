@@ -68,9 +68,9 @@ class _NetworkImageSafeState extends State<NetworkImageSafe> {
   }
 
   @override
-  void didUpdateWidget(covariant NetworkImageSafe old) {
-    super.didUpdateWidget(old);
-    if (old.url != widget.url) {
+  void didUpdateWidget(covariant NetworkImageSafe oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.url != widget.url) {
       _attempt = 0;
       _state = _LoadState.loading;
       _bytes = null;

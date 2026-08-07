@@ -68,6 +68,7 @@ class _BootstrapState extends State<_Bootstrap> {
 
   Future<bool> _init() async {
     await context.read<SettingsProvider>().load();
+    if (!mounted) return false;
     return context.read<AuthProvider>().tryAutoLogin();
   }
 

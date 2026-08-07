@@ -5,7 +5,7 @@ import '../models/destination.dart';
 import '../screens/destination_detail_screen.dart';
 import 'network_image_safe.dart';
 
-/// "Lieux à proximité" — porté depuis GET /destinations/<id>/nearby du
+/// "Lieux à proximité" — porté depuis GET /destinations/`<id>`/nearby du
 /// monolithe Phase 1 (distance à vol d'oiseau, formule de haversine).
 class NearbyPlacesSection extends StatefulWidget {
   final String destinationId;
@@ -73,7 +73,7 @@ class _NearbyPlacesSectionState extends State<NearbyPlacesSection> {
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: _places.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 10),
+            separatorBuilder: (_, _) => const SizedBox(width: 10),
             itemBuilder: (context, i) {
               final d = _places[i];
               return SizedBox(

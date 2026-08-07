@@ -35,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
+      if (!mounted) return;
       context.read<DestinationProvider>().search(q: '');
       context.read<DestinationProvider>().loadRecommendations();
       context.read<ItineraryProvider>().load();
