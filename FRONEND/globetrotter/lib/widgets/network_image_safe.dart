@@ -60,6 +60,8 @@ class _NetworkImageSafeState extends State<NetworkImageSafe> {
   _LoadState _state = _LoadState.loading;
   Uint8List? _bytes;
   int _attempt = 0;
+  CancelToken? _cancelToken;
+  Timer? _retryTimer;
 
   @override
   void initState() {
@@ -71,6 +73,11 @@ class _NetworkImageSafeState extends State<NetworkImageSafe> {
   void didUpdateWidget(covariant NetworkImageSafe oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.url != widget.url) {
+      // Une nouvelle URL arrive (ex: recyclage de la carte dans une liste) -
+      // on annule tout ce qui était en cours pour l'ancienne avant de
+      // repartir, sinon une réponse tardive pourrait écraser le nouvel état.
+      _cancelToken?.cancel('url changed');
+      _retryTimer?.cancel();
       _attempt = 0;
       _state = _LoadState.loading;
       _bytes = null;
@@ -78,16 +85,44 @@ class _NetworkImageSafeState extends State<NetworkImageSafe> {
     }
   }
 
+  @override
+  void dispose() {
+    // Sans ça, une requête Dio ou un minuteur de réessai encore en vol au
+    // moment où le widget disparaît (l'utilisateur quitte l'écran, ou la
+    // carte sort de la liste) continue de tourner en arrière-plan pour
+    // rien - gaspillage de données, et c'est exactement ce qui faisait
+    // échouer les tests widgets ("A Timer is still pending even after the
+    // widget tree was disposed") : Dio programme un minuteur de timeout en
+    // interne dès l'appel _dio.get(...), qui restait actif après la fin du
+    // test faute d'annulation explicite.
+    _cancelToken?.cancel('disposed');
+    _retryTimer?.cancel();
+    super.dispose();
+  }
+
+  /// Délai annulable (contrairement à `await Future.delayed(...)`, dont le
+  /// minuteur interne ne peut pas être arrêté une fois lancé).
+  Future<void> _cancellableDelay(Duration d) {
+    final completer = Completer<void>();
+    _retryTimer = Timer(d, () {
+      if (!completer.isCompleted) completer.complete();
+    });
+    return completer.future;
+  }
+
   Future<void> _load() async {
     if (widget.url.isEmpty) {
       if (mounted) setState(() => _state = _LoadState.failed);
       return;
     }
+    final cancelToken = CancelToken();
+    _cancelToken = cancelToken;
     const maxAttempts = 3; // 1 essai initial + 2 réessais
     for (var i = _attempt; i < maxAttempts; i++) {
       try {
         final res = await _dio.get<List<int>>(
           widget.url,
+          cancelToken: cancelToken,
           options: Options(responseType: ResponseType.bytes),
         );
         final data = res.data;
@@ -98,10 +133,14 @@ class _NetworkImageSafeState extends State<NetworkImageSafe> {
           _state = _LoadState.success;
         });
         return;
-      } catch (_) {
+      } catch (e) {
+        if (e is DioException && e.type == DioExceptionType.cancel) {
+          return; // dispose()/nouvelle URL : on arrête là, sans retry ni setState
+        }
         _attempt = i + 1;
         if (i < maxAttempts - 1) {
-          await Future.delayed(Duration(milliseconds: 600 * (i + 1)));
+          await _cancellableDelay(Duration(milliseconds: 600 * (i + 1)));
+          if (!mounted) return;
         }
       }
     }
