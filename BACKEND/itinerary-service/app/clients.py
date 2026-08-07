@@ -9,9 +9,11 @@ and it's also where Phase 2's new failure modes live (network latency,
 the other service being down, etc. — Phase 4 problems, but you'll feel
 the seam here first).
 """
+from typing import List
+
 import httpx
 
-from .config import RECOMMENDATION_SERVICE_URL
+from .config import RECOMMENDATION_SERVICE_URL, USER_SERVICE_URL
 
 
 def destination_exists(destination_id: str) -> bool:
@@ -40,3 +42,25 @@ def bump_popularity(destination_id: str) -> None:
         # successfully. We just log and move on rather than failing the
         # whole request over a "nice to have" popularity counter.
         pass
+
+
+def get_following(token: str) -> List[str]:
+    """Ask User Service who the caller follows, forwarding their own bearer
+    token (same "token propagation" pattern as Recommendation Service ->
+    User Service). Used to build GET /itineraries/feed: we never store a
+    copy of the follow graph here - Itinerary Service still only owns
+    itineraries.json, exactly like the README's service-split diagram says.
+    """
+    try:
+        r = httpx.get(
+            f"{USER_SERVICE_URL}/follow/following",
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=5.0,
+        )
+        if r.status_code == 200:
+            return [u["id"] for u in r.json().get("results", [])]
+    except httpx.RequestError:
+        pass
+    # User Service down/unreachable: degrade to an empty feed rather than
+    # failing the whole request.
+    return []

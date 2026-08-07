@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional
 
 from datetime import datetime, timezone
 
-from .config import USERS_FILE, REVIEWS_FILE, FAVORITES_FILE, DATA_DIR
+from .config import USERS_FILE, REVIEWS_FILE, FAVORITES_FILE, FOLLOWS_FILE, DATA_DIR
 
 _lock = threading.Lock()
 
@@ -177,3 +177,59 @@ def remove_favorite(user_id: str, destination_id: str) -> List[str]:
         all_favs[user_id] = current
         _write(FAVORITES_FILE, all_favs)
         return current
+
+
+# ---------------- Social (follow / unfollow / search) ----------------
+# Stored as {"follower_id": ["followee_id", ...]} - same shape as favorites,
+# for the same reason (O(1) lookup of "who does THIS user follow").
+# "Who follows me" (followers) is derived by scanning this map rather than
+# kept as a second copy, so the two directions can never drift apart.
+
+def _read_follows() -> Dict[str, List[str]]:
+    raw = _read(FOLLOWS_FILE)
+    return raw if isinstance(raw, dict) else {}
+
+
+def get_following(user_id: str) -> List[str]:
+    return _read_follows().get(user_id, [])
+
+
+def get_followers(user_id: str) -> List[str]:
+    return [uid for uid, following in _read_follows().items() if user_id in following]
+
+
+def follow_user(follower_id: str, followee_id: str) -> List[str]:
+    with _lock:
+        all_follows = _read_follows()
+        current = all_follows.get(follower_id, [])
+        if followee_id not in current:
+            current.append(followee_id)
+        all_follows[follower_id] = current
+        _write(FOLLOWS_FILE, all_follows)
+        return current
+
+
+def unfollow_user(follower_id: str, followee_id: str) -> List[str]:
+    with _lock:
+        all_follows = _read_follows()
+        current = [u for u in all_follows.get(follower_id, []) if u != followee_id]
+        all_follows[follower_id] = current
+        _write(FOLLOWS_FILE, all_follows)
+        return current
+
+
+def search_users(query: str, exclude_id: str, limit: int = 20) -> List[Dict[str, Any]]:
+    """Simple substring match on name/email - good enough for a class
+    project's friend list; a real product would use a proper search index."""
+    q = query.lower().strip()
+    if not q:
+        return []
+    results = []
+    for u in get_users():
+        if u["id"] == exclude_id:
+            continue
+        if q in u["full_name"].lower() or q in u["email"].lower():
+            results.append(u)
+        if len(results) >= limit:
+            break
+    return results

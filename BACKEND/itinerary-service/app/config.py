@@ -15,3 +15,8 @@ ITINERARIES_FILE = DATA_DIR / "itineraries.json"
 # Where to find the Recommendation Service, which owns destinations.
 # Override with an env var in docker-compose / prod (e.g. http://recommendation-service:8003)
 RECOMMENDATION_SERVICE_URL = os.getenv("RECOMMENDATION_SERVICE_URL", "http://localhost:8003")
+
+# Where to find the User Service - needed for the "friends' trips" feed
+# (GET /itineraries/feed), which first asks User Service who the caller
+# follows before filtering to those people's public itineraries.
+USER_SERVICE_URL = os.getenv("USER_SERVICE_URL", "http://localhost:8001")

@@ -16,6 +16,7 @@ class ItineraryCreate(BaseModel):
     end_date: Optional[str] = None
     stops: List[ItineraryStop] = []
     shared_with: List[str] = []  # emails of friends/family
+    is_public: bool = False  # visible to followers in GET /itineraries/feed
 
 
 class ItineraryUpdate(BaseModel):
@@ -25,3 +26,8 @@ class ItineraryUpdate(BaseModel):
     end_date: Optional[str] = None
     stops: Optional[List[ItineraryStop]] = None
     shared_with: Optional[List[str]] = None
+    is_public: Optional[bool] = None
+
+
+class VisibilityUpdate(BaseModel):
+    is_public: bool

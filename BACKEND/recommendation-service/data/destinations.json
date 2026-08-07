@@ -511,9 +511,9 @@
   {
     "id": "y028",
     "name": "ICT University",
-    "quartier": "Mendong",
+    "quartier": "Zoatoupsi (Messassi)",
     "category": "education",
-    "description": "Établissement d'enseignement supérieur privé à Yaoundé, spécialisé dans les technologies de l'information et le management.",
+    "description": "Université privée accréditée, spécialisée en TIC et management. Adresse : 1 Avenue Dispensaire Messassi, Zoatoupsi.",
     "tags": [
       "education"
     ],
@@ -522,8 +522,8 @@
     "best_time": "Journée (jours ouvrés)",
     "popularity": 40,
     "image_source": "Unsplash (placeholder générique - pas le vrai campus)",
-    "lat": 3.839,
-    "lng": 11.475
+    "lat": 3.9527,
+    "lng": 11.5166
   },
   {
     "id": "y029",
@@ -668,5 +668,247 @@
     "image_source": "Unsplash (placeholder générique - pas le vrai bâtiment)",
     "lat": 3.8675,
     "lng": 11.5145
+  },
+  {
+    "id": "y037",
+    "name": "Lycée Général-Leclerc",
+    "quartier": "Ngoa-Ekélé",
+    "category": "education",
+    "description": "Le plus grand lycée public du Cameroun, fondé en 1952, environ 7000 élèves.",
+    "tags": [
+      "education",
+      "history"
+    ],
+    "image": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Journée (jours ouvrés)",
+    "popularity": 35,
+    "image_source": "Unsplash (placeholder générique)",
+    "lat": 3.858,
+    "lng": 11.501
+  },
+  {
+    "id": "y038",
+    "name": "Collège Jean-Tabi",
+    "quartier": "Etoudi",
+    "category": "education",
+    "description": "Collège catholique privé fondé en 1956, l'un des établissements secondaires réputés de Yaoundé.",
+    "tags": [
+      "education"
+    ],
+    "image": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Journée (jours ouvrés)",
+    "popularity": 28,
+    "image_source": "Unsplash (placeholder générique)",
+    "lat": 3.902,
+    "lng": 11.512
+  },
+  {
+    "id": "y039",
+    "name": "Collège François-Xavier-Vogt",
+    "quartier": "Mvolyé",
+    "category": "education",
+    "description": "Collège catholique historique de Yaoundé, situé dans le quartier de Mvolyé.",
+    "tags": [
+      "education"
+    ],
+    "image": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Journée (jours ouvrés)",
+    "popularity": 26,
+    "image_source": "Unsplash (placeholder générique)",
+    "lat": 3.869,
+    "lng": 11.515
+  },
+  {
+    "id": "y040",
+    "name": "Bitame Lucia International School",
+    "quartier": "Nkolfoulou",
+    "category": "education",
+    "description": "École primaire et maternelle bilingue (anglais/français) fondée en 2009 à Nkolfoulou, à environ 12 km de Yaoundé.",
+    "tags": [
+      "education"
+    ],
+    "image": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Journée (jours ouvrés)",
+    "popularity": 18,
+    "image_source": "Unsplash (placeholder générique) — localisation approximative, à vérifier",
+    "lat": 3.97,
+    "lng": 11.61
+  },
+  {
+    "id": "y041",
+    "name": "Hôpital Central de Yaoundé",
+    "quartier": "Centre-ville",
+    "category": "health",
+    "description": "Le plus grand hôpital du Cameroun, fondé en 1933, ouvert 24h/24 et 7j/7.",
+    "tags": [
+      "health"
+    ],
+    "image": "https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "24h/24",
+    "popularity": 30,
+    "image_source": "Unsplash (placeholder générique)",
+    "lat": 3.8714,
+    "lng": 11.5104
+  },
+  {
+    "id": "y042",
+    "name": "Hôpital Général de Yaoundé",
+    "quartier": "Ngousso",
+    "category": "health",
+    "description": "Hôpital de référence (médecine, chirurgie, obstétrique, pédiatrie), ouvert en 1985.",
+    "tags": [
+      "health"
+    ],
+    "image": "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "24h/24",
+    "popularity": 27,
+    "image_source": "Unsplash (placeholder générique)",
+    "lat": 3.9066,
+    "lng": 11.5414
+  },
+  {
+    "id": "y043",
+    "name": "Hôpital Gynéco-Obstétrique et Pédiatrique de Yaoundé",
+    "quartier": "Ngousso",
+    "category": "health",
+    "description": "Hôpital spécialisé dans la santé de la femme et de l'enfant, ouvert en 2002.",
+    "tags": [
+      "health"
+    ],
+    "image": "https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "24h/24",
+    "popularity": 22,
+    "image_source": "Unsplash (placeholder générique)",
+    "lat": 3.8752,
+    "lng": 11.5299
+  },
+  {
+    "id": "y044",
+    "name": "Aéroport International de Yaoundé-Nsimalen",
+    "quartier": "Nsimalen",
+    "category": "transport",
+    "description": "Principal aéroport international du Cameroun, à environ 27 km au sud du centre-ville.",
+    "tags": [
+      "transport"
+    ],
+    "image": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "24h/24",
+    "popularity": 32,
+    "image_source": "Unsplash (placeholder générique)",
+    "lat": 3.7226,
+    "lng": 11.5533
+  },
+  {
+    "id": "y045",
+    "name": "Palais Polyvalent des Sports de Yaoundé",
+    "quartier": "Centre-ville",
+    "category": "sports",
+    "description": "Salle omnisports couverte (5263 places), inaugurée en 2009, accueille basketball et autres sports en salle.",
+    "tags": [
+      "sports"
+    ],
+    "image": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800",
+    "avg_price_fcfa": 1000,
+    "best_time": "Soirée (événements)",
+    "popularity": 24,
+    "image_source": "Unsplash (placeholder générique)",
+    "lat": 3.874,
+    "lng": 11.512
+  },
+  {
+    "id": "y046",
+    "name": "Marché Mvog-Mbi",
+    "quartier": "Mvog-Mbi",
+    "category": "market",
+    "description": "Marché de quartier animé au sud de Yaoundé, connu pour ses produits vivriers et son ambiance.",
+    "tags": [
+      "shopping",
+      "food"
+    ],
+    "image": "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Matinée",
+    "popularity": 20,
+    "image_source": "Unsplash (placeholder générique)",
+    "lat": 3.855,
+    "lng": 11.515
+  },
+  {
+    "id": "y047",
+    "name": "Mosquée Centrale de Yaoundé",
+    "quartier": "Briqueterie",
+    "category": "attraction",
+    "description": "Principale mosquée de Yaoundé, située dans le quartier de la Briqueterie.",
+    "tags": [
+      "culture",
+      "religion"
+    ],
+    "image": "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 19,
+    "image_source": "Unsplash (placeholder générique) — localisation approximative, à vérifier",
+    "lat": 3.876,
+    "lng": 11.509
+  },
+  {
+    "id": "y048",
+    "name": "Institut Français du Cameroun — Yaoundé",
+    "quartier": "Bastos",
+    "category": "entertainment",
+    "description": "Centre culturel franco-camerounais : expositions, cinéma, médiathèque, concerts.",
+    "tags": [
+      "culture"
+    ],
+    "image": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800",
+    "avg_price_fcfa": 1000,
+    "best_time": "Soirée",
+    "popularity": 23,
+    "image_source": "Unsplash (placeholder générique)",
+    "lat": 3.883,
+    "lng": 11.519
+  },
+  {
+    "id": "y049",
+    "name": "Immeuble CNPS (Caisse Nationale de Prévoyance Sociale)",
+    "quartier": "Centre-ville",
+    "category": "attraction",
+    "description": "Tour emblématique du centre-ville de Yaoundé, l'un des repères visuels de la skyline.",
+    "tags": [
+      "landmark"
+    ],
+    "image": "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 17,
+    "image_source": "Unsplash (placeholder générique)",
+    "lat": 3.867,
+    "lng": 11.517
+  },
+  {
+    "id": "y050",
+    "name": "Place de l'Indépendance",
+    "quartier": "Centre-ville",
+    "category": "attraction",
+    "description": "Place publique du centre-ville de Yaoundé, un des lieux symboliques de la capitale.",
+    "tags": [
+      "landmark",
+      "history"
+    ],
+    "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800",
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 16,
+    "image_source": "Unsplash (placeholder générique) — localisation approximative, à vérifier",
+    "lat": 3.866,
+    "lng": 11.5155
   }
 ]

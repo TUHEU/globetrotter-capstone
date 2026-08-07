@@ -36,3 +36,10 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
         "full_name": payload.get("full_name", ""),
         "email": payload.get("email", ""),
     }
+
+
+def get_raw_token(token: str = Depends(oauth2_scheme)) -> str:
+    """Needed when we have to FORWARD the caller's token to another service
+    (e.g. asking User Service who this user follows, for the friends feed)
+    rather than just reading our own decoded claims."""
+    return token

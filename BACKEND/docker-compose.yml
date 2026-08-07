@@ -27,8 +27,11 @@ services:
     environment:
       SECRET_KEY: ${SECRET_KEY:-globetrotter-phase2-secret-change-me}
       RECOMMENDATION_SERVICE_URL: http://recommendation-service:8003
+      USER_SERVICE_URL: http://user-service:8001
     volumes:
       - ./itinerary-service/data:/app/data
+    depends_on:
+      - user-service
     restart: unless-stopped
 
   recommendation-service:
