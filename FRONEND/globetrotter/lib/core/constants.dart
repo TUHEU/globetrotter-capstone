@@ -25,8 +25,10 @@ class ApiConstants {
     if (kReleaseMode) return prodUrl;
 
     // Mode développement (flutter run) :
-    // Port 8000 = celui de l'api-gateway (docker compose), pas 4200.
-    if (lanIp.isNotEmpty) return 'http://$lanIp:8000';
+    // Port 4200 = celui de l'api-gateway en local (docker compose up --build,
+    // sans fichier local séparé) - même port que la prod (Nginx sur le VPS),
+    // donc un seul et même docker-compose.yml sert pour les deux.
+    if (lanIp.isNotEmpty) return 'http://$lanIp:4200';
     return prodUrl; // par défaut : dev tape aussi sur le VPS en ligne
   }
 
@@ -45,9 +47,22 @@ class ApiConstants {
 /// Interests used for personalized recommendations (registration + explore filters).
 class PreferenceTags {
   static const List<String> all = [
-    'food', 'culture', 'nature', 'history', 'art', 'shopping',
-    'nightlife', 'family', 'relax', 'romance', 'photo', 'sport',
-    'wildlife', 'hiking', 'luxury', 'events',
+    'food',
+    'culture',
+    'nature',
+    'history',
+    'art',
+    'shopping',
+    'nightlife',
+    'family',
+    'relax',
+    'romance',
+    'photo',
+    'sport',
+    'wildlife',
+    'hiking',
+    'luxury',
+    'events',
   ];
 }
 
