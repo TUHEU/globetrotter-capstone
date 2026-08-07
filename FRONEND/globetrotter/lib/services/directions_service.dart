@@ -1,5 +1,16 @@
 import 'package:dio/dio.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:maplibre_gl/maplibre_gl.dart' show LatLng;
+
+// NOTE: this used to import latlong2's LatLng instead of maplibre_gl's.
+// Both packages define a class literally named `LatLng`, with the same
+// .latitude/.longitude shape - but they are NOT the same Dart type, so a
+// List<LatLng> built here couldn't be passed to Map3DView (which needs
+// maplibre_gl's LatLng) without every caller manually converting each
+// point, and vice-versa for fetchRoute()'s input. That mismatch is exactly
+// what caused the "argument_type_not_assignable" / "list_element_type_not_
+// assignable" errors in itinerary_map_screen.dart and directions_screen.dart.
+// Standardizing on maplibre_gl's LatLng here (the type every screen and
+// Map3DView already use) removes the conversion entirely at both ends.
 
 /// Une instruction de navigation ("Tournez à droite sur Avenue Kennedy").
 class RouteStep {

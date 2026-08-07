@@ -98,9 +98,7 @@ class _DirectionsScreenState extends State<DirectionsScreen> {
                             color: scheme.primary,
                           ),
                         ],
-                        routePolyline: _route?.polyline
-                            .map((p) => LatLng(p.latitude, p.longitude))
-                            .toList(),
+                        routePolyline: _route?.polyline,
                         myPosition: _myPosition != null
                             ? LatLng(_myPosition!.latitude, _myPosition!.longitude)
                             : null,

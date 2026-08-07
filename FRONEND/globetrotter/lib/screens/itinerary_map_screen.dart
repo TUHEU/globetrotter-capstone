@@ -119,9 +119,9 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
                     Expanded(
                       child: Map3DView(
                         stops: stops,
-                        routePolyline: _route?.polyline
-                            .map((p) => LatLng(p.latitude, p.longitude))
-                            .toList(),
+                        // Plus besoin de convertir point par point : RouteResult.polyline
+                        // est maintenant déjà en LatLng maplibre_gl (voir directions_service.dart).
+                        routePolyline: _route?.polyline,
                         myPosition: myLatLng,
                       ),
                     ),
