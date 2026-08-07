@@ -58,8 +58,7 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
     });
 
     final destProvider = context.read<DestinationProvider>();
-    final sortedStops = [...widget.itinerary.stops]
-      ..sort((a, b) => a.day.compareTo(b.day));
+    final sortedStops = [...widget.itinerary.stops]..sort((a, b) => a.day.compareTo(b.day));
 
     final resolved = <_StopPoint>[];
     for (final stop in sortedStops) {
@@ -75,21 +74,14 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
       return;
     }
 
-    await Future.wait(
-      resolved.map((p) async {
-        p.weather = await WeatherService.fetchCurrent(
-          p.destination.lat,
-          p.destination.lng,
-        );
-      }),
-    );
+    await Future.wait(resolved.map((p) async {
+      p.weather = await WeatherService.fetchCurrent(p.destination.lat, p.destination.lng);
+    }));
 
     RouteResult? route;
     if (resolved.length >= 2) {
       route = await DirectionsService.fetchRoute(
-        resolved
-            .map((p) => LatLng(p.destination.lat, p.destination.lng))
-            .toList(),
+        resolved.map((p) => LatLng(p.destination.lat, p.destination.lng)).toList(),
       );
     }
 
@@ -113,156 +105,113 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
           color: scheme.primary,
         ),
     ];
-    final myLatLng = _myPosition != null
-        ? LatLng(_myPosition!.latitude, _myPosition!.longitude)
-        : null;
+    final myLatLng =
+        _myPosition != null ? LatLng(_myPosition!.latitude, _myPosition!.longitude) : null;
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.itinerary.title)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(_error!),
-              ),
-            )
-          : Column(
-              children: [
-                Expanded(
-                  child: Map3DView(
-                    stops: stops,
-                    routePolyline: _route?.polyline
-                        .map((p) => LatLng(p.latitude, p.longitude))
-                        .toList(),
-                    myPosition: myLatLng,
-                  ),
-                ),
-                if (_route != null)
-                  Material(
-                    color: scheme.primaryContainer,
-                    child: InkWell(
-                      onTap: _route!.steps.isEmpty
-                          ? null
-                          : () => setState(
-                              () => _showDirections = !_showDirections,
-                            ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.directions_walk,
-                              color: scheme.onPrimaryContainer,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'Trajet à pied : ${_route!.distanceLabel} · ${_route!.durationLabel}',
-                                style: TextStyle(
-                                  color: scheme.onPrimaryContainer,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            if (_route!.steps.isNotEmpty)
-                              Icon(
-                                _showDirections
-                                    ? Icons.expand_less
-                                    : Icons.expand_more,
-                                color: scheme.onPrimaryContainer,
-                              ),
-                          ],
-                        ),
+              ? Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(_error!)))
+              : Column(
+                  children: [
+                    Expanded(
+                      child: Map3DView(
+                        stops: stops,
+                        routePolyline: _route?.polyline
+                            .map((p) => LatLng(p.latitude, p.longitude))
+                            .toList(),
+                        myPosition: myLatLng,
                       ),
                     ),
-                  ),
-                if (_showDirections &&
-                    _route != null &&
-                    _route!.steps.isNotEmpty)
-                  SizedBox(
-                    height: 220,
-                    child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      itemCount: _route!.steps.length,
-                      separatorBuilder: (_, __) => const Divider(height: 1),
-                      itemBuilder: (_, i) {
-                        final step = _route!.steps[i];
-                        return ListTile(
-                          dense: true,
-                          leading: CircleAvatar(
-                            radius: 12,
-                            child: Text(
-                              '${i + 1}',
-                              style: const TextStyle(fontSize: 11),
-                            ),
-                          ),
-                          title: Text(step.instruction),
-                          trailing: Text(
-                            step.distanceLabel,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                Expanded(
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(12),
-                    itemCount: _points.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 8),
-                    itemBuilder: (context, i) {
-                      final p = _points[i];
-                      return Card(
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: scheme.primary,
-                            foregroundColor: scheme.onPrimary,
-                            child: Text('${i + 1}'),
-                          ),
-                          title: Text(p.destination.name),
-                          subtitle: Text(
-                            _myPosition != null
-                                ? '${p.destination.quartier} · Jour ${p.stop.day} · à ${LocationService.formatKm(LocationService.haversineKm(_myPosition!.latitude, _myPosition!.longitude, p.destination.lat, p.destination.lng))} de vous'
-                                : '${p.destination.quartier} · Jour ${p.stop.day}',
-                          ),
-                          trailing: p.weather != null
-                              ? Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      '${p.weather!.emoji} ${p.weather!.temperatureC.round()}°C',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    Text(
-                                      p.weather!.description,
-                                      style: const TextStyle(fontSize: 11),
-                                    ),
-                                  ],
-                                )
-                              : const SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: Icon(Icons.cloud_off, size: 18),
+                    if (_route != null)
+                      Material(
+                        color: scheme.primaryContainer,
+                        child: InkWell(
+                          onTap: _route!.steps.isEmpty
+                              ? null
+                              : () => setState(() => _showDirections = !_showDirections),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            child: Row(
+                              children: [
+                                Icon(Icons.directions_walk, color: scheme.onPrimaryContainer, size: 20),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Trajet à pied : ${_route!.distanceLabel} · ${_route!.durationLabel}',
+                                    style: TextStyle(
+                                        color: scheme.onPrimaryContainer, fontWeight: FontWeight.w600),
+                                  ),
                                 ),
+                                if (_route!.steps.isNotEmpty)
+                                  Icon(
+                                    _showDirections ? Icons.expand_less : Icons.expand_more,
+                                    color: scheme.onPrimaryContainer,
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    if (_showDirections && _route != null && _route!.steps.isNotEmpty)
+                      SizedBox(
+                        height: 220,
+                        child: ListView.separated(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          itemCount: _route!.steps.length,
+                          separatorBuilder: (_, __) => const Divider(height: 1),
+                          itemBuilder: (_, i) {
+                            final step = _route!.steps[i];
+                            return ListTile(
+                              dense: true,
+                              leading: CircleAvatar(
+                                  radius: 12, child: Text('${i + 1}', style: const TextStyle(fontSize: 11))),
+                              title: Text(step.instruction),
+                              trailing: Text(step.distanceLabel,
+                                  style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                            );
+                          },
+                        ),
+                      ),
+                    Expanded(
+                      child: ListView.separated(
+                        padding: const EdgeInsets.all(12),
+                        itemCount: _points.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 8),
+                        itemBuilder: (context, i) {
+                          final p = _points[i];
+                          return Card(
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: scheme.primary,
+                                foregroundColor: scheme.onPrimary,
+                                child: Text('${i + 1}'),
+                              ),
+                              title: Text(p.destination.name),
+                              subtitle: Text(_myPosition != null
+                                  ? '${p.destination.quartier} · Jour ${p.stop.day} · à ${LocationService.formatKm(LocationService.haversineKm(_myPosition!.latitude, _myPosition!.longitude, p.destination.lat, p.destination.lng))} de vous'
+                                  : '${p.destination.quartier} · Jour ${p.stop.day}'),
+                              trailing: p.weather != null
+                                  ? Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        Text('${p.weather!.emoji} ${p.weather!.temperatureC.round()}°C',
+                                            style: const TextStyle(fontWeight: FontWeight.w700)),
+                                        Text(p.weather!.description, style: const TextStyle(fontSize: 11)),
+                                      ],
+                                    )
+                                  : const SizedBox(
+                                      width: 24, height: 24, child: Icon(Icons.cloud_off, size: 18)),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
     );
   }
 }

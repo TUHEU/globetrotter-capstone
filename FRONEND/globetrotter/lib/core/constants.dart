@@ -45,22 +45,9 @@ class ApiConstants {
 /// Interests used for personalized recommendations (registration + explore filters).
 class PreferenceTags {
   static const List<String> all = [
-    'food',
-    'culture',
-    'nature',
-    'history',
-    'art',
-    'shopping',
-    'nightlife',
-    'family',
-    'relax',
-    'romance',
-    'photo',
-    'sport',
-    'wildlife',
-    'hiking',
-    'luxury',
-    'events',
+    'food', 'culture', 'nature', 'history', 'art', 'shopping',
+    'nightlife', 'family', 'relax', 'romance', 'photo', 'sport',
+    'wildlife', 'hiking', 'luxury', 'events',
   ];
 }
 
