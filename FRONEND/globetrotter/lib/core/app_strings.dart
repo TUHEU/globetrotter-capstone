@@ -15,7 +15,8 @@ class AppStrings {
   // ---------- Explore ----------
   String get searchHint =>
       isFr ? 'Rechercher un lieu, un quartier…' : 'Search a place, a district…';
-  String get noResults => isFr ? 'Aucun lieu trouvé.' : 'No places found.';
+  String get noResults =>
+      isFr ? 'Aucun lieu trouvé.' : 'No places found.';
   String get all => isFr ? 'Tout' : 'All';
 
   // ---------- Dashboard header ----------
@@ -33,9 +34,8 @@ class AppStrings {
   String get recoSubtitle => isFr
       ? 'Selon vos centres d\'intérêt, vos sorties passées et les lieux préférés des Yaoundéens.'
       : 'Based on your interests, past trips, and Yaoundé\'s most loved places.';
-  String get noRecos => isFr
-      ? 'Aucune recommandation pour l\'instant.'
-      : 'No recommendations yet.';
+  String get noRecos =>
+      isFr ? 'Aucune recommandation pour l\'instant.' : 'No recommendations yet.';
 
   // ---------- Trips ----------
   String get tripsEmpty => isFr
@@ -56,14 +56,14 @@ class AppStrings {
   String get language => isFr ? 'Langue' : 'Language';
   String get logout => isFr ? 'Se déconnecter' : 'Log out';
   String get retry => isFr ? 'Réessayer' : 'Retry';
-  String get serverError =>
-      isFr ? 'Impossible de contacter le serveur.' : 'Cannot reach the server.';
+  String get serverError => isFr
+      ? 'Impossible de contacter le serveur.'
+      : 'Cannot reach the server.';
 
   // ---------- Auth ----------
   String get welcomeBack => isFr ? 'Bon retour ! 👋' : 'Welcome back! 👋';
-  String get loginSubtitle => isFr
-      ? 'Connectez-vous pour retrouver vos sorties'
-      : 'Log in to find your trips again';
+  String get loginSubtitle =>
+      isFr ? 'Connectez-vous pour retrouver vos sorties' : 'Log in to find your trips again';
   String get email => isFr ? 'Email' : 'Email';
   String get password => isFr ? 'Mot de passe' : 'Password';
   String get passwordMin6 => isFr ? 'Mot de passe (6 min)' : 'Password (6 min)';
@@ -73,78 +73,104 @@ class AppStrings {
       isFr ? 'Créer un compte gratuitement' : 'Create a free account';
   String get createAccount => isFr ? 'Créer un compte' : 'Create account';
   String get fullName => isFr ? 'Nom complet' : 'Full name';
-  String get interestsQuestion => isFr
-      ? 'Qu\'est-ce qui vous intéresse à Yaoundé ?'
-      : 'What interests you in Yaoundé?';
+  String get interestsQuestion =>
+      isFr ? 'Qu\'est-ce qui vous intéresse à Yaoundé ?' : 'What interests you in Yaoundé?';
   String get interestsHint => isFr
       ? 'Vos choix alimentent vos recommandations personnalisées'
       : 'Your picks power your personalized recommendations';
   String get createMyAccount => isFr ? 'Créer mon compte' : 'Create my account';
-  String get invalidEmail =>
-      isFr ? 'Entrez un email valide' : 'Enter a valid email';
-  String get min6chars =>
-      isFr ? '6 caractères minimum' : 'Minimum 6 characters';
+  String get invalidEmail => isFr ? 'Entrez un email valide' : 'Enter a valid email';
+  String get min6chars => isFr ? '6 caractères minimum' : 'Minimum 6 characters';
   String get enterName => isFr ? 'Entrez votre nom' : 'Enter your name';
 
   // ---------- Erreurs réseau ----------
   String get cannotReachServer => isFr
       ? 'Impossible de contacter le serveur. Vérifiez votre connexion.'
       : 'Cannot reach the server. Please check your connection.';
-  String get somethingWrong => isFr
-      ? 'Une erreur est survenue. Réessayez.'
-      : 'Something went wrong. Please try again.';
+  String get somethingWrong =>
+      isFr ? 'Une erreur est survenue. Réessayez.' : 'Something went wrong. Please try again.';
   String get invalidCredentials =>
       isFr ? 'Email ou mot de passe invalide' : 'Invalid email or password';
   String get emailAlreadyRegistered =>
       isFr ? 'Cet email est déjà utilisé' : 'Email already registered';
   String get loginFailed => isFr ? 'Connexion impossible' : 'Login failed';
-  String get registerFailed =>
-      isFr ? 'Inscription impossible' : 'Registration failed';
-  String get continueWithGoogle =>
-      isFr ? 'Continuer avec Google' : 'Continue with Google';
+  String get registerFailed => isFr ? 'Inscription impossible' : 'Registration failed';
+  String get continueWithGoogle => isFr ? 'Continuer avec Google' : 'Continue with Google';
   String get googleNotConfigured => isFr
       ? 'Google Sign-In pas encore configuré pour cette app'
       : 'Google Sign-In not configured for this app yet';
 
   // ---------- Panneau de marque (branding) ----------
-  String get authTagline => isFr
-      ? 'Découvrez Yaoundé plus intelligemment. Voyagez mieux. 🇨🇲'
-      : 'Discover Yaoundé smarter. Travel better. 🇨🇲';
-  String get registerTitle =>
-      isFr ? 'Rejoignez l\'aventure' : 'Join the adventure';
+  String get authTagline =>
+      isFr ? 'Découvrez Yaoundé plus intelligemment. Voyagez mieux. 🇨🇲'
+           : 'Discover Yaoundé smarter. Travel better. 🇨🇲';
+  String get registerTitle => isFr ? 'Rejoignez l\'aventure' : 'Join the adventure';
   String get registerSubtitle => isFr
       ? 'Créez votre compte et explorez Yaoundé autrement ✨'
       : 'Create your account and explore Yaoundé differently ✨';
-  String get featurePlaces =>
-      isFr ? '26+ lieux à Yaoundé' : '26+ places in Yaoundé';
-  String get featureRecos =>
-      isFr ? 'Recos personnalisées' : 'Personalized recos';
+  String get featurePlaces => isFr ? '26+ lieux à Yaoundé' : '26+ places in Yaoundé';
+  String get featureRecos => isFr ? 'Recos personnalisées' : 'Personalized recos';
   String get featureTrips => isFr ? 'Sorties partagées' : 'Shared trips';
 
   // ---------- Création d'une sortie (create_itinerary_screen.dart) ----------
   String get newItineraryTitle => isFr ? 'Nouvelle sortie' : 'New itinerary';
-  String get atLeastOneDestination => isFr
-      ? 'Ajoutez au moins une destination'
-      : 'Add at least one destination';
+  String get atLeastOneDestination =>
+      isFr ? 'Ajoutez au moins une destination' : 'Add at least one destination';
   String get tripTitleLabel => isFr ? 'Titre de la sortie' : 'Trip title';
   String get giveItATitle => isFr ? 'Donnez-lui un titre' : 'Give it a title';
   String get descriptionOptional =>
       isFr ? 'Description (optionnel)' : 'Description (optional)';
   String get startDate => isFr ? 'Date de début' : 'Start date';
   String get endDate => isFr ? 'Date de fin' : 'End date';
-  String get shareWithLabel => isFr
-      ? 'Partager avec (emails, séparés par des virgules)'
-      : 'Share with (emails, comma separated)';
-  String get shareWithHelper => isFr
-      ? 'Vos amis et votre famille verront cette sortie'
-      : 'Friends & family will see this trip';
+  String get shareWithLabel =>
+      isFr ? 'Partager avec (emails, séparés par des virgules)' : 'Share with (emails, comma separated)';
+  String get shareWithHelper =>
+      isFr ? 'Vos amis et votre famille verront cette sortie' : 'Friends & family will see this trip';
   String get stopsLabel => isFr ? 'Étapes' : 'Stops';
   String get addStop => isFr ? 'Ajouter une étape' : 'Add stop';
   String dayLabel(int n) => isFr ? 'Jour $n' : 'Day $n';
   String get notesOptional => isFr ? 'Notes (optionnel)' : 'Notes (optional)';
-  String get createItinerary =>
-      isFr ? "Créer l'itinéraire" : 'Create itinerary';
+  String get createItinerary => isFr ? "Créer l'itinéraire" : 'Create itinerary';
   String get pastDateNotAllowed => isFr
       ? 'Impossible de choisir une date déjà passée'
       : 'Cannot pick a date that has already passed';
+
+  // ---------- Social (amis, partage) ----------
+  String get friends => isFr ? 'Amis' : 'Friends';
+  String get friendsSubtitle => isFr
+      ? 'Suivez vos amis pour voir leurs sorties publiques'
+      : 'Follow friends to see their public trips';
+  String get searchFriendsHint =>
+      isFr ? 'Rechercher par nom ou email…' : 'Search by name or email…';
+  String get follow => isFr ? 'Suivre' : 'Follow';
+  String get unfollow => isFr ? 'Ne plus suivre' : 'Unfollow';
+  String get following => isFr ? 'Abonnements' : 'Following';
+  String get followers => isFr ? 'Abonnés' : 'Followers';
+  String get noSearchResults =>
+      isFr ? 'Aucun utilisateur trouvé.' : 'No users found.';
+  String get notFollowingAnyone => isFr
+      ? 'Vous ne suivez personne pour l\'instant.\nRecherchez des amis ci-dessus.'
+      : 'You\'re not following anyone yet.\nSearch for friends above.';
+  String get noFollowersYet =>
+      isFr ? 'Personne ne vous suit encore.' : 'No followers yet.';
+  String get friendsFeed => isFr ? 'Sorties des amis' : 'Friends\' trips';
+  String get friendsFeedEmpty => isFr
+      ? 'Aucune sortie publique de vos amis pour l\'instant.\nSuivez plus de monde ou attendez qu\'ils partagent une sortie !'
+      : 'No public trips from friends yet.\nFollow more people or wait for them to share a trip!';
+  String get makePublic => isFr ? 'Rendre publique' : 'Make public';
+  String get makePublicHelper => isFr
+      ? 'Visible par vos abonnés dans "Sorties des amis"'
+      : 'Visible to your followers in "Friends\' trips"';
+  String get makePrivate => isFr ? 'Rendre privée' : 'Make private';
+  String get publicTripBadge => isFr ? 'Publique' : 'Public';
+  String get visibilityUpdateFailed => isFr
+      ? 'Impossible de changer la visibilité'
+      : 'Could not change visibility';
+  String get share => isFr ? 'Partager' : 'Share';
+  String shareItineraryText(String title, int stops) => isFr
+      ? 'Découvre mon itinéraire "$title" sur GlobeTrotter Yaoundé ($stops étape(s)) !'
+      : 'Check out my itinerary "$title" on GlobeTrotter Yaoundé ($stops stop(s))!';
+  String shareDestinationText(String name, String quartier) => isFr
+      ? 'Va voir $name ($quartier) sur GlobeTrotter Yaoundé !'
+      : 'Check out $name ($quartier) on GlobeTrotter Yaoundé!';
 }
