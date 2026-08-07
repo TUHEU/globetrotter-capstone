@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:maplibre_gl/maplibre_gl.dart';
 import '../core/constants.dart';
 import '../models/destination.dart';
 import '../services/location_service.dart';
 import '../services/weather_service.dart';
 import '../widgets/destination_reviews_section.dart';
+import '../widgets/map3d_view.dart';
 import '../widgets/nearby_places_section.dart';
 import '../widgets/network_image_safe.dart';
 import 'create_itinerary_screen.dart';
+import 'directions_screen.dart';
 
 class DestinationDetailScreen extends StatefulWidget {
   final Destination destination;
@@ -22,6 +23,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
   WeatherInfo? _weather;
   bool _weatherLoading = true;
   double? _distanceKm;
+  LatLng? _myPosition;
 
   @override
   void initState() {
@@ -35,11 +37,14 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
     });
     // Distance calculée localement (haversine) une fois la position connue -
     // pas besoin d'attendre le serveur pour un simple calcul de distance.
+    // On garde aussi la position elle-même (_myPosition) pour le point bleu
+    // "vous êtes ici" affiché sur la carte 3D ci-dessous.
     LocationService.getCurrentPosition().then((pos) {
       if (!mounted || pos == null) return;
       setState(() {
         _distanceKm = LocationService.haversineKm(
             pos.latitude, pos.longitude, widget.destination.lat, widget.destination.lng);
+        _myPosition = LatLng(pos.latitude, pos.longitude);
       });
     });
   }
@@ -126,37 +131,37 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16),
                     child: SizedBox(
-                      height: 180,
-                      child: IgnorePointer(
-                        // Aperçu non-interactif (pas de scroll/zoom au doigt) —
-                        // juste une carte de localisation, pas un explorateur.
-                        child: FlutterMap(
-                          options: MapOptions(
-                            initialCenter: LatLng(destination.lat, destination.lng),
-                            initialZoom: 14.5,
-                            interactionOptions:
-                                const InteractionOptions(flags: InteractiveFlag.none),
+                      height: 220,
+                      // Contrairement à l'ancien aperçu flutter_map (plat,
+                      // figé, tuiles OpenStreetMap 2D), c'est maintenant la
+                      // MÊME carte 3D (immeubles en relief, style MapLibre/
+                      // OpenFreeMap) que celle des itinéraires - avec le
+                      // point "vous êtes ici" dès que la position est connue,
+                      // et interactive (zoom/rotation/tilt) au lieu d'être
+                      // juste une image de fond.
+                      child: Map3DView(
+                        stops: [
+                          Map3DStop(
+                            point: LatLng(destination.lat, destination.lng),
+                            label: destination.name,
+                            color: theme.colorScheme.error,
                           ),
-                          children: [
-                            TileLayer(
-                              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                              userAgentPackageName: 'com.example.globetrotter',
-                            ),
-                            MarkerLayer(markers: [
-                              Marker(
-                                point: LatLng(destination.lat, destination.lng),
-                                width: 36,
-                                height: 36,
-                                child: Icon(Icons.location_pin,
-                                    color: theme.colorScheme.error, size: 36),
-                              ),
-                            ]),
-                          ],
-                        ),
+                        ],
+                        myPosition: _myPosition,
                       ),
                     ),
                   ),
                   const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      icon: const Icon(Icons.directions_outlined),
+                      label: const Text('Itinéraire (voir sur la carte 3D)'),
+                      onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => DirectionsScreen(destination: destination))),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton.icon(

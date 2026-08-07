@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:maplibre_gl/maplibre_gl.dart' show LatLng;
 import 'package:provider/provider.dart';
 
 import 'package:geolocator/geolocator.dart' as geo;
@@ -11,11 +10,14 @@ import '../providers/destination_provider.dart';
 import '../services/directions_service.dart';
 import '../services/location_service.dart';
 import '../services/weather_service.dart';
+import '../widgets/map3d_view.dart';
 
-/// Affiche un itinéraire sur une carte OpenStreetMap (gratuite, sans clé API) :
-/// - un marqueur par arrêt (dans l'ordre du jour puis de la liste)
-/// - un tracé de trajet à pied entre les arrêts (OSRM, gratuit)
-/// - la météo actuelle de chaque arrêt
+/// Affiche un itinéraire sur une carte 3D (immeubles en relief, façon Google
+/// Maps/Plans) — MapLibre GL + OpenFreeMap, gratuit, sans clé API :
+/// - un marqueur numéroté par arrêt (dans l'ordre du jour puis de la liste)
+/// - le tracé du trajet à pied entre les arrêts (OSRM, gratuit)
+/// - les instructions de navigation pas-à-pas ("tournez à droite sur...")
+/// - la position actuelle et la météo de chaque arrêt
 class ItineraryMapScreen extends StatefulWidget {
   final Itinerary itinerary;
   const ItineraryMapScreen({super.key, required this.itinerary});
@@ -32,12 +34,12 @@ class _StopPoint {
 }
 
 class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
-  final MapController _mapController = MapController();
   List<_StopPoint> _points = [];
   RouteResult? _route;
   bool _loading = true;
   String? _error;
   geo.Position? _myPosition;
+  bool _showDirections = false;
 
   @override
   void initState() {
@@ -72,7 +74,6 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
       return;
     }
 
-    // Météo actuelle de chaque arrêt, en parallèle.
     await Future.wait(resolved.map((p) async {
       p.weather = await WeatherService.fetchCurrent(p.destination.lat, p.destination.lng);
     }));
@@ -90,38 +91,22 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
       _route = route;
       _loading = false;
     });
-
-    // Centre la carte pour englober tous les arrêts.
-    // IMPORTANT : LatLngBounds.fromPoints() sur un seul point (bornes de
-    // largeur/hauteur nulles) peut faire planter fitCamera() dans certaines
-    // versions de flutter_map — plusieurs de vos vrais itinéraires n'ont
-    // qu'UN seul arrêt, donc ce cas arrive en pratique, pas juste en théorie.
-    if (_points.length >= 2) {
-      final bounds = LatLngBounds.fromPoints(
-        _points.map((p) => LatLng(p.destination.lat, p.destination.lng)).toList(),
-      );
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        try {
-          _mapController.fitCamera(CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(56)));
-        } catch (_) {
-          // En dernier recours, centre simplement sur le premier arrêt
-          // plutôt que de laisser une exception remonter et planter l'écran.
-          _mapController.move(LatLng(_points.first.destination.lat, _points.first.destination.lng), 13);
-        }
-      });
-    } else if (_points.length == 1) {
-      // Un seul arrêt : pas de "bounds" à calculer, juste centrer dessus.
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        _mapController.move(LatLng(_points.first.destination.lat, _points.first.destination.lng), 14);
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+
+    final stops = [
+      for (int i = 0; i < _points.length; i++)
+        Map3DStop(
+          point: LatLng(_points[i].destination.lat, _points[i].destination.lng),
+          label: '${i + 1}',
+          color: scheme.primary,
+        ),
+    ];
+    final myLatLng =
+        _myPosition != null ? LatLng(_myPosition!.latitude, _myPosition!.longitude) : null;
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.itinerary.title)),
@@ -132,73 +117,62 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
               : Column(
                   children: [
                     Expanded(
-                      child: FlutterMap(
-                        mapController: _mapController,
-                        options: MapOptions(
-                          initialCenter: _points.isNotEmpty
-                              ? LatLng(_points.first.destination.lat, _points.first.destination.lng)
-                              : const LatLng(3.8480, 11.5021),
-                          initialZoom: 13,
-                        ),
-                        children: [
-                          // OpenStreetMap : tuiles gratuites, aucune clé API requise.
-                          // Merci de respecter la politique d'usage tuile OSM en prod
-                          // (https://operations.osmfoundation.org/policies/tiles/).
-                          TileLayer(
-                            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            userAgentPackageName: 'com.example.globetrotter',
-                          ),
-                          if (_route != null)
-                            PolylineLayer(polylines: [
-                              Polyline(points: _route!.polyline, strokeWidth: 4, color: scheme.secondary),
-                            ]),
-                          MarkerLayer(
-                            markers: [
-                              for (int i = 0; i < _points.length; i++)
-                                Marker(
-                                  point: LatLng(_points[i].destination.lat, _points[i].destination.lng),
-                                  width: 40,
-                                  height: 40,
-                                  child: _StopMarker(index: i + 1, color: scheme.primary),
-                                ),
-                              // Point bleu "vous êtes ici" — porté de la
-                              // fonctionnalité "Show my location (live)" du
-                              // monolithe Phase 1.
-                              if (_myPosition != null)
-                                Marker(
-                                  point: LatLng(_myPosition!.latitude, _myPosition!.longitude),
-                                  width: 22,
-                                  height: 22,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(color: Colors.white, width: 3),
-                                      boxShadow: const [
-                                        BoxShadow(color: Colors.black38, blurRadius: 4)
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ],
+                      child: Map3DView(
+                        stops: stops,
+                        routePolyline: _route?.polyline
+                            .map((p) => LatLng(p.latitude, p.longitude))
+                            .toList(),
+                        myPosition: myLatLng,
                       ),
                     ),
                     if (_route != null)
-                      Container(
-                        width: double.infinity,
+                      Material(
                         color: scheme.primaryContainer,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        child: Row(
-                          children: [
-                            Icon(Icons.directions_walk, color: scheme.onPrimaryContainer, size: 20),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Trajet à pied : ${_route!.distanceLabel} · ${_route!.durationLabel}',
-                              style: TextStyle(color: scheme.onPrimaryContainer, fontWeight: FontWeight.w600),
+                        child: InkWell(
+                          onTap: _route!.steps.isEmpty
+                              ? null
+                              : () => setState(() => _showDirections = !_showDirections),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            child: Row(
+                              children: [
+                                Icon(Icons.directions_walk, color: scheme.onPrimaryContainer, size: 20),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Trajet à pied : ${_route!.distanceLabel} · ${_route!.durationLabel}',
+                                    style: TextStyle(
+                                        color: scheme.onPrimaryContainer, fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                                if (_route!.steps.isNotEmpty)
+                                  Icon(
+                                    _showDirections ? Icons.expand_less : Icons.expand_more,
+                                    color: scheme.onPrimaryContainer,
+                                  ),
+                              ],
                             ),
-                          ],
+                          ),
+                        ),
+                      ),
+                    if (_showDirections && _route != null && _route!.steps.isNotEmpty)
+                      SizedBox(
+                        height: 220,
+                        child: ListView.separated(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          itemCount: _route!.steps.length,
+                          separatorBuilder: (_, __) => const Divider(height: 1),
+                          itemBuilder: (_, i) {
+                            final step = _route!.steps[i];
+                            return ListTile(
+                              dense: true,
+                              leading: CircleAvatar(
+                                  radius: 12, child: Text('${i + 1}', style: const TextStyle(fontSize: 11))),
+                              title: Text(step.instruction),
+                              trailing: Text(step.distanceLabel,
+                                  style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                            );
+                          },
                         ),
                       ),
                     Expanded(
@@ -229,7 +203,8 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
                                         Text(p.weather!.description, style: const TextStyle(fontSize: 11)),
                                       ],
                                     )
-                                  : const SizedBox(width: 24, height: 24, child: Icon(Icons.cloud_off, size: 18)),
+                                  : const SizedBox(
+                                      width: 24, height: 24, child: Icon(Icons.cloud_off, size: 18)),
                             ),
                           );
                         },
@@ -237,29 +212,6 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
                     ),
                   ],
                 ),
-    );
-  }
-}
-
-class _StopMarker extends StatelessWidget {
-  final int index;
-  final Color color;
-  const _StopMarker({required this.index, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 2),
-        boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        '$index',
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-      ),
     );
   }
 }

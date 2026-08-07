@@ -46,12 +46,27 @@ class _DraggableLanguageButtonState extends State<DraggableLanguageButton> {
     return Positioned(
       left: _position!.dx,
       top: _position!.dy,
-      child: GestureDetector(
-        onPanStart: (_) => _dragAccum = Offset.zero,
-        onPanUpdate: (details) {
+      child: Listener(
+        // IMPORTANT : `Listener` reçoit les événements de pointeur bruts et
+        // NE PASSE PAS par l'arène de gestes Flutter (GestureArenaManager).
+        // `GestureDetector.onPan*` en revanche doit *gagner* cette arène
+        // face à tout ancêtre concurrent — ici, le `SingleChildScrollView`
+        // plein écran d'AuthScaffold, qui a lui aussi un reconnaisseur de
+        // glissement vertical sous toute la zone où flotte la bulle.
+        //
+        // À la souris (PC), un simple clic ne déclenche jamais le
+        // glissement vertical du ScrollView (il faut la molette), donc le
+        // pan du bouton gagnait l'arène par défaut → ça marchait. Au doigt
+        // (téléphone), TOUT contact-glissement est un candidat valide pour
+        // le ScrollView, qui gagnait souvent l'arène à la place du bouton
+        // → le bouton restait figé. `Listener` élimine ce problème : il
+        // reçoit chaque `onPointerMove` qui le touche, peu importe ce que
+        // fait l'arène de gestes en parallèle.
+        onPointerDown: (_) => _dragAccum = Offset.zero,
+        onPointerMove: (event) {
           setState(() {
-            _dragAccum += details.delta;
-            var next = _position! + details.delta;
+            _dragAccum += event.delta;
+            var next = _position! + event.delta;
             // Reste dans les limites de l'écran (avec une petite marge).
             next = Offset(
               next.dx.clamp(4.0, size.width - bubbleSize - 4),
@@ -60,13 +75,10 @@ class _DraggableLanguageButtonState extends State<DraggableLanguageButton> {
             _position = next;
           });
         },
-        onPanEnd: (_) {
-          // Seuil plus généreux qu'au clavier/souris : sur un écran tactile,
-          // même un simple tap du doigt bouge naturellement de quelques
-          // pixels (contact plus large qu'un curseur de souris) — un seuil
-          // trop bas faisait que ça marchait à la souris (PC) mais jamais
-          // au doigt (téléphone), le geste étant presque toujours détecté
-          // comme un glissement au lieu d'un appui.
+        onPointerUp: (_) {
+          // Seuil généreux : sur un écran tactile, même un simple tap du
+          // doigt bouge naturellement de quelques pixels (contact plus
+          // large qu'un curseur de souris).
           if (_dragAccum.distance < 18) {
             settings.setLanguage(isFr ? 'en' : 'fr');
           }

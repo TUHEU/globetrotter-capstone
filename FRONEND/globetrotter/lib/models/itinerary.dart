@@ -25,6 +25,7 @@ class Itinerary {
   final String? endDate;
   final List<ItineraryStop> stops;
   final List<String> sharedWith;
+  final bool isPublic;
 
   Itinerary({
     required this.id,
@@ -36,6 +37,7 @@ class Itinerary {
     this.endDate,
     required this.stops,
     required this.sharedWith,
+    this.isPublic = false,
   });
 
   factory Itinerary.fromJson(Map<String, dynamic> j) => Itinerary(
@@ -48,5 +50,6 @@ class Itinerary {
         endDate: j['end_date'],
         stops: (j['stops'] as List? ?? []).map((s) => ItineraryStop.fromJson(s)).toList(),
         sharedWith: List<String>.from(j['shared_with'] ?? []),
+        isPublic: j['is_public'] ?? false,
       );
 }

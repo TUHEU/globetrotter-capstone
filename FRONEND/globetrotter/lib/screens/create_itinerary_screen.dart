@@ -29,6 +29,7 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
   final _sharedWith = TextEditingController();
   DateTime? _start;
   DateTime? _end;
+  bool _isPublic = false;
   final List<_StopDraft> _stops = [];
   bool _saving = false;
 
@@ -112,6 +113,7 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
                   ))
               .toList(),
           sharedWith: shared,
+          isPublic: _isPublic,
         );
     if (!mounted) return;
     final s = context.read<SettingsProvider>().s;
@@ -180,6 +182,15 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
                     prefixIcon: const Icon(Icons.group_outlined),
                     helperText: s.shareWithHelper,
                   ),
+                ),
+                const SizedBox(height: 8),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  secondary: const Icon(Icons.public),
+                  title: Text(s.makePublic),
+                  subtitle: Text(s.makePublicHelper),
+                  value: _isPublic,
+                  onChanged: (v) => setState(() => _isPublic = v),
                 ),
                 const SizedBox(height: 24),
                 Row(children: [

@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../core/constants.dart';
 import '../models/destination.dart';
 import '../providers/favorites_provider.dart';
+import '../providers/settings_provider.dart';
+import '../services/share_service.dart';
 import 'network_image_safe.dart';
 
 class DestinationCard extends StatelessWidget {
@@ -73,6 +75,26 @@ class DestinationCard extends StatelessWidget {
                         size: 20,
                         color: isFav ? Colors.redAccent : theme.colorScheme.onSurface,
                       ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 6,
+                right: 50,
+                child: Material(
+                  color: theme.colorScheme.surface.withValues(alpha: 0.9),
+                  shape: const CircleBorder(),
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    onTap: () => ShareService.shareText(
+                      context.read<SettingsProvider>().s.shareDestinationText(
+                          destination.name, destination.quartier),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Icon(Icons.share_outlined,
+                          size: 20, color: theme.colorScheme.onSurface),
                     ),
                   ),
                 ),

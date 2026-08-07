@@ -36,6 +36,7 @@ class ItineraryProvider extends ChangeNotifier {
     String? endDate,
     required List<ItineraryStop> stops,
     List<String> sharedWith = const [],
+    bool isPublic = false,
   }) async {
     try {
       await ApiClient.instance.dio.post('/itineraries', data: {
@@ -45,6 +46,19 @@ class ItineraryProvider extends ChangeNotifier {
         'end_date': endDate,
         'stops': stops.map((s) => s.toJson()).toList(),
         'shared_with': sharedWith,
+        'is_public': isPublic,
+      });
+      await load();
+      return null;
+    } catch (e) {
+      return e;
+    }
+  }
+
+  Future<Object?> setVisibility(String id, bool isPublic) async {
+    try {
+      await ApiClient.instance.dio.patch('/itineraries/$id/visibility', data: {
+        'is_public': isPublic,
       });
       await load();
       return null;

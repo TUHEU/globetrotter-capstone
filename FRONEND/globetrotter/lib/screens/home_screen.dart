@@ -5,13 +5,17 @@ import '../core/constants.dart';
 import '../providers/auth_provider.dart';
 import '../providers/destination_provider.dart';
 import '../providers/favorites_provider.dart';
+import '../providers/friends_provider.dart';
 import '../providers/itinerary_provider.dart';
 import '../providers/settings_provider.dart';
+import '../services/share_service.dart';
 import '../widgets/destination_card.dart';
 import 'create_itinerary_screen.dart';
 import 'assistant_screen.dart';
 import 'destination_detail_screen.dart';
 import 'favorites_screen.dart';
+import 'friends_feed_screen.dart';
+import 'friends_screen.dart';
 import 'itinerary_map_screen.dart';
 import 'login_screen.dart';
 import 'reviews_screen.dart';
@@ -391,16 +395,45 @@ class _TripsTab extends StatelessWidget {
     final destProvider = context.watch<DestinationProvider>();
     final s = context.watch<SettingsProvider>().s;
     return SafeArea(
-      child: p.loading
-          ? const Center(child: CircularProgressIndicator())
-          : p.itineraries.isEmpty
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(32),
-                    child: Text(s.tripsEmpty, textAlign: TextAlign.center),
-                  ),
-                )
-              : RefreshIndicator(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 8, 4),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(s.navTrips,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(fontWeight: FontWeight.w700)),
+                ),
+                IconButton(
+                  tooltip: s.friendsFeed,
+                  icon: const Icon(Icons.dynamic_feed_outlined),
+                  onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const FriendsFeedScreen())),
+                ),
+                IconButton(
+                  tooltip: s.friends,
+                  icon: const Icon(Icons.people_outline),
+                  onPressed: () => Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (_) => const FriendsScreen())),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: p.loading
+                ? const Center(child: CircularProgressIndicator())
+                : p.itineraries.isEmpty
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(32),
+                          child: Text(s.tripsEmpty, textAlign: TextAlign.center),
+                        ),
+                      )
+                    : RefreshIndicator(
                   onRefresh: () => p.load(),
                   child: ListView.builder(
                     padding: const EdgeInsets.symmetric(vertical: 8),
@@ -412,8 +445,22 @@ class _TripsTab extends StatelessWidget {
                             horizontal: 16, vertical: 8),
                         child: ExpansionTile(
                           leading: const Icon(Icons.map_outlined),
-                          title: Text(it.title,
-                              style: const TextStyle(fontWeight: FontWeight.w700)),
+                          title: Row(children: [
+                            Expanded(
+                              child: Text(it.title,
+                                  style: const TextStyle(fontWeight: FontWeight.w700)),
+                            ),
+                            if (it.isPublic)
+                              Padding(
+                                padding: const EdgeInsets.only(left: 6),
+                                child: Chip(
+                                  label: Text(s.publicTripBadge),
+                                  avatar: const Icon(Icons.public, size: 14),
+                                  visualDensity: VisualDensity.compact,
+                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                              ),
+                          ]),
                           subtitle: Text([
                             if (it.startDate != null)
                               '${it.startDate} → ${it.endDate ?? "?"}',
@@ -444,6 +491,23 @@ class _TripsTab extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
+                                IconButton(
+                                  tooltip: it.isPublic ? s.makePrivate : s.makePublic,
+                                  icon: Icon(it.isPublic ? Icons.public : Icons.public_off_outlined),
+                                  onPressed: () async {
+                                    final err = await p.setVisibility(it.id, !it.isPublic);
+                                    if (err != null && context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text(s.visibilityUpdateFailed)));
+                                    }
+                                  },
+                                ),
+                                IconButton(
+                                  tooltip: s.share,
+                                  icon: const Icon(Icons.share_outlined),
+                                  onPressed: () => ShareService.shareText(
+                                      s.shareItineraryText(it.title, it.stops.length)),
+                                ),
                                 if (it.stops.isNotEmpty)
                                   TextButton.icon(
                                     icon: const Icon(Icons.map_outlined),
@@ -471,6 +535,9 @@ class _TripsTab extends StatelessWidget {
                     },
                   ),
                 ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -549,6 +616,17 @@ class _ProfileTab extends StatelessWidget {
           const SizedBox(height: 12),
           Card(
             child: ListTile(
+              leading: const Icon(Icons.people_outline),
+              title: Text(s.friends),
+              subtitle: Text(s.friendsSubtitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const FriendsScreen())),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: ListTile(
               leading: const Icon(Icons.favorite_outline),
               title: const Text('Favoris'),
               subtitle: const Text('Destinations sauvegardées'),
@@ -586,6 +664,7 @@ class _ProfileTab extends StatelessWidget {
               await auth.logout();
               if (context.mounted) {
                 context.read<FavoritesProvider>().clear();
+                context.read<FriendsProvider>().clear();
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (_) => const LoginScreen()),
                     (_) => false);

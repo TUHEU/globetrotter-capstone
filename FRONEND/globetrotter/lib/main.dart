@@ -8,6 +8,7 @@ import 'providers/settings_provider.dart';
 import 'providers/review_provider.dart';
 import 'providers/assistant_provider.dart';
 import 'providers/favorites_provider.dart';
+import 'providers/friends_provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 
@@ -29,6 +30,7 @@ class GlobeTrotterApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ReviewProvider()),
         ChangeNotifierProvider(create: (_) => AssistantProvider()),
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+        ChangeNotifierProvider(create: (_) => FriendsProvider()),
       ],
       child: Consumer<SettingsProvider>(
         builder: (context, settings, _) {
