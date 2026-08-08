@@ -8,6 +8,142 @@ de la Phase 1 (Monolithe) jusqu'à la Phase 2 (Microservices) en production.
 
 ---
 
+## [2.8.0] — Qualité, données & infrastructure
+### Ajouté
+- `founded_year` / `history` sur les destinations (année de fondation +
+  bloc historique optionnel affiché sur la fiche lieu) — renseignés pour
+  11 lieux avec sources vérifiées (Stade Omnisports : 1972, Université de
+  Yaoundé I : 1962, ICT University : 2010, Hôpital Central : 1933, Palais
+  des Congrès : 1982, Hilton Yaoundé : 1974, etc.)
+- Cache mémoire des images (`NetworkImageSafe`) : une photo déjà vue durant
+  la session se réaffiche instantanément (LRU, 150 entrées max) au lieu
+  d'être re-téléchargée à chaque scroll ou changement d'écran — mobile
+  uniquement, le Web s'appuie déjà sur le cache HTTP natif du navigateur
+- `.gitignore` (absent du dépôt jusqu'ici) + `.env.example` (backend) :
+  protège désormais `backend/.env` d'un commit accidentel
+- `update.sh` pour le dépôt du site vitrine (`TUHEU/GLOBE`), jusque-là
+  absent/non versionné — sauvegarde avant mise à jour, `git reset --hard
+  origin/main` (au lieu d'un `git pull` simple, qui échouait dès qu'un
+  artefact de build avait été modifié localement sans être commité),
+  vérification des fichiers essentiels du build, contrôle du site en ligne
+
+### Corrigé
+- **Doublon de dépendance carte** : `flutter_map` (2D, tuiles plates) et
+  `maplibre_gl` (3D) coexistaient ; la fiche d'un lieu (`destination_detail_
+  screen.dart`) utilisait encore l'ancienne carte 2D pendant que le reste de
+  l'app était déjà passé à la 3D — remplacée par le même `Map3DView` que les
+  écrans d'itinéraire, `flutter_map`/`latlong2` retirés du projet
+- **Conflit de type `LatLng`** : `maplibre_gl` et `latlong2` définissent
+  chacun une classe nommée `LatLng`, non-interchangeables pour le
+  compilateur — `directions_service.dart` utilisait celle de `latlong2`
+  alors que tous les écrans cartographiques utilisaient déjà celle de
+  `maplibre_gl`, provoquant des erreurs de compilation
+  (`argument_type_not_assignable`) dans `itinerary_map_screen.dart` et
+  `directions_screen.dart`. Uniformisé sur `maplibre_gl` partout
+- **23 signalements `flutter analyze`** (niveau info, aucune erreur) :
+  commentaires de documentation interprétés comme du HTML, `BuildContext`
+  utilisé après un `await` sans vérifier `mounted` (9 occurrences —
+  `main.dart`, `create_itinerary_screen.dart`, `friends_screen.dart`,
+  `home_screen.dart`, `reviews_screen.dart`), paramètres de callback
+  `(_, __)` simplifiés en `(_, _)`, `didUpdateWidget` renommé pour
+  correspondre à la convention Flutter, syntaxe d'éléments null-aware
+  modernisée (`'tag': ?tag`)
+- **Port de développement local incohérent** : `docker compose up --build`
+  publie la passerelle sur le port **4200** (aligné sur Nginx en
+  production), mais `ApiConstants.baseUrl` ciblait encore le port 8000 en
+  mode développement — corrigé pour utiliser 4200 partout ; documentation
+  (`README.md`, `backend/README.md`, `SETUP_GUIDE.md`) mise à jour en
+  conséquence
+- **Minuteur en fuite dans `NetworkImageSafe`** (faisait échouer 4 tests
+  widgets avec `A Timer is still pending even after the widget tree was
+  disposed`) : la requête Dio et le délai de réessai n'étaient jamais
+  annulés à la destruction du widget — ajout d'un `CancelToken` et d'un
+  `Timer` de réessai explicitement annulables dans `dispose()`
+- `undefined_identifier: ScrollDirection` et paramètre `padding` dupliqué
+  dans `home_screen.dart`, introduits lors de l'ajout du masquage de la
+  bulle IA au défilement — import manquant ajouté, les deux `padding:`
+  fusionnés en un seul `EdgeInsets.fromLTRB`
+
+### Sécurité
+- Deux clés API (Gemini, OpenRouter) collées en clair dans une conversation
+  de travail — rotation recommandée par précaution, indépendamment du
+  `.gitignore` qui ne protège que les commits futurs, pas l'historique déjà
+  potentiellement exposé
+
+---
+
+## [2.7.0] — Navigation guidée & partage
+### Ajouté
+- **Flèche directionnelle boussole** (`DirectionArrow`, `flutter_compass`) :
+  pointe en permanence vers la destination quelle que soit l'orientation du
+  téléphone (cap absolu vers la cible moins cap actuel de l'appareil),
+  avec indication textuelle ("Continuez tout droit" / "Tournez à droite" /
+  "à gauche" / "Faites demi-tour"). Position GPS suivie en direct
+  (`LocationService.watchPosition`) pendant la navigation, plus seulement
+  au chargement de l'écran. Repli sur le cap brut (sans rotation par
+  rapport au téléphone) si aucun magnétomètre n'est disponible
+- **Liens de partage profonds** : partager un lieu ou une sortie inclut
+  désormais un lien (`fahglobe.duckdns.org/app/#/d/<id>` ou `#/i/<id>`) qui
+  ouvre l'app directement sur le bon écran. Format en fragment d'URL (`#`)
+  choisi pour fonctionner sans aucune modification de la configuration
+  Nginx (le fragment n'est jamais envoyé au serveur) ; ouverture directe
+  dans l'app installée (Android App Links / iOS Universal Links) non
+  configurée — nécessite en plus une empreinte de signature et un fichier
+  hébergé côté serveur, non mis en place pour l'instant
+- Bulle "flèche boussole" intégrée à la barre d'info trajet de
+  `DirectionsScreen`, visible aussi bien en regardant la carte que la
+  liste des instructions
+
+---
+
+## [2.6.0] — Réseau social : suivre, partager, communiquer
+### Ajouté
+- **Messagerie directe** (`user-service`) : `GET /messages/inbox`,
+  `GET/POST /messages/{other_user_id}` — accès restreint aux personnes
+  qu'on suit ou qui nous suivent (pas de message à un inconnu trouvé via
+  la recherche). Écrans **Boîte de réception** et **Conversation**
+  (bulles de discussion, envoi optimiste), badge de messages non lus sur
+  l'onglet Sorties
+- **Commentaires et likes sur les sorties** (`itinerary-service`) :
+  `POST /itineraries/{id}/like` (bascule), `GET/POST /itineraries/{id}/
+  comments`, `DELETE .../comments/{comment_id}` (auteur uniquement).
+  `like_count` / `liked_by_me` / `comment_count` renvoyés sur toutes les
+  routes d'itinéraires (mes sorties, fil des amis, sorties publiques d'un
+  ami, fiche détaillée). Barre "like + commentaires" (`LikeCommentBar`) et
+  feuille de commentaires (`CommentsSheet`) réutilisées sur le fil des
+  amis et dans l'onglet Mes sorties
+- 14 nouvelles destinations (36 → 50) : écoles secondaires (Lycée
+  Général-Leclerc, Collège Jean-Tabi, Collège François-Xavier-Vogt, Bitame
+  Lucia International School), hôpitaux, aéroport de Nsimalen, Mosquée
+  Centrale, Institut Français, Marché Mvog-Mbi, etc. Catégories `health`
+  et `transport` ajoutées à `PlaceCategories`
+
+### Corrigé
+- **Localisation d'ICT University** : le lieu était enregistré à Mendong ;
+  corrigé vers Zoatoupsi/Messassi (coordonnées vérifiées), conforme à
+  l'adresse réelle
+- **Bouton de langue injoignable au doigt sur mobile** (fonctionnait à la
+  souris) : le geste de glisser (`GestureDetector.onPan*`) perdait
+  systématiquement l'arène de gestes face au `SingleChildScrollView` en
+  arrière-plan sur écran tactile — remplacé par un `Listener` (événements
+  de pointeur bruts, hors arène de gestes), zone de contact invisible
+  agrandie (52px → ~76px) et `HitTestBehavior.opaque`
+- **Bulle IA flottante recouvrant le contenu en fin de liste** : marge
+  basse ajoutée sur les listes des 4 onglets, et la bulle se masque
+  désormais automatiquement pendant un défilement actif vers le bas
+  (réapparaît au défilement vers le haut ou à l'arrêt)
+- **Connexion Google bloquée sur le Web** ("Getting ready" indéfiniment,
+  quel que soit le port/l'origine testés) : `google_sign_in_web` lève une
+  assertion si `serverClientId` est fourni sur le Web (paramètre réservé à
+  Android/iOS) — notre code le passait sur toutes les plateformes sans
+  distinction, faisant échouer `initialize()` à chaque tentative. Corrigé
+  (`serverClientId: kIsWeb ? null : ...`) ; bouton Web désormais construit
+  via un `FutureBuilder` qui attend la fin réelle de l'initialisation
+  avant d'appeler `renderButton()`, pour éliminer aussi une course
+  possible entre les deux
+
+---
+
 ## [2.5.0] — Bulle de langue déplaçable & corrections diverses
 ### Ajouté
 - Sélecteur de langue transformé en bulle flottante déplaçable (icône globe
@@ -87,6 +223,10 @@ de la Phase 1 (Monolithe) jusqu'à la Phase 2 (Microservices) en production.
   `<img>` native sur le Web (`HtmlElementView`) plutôt que via le canvas
   CanvasKit, qui exige des en-têtes CORS que Wikimedia n'envoie pas
   systématiquement
+
+> **Note (v2.8.0)** : `flutter_map` a depuis été entièrement retiré du
+> projet (voir Corrigé, v2.8.0) — la carte s'appuie désormais uniquement
+> sur `maplibre_gl` (rendu 3D), y compris sur la fiche d'un lieu.
 
 ---
 
@@ -250,7 +390,7 @@ de la Phase 1 (Monolithe) jusqu'à la Phase 2 (Microservices) en production.
 | Phase | Statut | Contenu |
 |---|---|---|
 | **Phase 1 — Monolithe** | ✅ Complétée | API REST unique, stockage JSON, Flutter multi-plateforme |
-| **Phase 2 — Microservices** | ✅ Complétée et déployée en production | 5 services (user, itinerary, recommendation, ai, api-gateway), Docker Compose, connexion Google, assistant IA, carte, météo, avis, favoris, localisation |
+| **Phase 2 — Microservices** | ✅ Complétée et déployée en production | 5 services (user, itinerary, recommendation, ai, api-gateway), Docker Compose, connexion Google, assistant IA, carte 3D, météo, avis, favoris, localisation, réseau social (suivi, messagerie, commentaires/likes), navigation guidée, liens de partage profonds |
 | Phase 3 — Déploiement cloud | À venir | Conteneurisation avancée, load balancing, auto-scaling |
 | Phase 4 — Résilience | À venir | Cache, files de messages, circuit breakers |
 
@@ -260,12 +400,13 @@ de la Phase 1 (Monolithe) jusqu'à la Phase 2 (Microservices) en production.
 
 | Composant | Emplacement | Détails |
 |---|---|---|
-| API Gateway | VPS Ubuntu, Docker Compose | `api-gateway`, port interne 4200 (inchangé depuis la Phase 1 pour compatibilité Nginx) |
+| API Gateway | VPS Ubuntu, Docker Compose | `api-gateway`, port interne 4200 (inchangé depuis la Phase 1 pour compatibilité Nginx). En local, `docker compose up --build` publie désormais aussi sur 4200 (aligné avec la prod depuis v2.8.0) |
 | Microservices | Docker Compose (même hôte) | `user-service` (8001), `itinerary-service` (8002), `recommendation-service` (8003), `ai-service` (8004) |
 | Assistant IA | `ai-service` | Gemini 2.5 Flash (gratuit), repli automatique vers OpenRouter (`openrouter/free`) |
 | Reverse proxy | Nginx | HTTPS (Let's Encrypt), routage API + site statique, règles étendues aux routes Phase 2 |
 | Domaine | `fahglobe.duckdns.org` | DNS dynamique DuckDNS |
-| Site + téléchargements | `/var/www/GLOBE` | Vitrine, hub de téléchargement, app Flutter Web (dépôt Git séparé `TUHEU/GLOBE`) |
+| Site + téléchargements | `/var/www/GLOBE` | Vitrine, hub de téléchargement, app Flutter Web (dépôt Git séparé `TUHEU/GLOBE`), déployé via son propre `update.sh` (v2.8.0) |
 | Sauvegardes backend | `~/BACKEND-GLOBE-V2/backups/` | Automatiques à chaque `update.sh`, 10 dernières conservées |
-| Dépôt de code (backend) | GitHub (`TUHEU/BACKEND-GLOBE`) | Historique nettoyé (`git filter-repo`) ; `git pull` automatique via `update.sh` |
+| Sauvegardes site | `/var/www/GLOBE_backups/` | Automatiques à chaque `update.sh` du site, 10 dernières conservées |
+| Dépôt de code (backend) | GitHub (`TUHEU/BACKEND-GLOBE`) | Historique nettoyé (`git filter-repo`) ; `.gitignore` + `.env.example` (v2.8.0) ; `git pull` automatique via `update.sh` |
 | Dépôt de code (site) | GitHub (`TUHEU/GLOBE`) | Build Flutter Web + APK + zip Windows, mis à jour via son propre `update.sh` |
