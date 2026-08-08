@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'core/app_theme.dart';
@@ -69,7 +71,16 @@ class _BootstrapState extends State<_Bootstrap> {
   Future<bool> _init() async {
     await context.read<SettingsProvider>().load();
     if (!mounted) return false;
-    return context.read<AuthProvider>().tryAutoLogin();
+    final auth = context.read<AuthProvider>();
+    // Lance l'initialisation du SDK Google tôt, sans bloquer le démarrage
+    // dessus (le formulaire email/mot de passe doit rester utilisable même
+    // si Google est lent/indisponible) - voir le commentaire de
+    // ensureGoogleReady() dans auth_provider.dart pour pourquoi c'est
+    // nécessaire spécifiquement pour que le bouton Web fonctionne un jour.
+    if (auth.isGoogleSignInAvailable) {
+      unawaited(auth.ensureGoogleReady());
+    }
+    return auth.tryAutoLogin();
   }
 
   @override

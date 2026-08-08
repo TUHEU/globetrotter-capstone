@@ -64,6 +64,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   bool _googleInitialized = false;
+  Future<void>? _googleInitFuture;
   StreamSubscription<GoogleSignInAuthenticationEvent>? _googleEventsSub;
 
   /// true sur Android/iOS/desktop (bouton "maison" + authenticate() marche) ;
@@ -97,11 +98,38 @@ class AuthProvider extends ChangeNotifier {
         defaultTargetPlatform == TargetPlatform.iOS;
   }
 
+  /// Point d'entrée PUBLIC pour initialiser le SDK Google Sign-In tôt, dès
+  /// le démarrage de l'app (voir main.dart::_BootstrapState._init) plutôt
+  /// que d'attendre qu'un widget en ait besoin.
+  ///
+  /// Pourquoi c'est nécessaire précisément sur le Web : [loginWithGoogle]
+  /// (utilisé sur Android/iOS) appelle déjà _ensureGoogleInitialized() lui-
+  /// même avant de s'authentifier - mais le bouton Web ([buildWebGoogleButton])
+  /// ne "clique" jamais vers notre code : c'est le SDK Google qui dessine et
+  /// gère lui-même tout le bouton via `renderButton()`. Sans appeler
+  /// initialize() AVANT ce rendu, le SDK n'a jamais reçu notre Client ID et
+  /// le bouton reste bloqué indéfiniment sur son texte de chargement interne
+  /// ("Getting ready") - quel que soit le port/origine utilisé, puisque le
+  /// blocage se produit avant même la vérification d'origine par Google.
+  Future<void> ensureGoogleReady() => _ensureGoogleInitialized();
+
   /// v7 de google_sign_in impose un singleton (`GoogleSignIn.instance`) qui
   /// DOIT être initialisé une seule fois avant tout appel — contrairement à
   /// v6 où on créait une instance à chaque connexion.
   Future<void> _ensureGoogleInitialized() async {
+    // Idempotent ET sûr en cas d'appels concurrents (ex: l'appel fait au
+    // démarrage de l'app dans main.dart et un tap utilisateur très rapide
+    // sur loginWithGoogle() qui arriveraient tous les deux avant la fin du
+    // premier appel) : le deuxième appelant attend simplement le MÊME
+    // Future au lieu de relancer une seconde initialisation en parallèle.
     if (_googleInitialized) return;
+    if (_googleInitFuture != null) return _googleInitFuture;
+    final future = _doInitializeGoogle();
+    _googleInitFuture = future;
+    return future;
+  }
+
+  Future<void> _doInitializeGoogle() async {
     await GoogleSignIn.instance.initialize(
       // Web : identifie l'app auprès de Google (Client ID "Web").
       clientId: ApiConstants.googleWebClientId.isNotEmpty
