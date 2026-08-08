@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:provider/provider.dart';
 import '../core/api_client.dart';
 import '../core/constants.dart';
@@ -666,8 +667,9 @@ class _ProfileTab extends StatelessWidget {
 
     return SafeArea(
       child: ListView(
-        padding: const EdgeInsets.only(bottom: 96),
-        padding: const EdgeInsets.all(20),
+        // Fusion de l'ancien padding (20 partout) avec la marge basse ajoutée
+        // pour dégager la bulle IA flottante (voir les autres onglets).
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 96),
         children: [
           CircleAvatar(
             radius: 44,
