@@ -135,13 +135,21 @@ class AuthProvider extends ChangeNotifier {
       clientId: ApiConstants.googleWebClientId.isNotEmpty
           ? ApiConstants.googleWebClientId
           : null,
-      // serverClientId (Web + Android) : force l'idToken renvoyé à être
-      // audiencé pour NOTRE Client ID Web, quelle que soit la plateforme —
-      // notre backend n'a alors besoin de faire confiance qu'à UN seul
-      // audience plutôt que de whitelister Web ET Android séparément.
-      serverClientId: ApiConstants.googleWebClientId.isNotEmpty
-          ? ApiConstants.googleWebClientId
-          : null,
+      // serverClientId : Android/iOS UNIQUEMENT - google_sign_in_web lève une
+      // assertion ("serverClientId is not supported on Web") si on le passe
+      // sur Web, ce qui faisait échouer initialize() à CHAQUE appel et
+      // laissait le bouton bloqué indéfiniment sur "Getting ready", peu
+      // importe l'origine/le port ou l'ordre d'appel (voir les correctifs
+      // précédents - aucun n'avait de chance de marcher tant que cette
+      // assertion faisait échouer l'initialisation elle-même). Sur mobile,
+      // ce paramètre sert à obtenir un idToken audiencé pour NOTRE Client ID
+      // Web plutôt que pour le Client ID Android/iOS, pour que le backend
+      // n'ait besoin de faire confiance qu'à une seule audience.
+      serverClientId: kIsWeb
+          ? null
+          : (ApiConstants.googleWebClientId.isNotEmpty
+              ? ApiConstants.googleWebClientId
+              : null),
     );
     _googleInitialized = true;
 
@@ -169,9 +177,48 @@ class AuthProvider extends ChangeNotifier {
   /// bouton remonte via authenticationEvents, pas via une valeur de retour -
   /// voir _ensureGoogleInitialized ci-dessus. API confirmée depuis la doc
   /// officielle du paquet (pub.dev/documentation/google_sign_in_web).
+  ///
+  /// CORRECTION : ce widget attend maintenant explicitement la fin de
+  /// _ensureGoogleInitialized() via FutureBuilder avant d'appeler
+  /// renderGoogleWebButton(). Avant ce correctif, le bouton était rendu
+  /// IMMÉDIATEMENT, sans attendre - et comme l'appel d'initialisation
+  /// lancé au démarrage (main.dart) est volontairement non-bloquant (pour
+  /// ne pas retarder l'affichage de l'écran de connexion), rien ne
+  /// garantissait qu'il ait fini avant que ce widget soit construit. Le
+  /// SDK Google (`google.accounts.id.renderButton`, au niveau JS) semble
+  /// exiger que l'initialisation soit déjà terminée AU MOMENT de l'appel
+  /// de rendu - appelé trop tôt, le bouton reste bloqué indéfiniment sur
+  /// son texte de chargement interne ("Getting ready"), sans jamais se
+  /// corriger tout seul même une fois l'initialisation terminée derrière.
   Widget buildWebGoogleButton() {
     if (!kIsWeb) return const SizedBox.shrink();
-    return google_web.renderGoogleWebButton();
+    return FutureBuilder<void>(
+      // ensureGoogleReady() est mis en cache (_googleInitFuture) - donc si
+      // l'appel de démarrage dans main.dart a déjà fini, ce FutureBuilder
+      // se résout quasi instantanément ; sinon, il attend la même requête
+      // déjà en cours plutôt que d'en relancer une deuxième.
+      future: ensureGoogleReady(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const SizedBox(
+            height: 40,
+            child: Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          );
+        }
+        if (snapshot.hasError) {
+          // Erreur réseau/config - pas de crash, juste pas de bouton Google.
+          // L'utilisateur garde le formulaire email/mot de passe.
+          return const SizedBox.shrink();
+        }
+        return google_web.renderGoogleWebButton();
+      },
+    );
   }
 
   Future<void> _completeGoogleLogin(GoogleSignInAccount account) async {
