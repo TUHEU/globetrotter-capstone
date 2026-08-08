@@ -15,6 +15,8 @@ from app.config import SECRET_KEY, ALGORITHM
 @pytest.fixture(autouse=True)
 def isolated_data(tmp_path, monkeypatch):
     monkeypatch.setattr(storage, "ITINERARIES_FILE", tmp_path / "itineraries.json")
+    monkeypatch.setattr(storage, "COMMENTS_FILE", tmp_path / "comments.json")
+    monkeypatch.setattr(storage, "LIKES_FILE", tmp_path / "likes.json")
     monkeypatch.setattr(storage, "DATA_DIR", tmp_path)
     # On simule que toute destination "t00x" existe (pas de vrai appel réseau
     # vers recommendation-service dans ces tests unitaires).

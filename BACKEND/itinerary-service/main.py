@@ -11,7 +11,7 @@ Docs: http://localhost:8002/docs
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import itineraries
+from app.routers import itineraries, social
 
 app = FastAPI(
     title="GlobeTrotter - Itinerary Service",
@@ -29,6 +29,7 @@ app.add_middleware(
 )
 
 app.include_router(itineraries.router)
+app.include_router(social.router)
 
 
 @app.get("/health")

@@ -5,6 +5,7 @@ import '../core/api_client.dart';
 import '../models/itinerary.dart';
 import '../providers/destination_provider.dart';
 import '../providers/settings_provider.dart';
+import '../widgets/like_comment_bar.dart';
 import 'itinerary_map_screen.dart';
 
 class FriendsFeedScreen extends StatefulWidget {
@@ -91,6 +92,13 @@ class _FriendsFeedScreenState extends State<FriendsFeedScreen> {
                                   style: const TextStyle(fontWeight: FontWeight.w700)),
                               subtitle: Text('${it.ownerName} · ${s.stops(it.stops.length)}'),
                               children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  child: LikeCommentBar(
+                                    itinerary: it,
+                                    onChanged: (updated) => setState(() => _items[i] = updated),
+                                  ),
+                                ),
                                 if (it.description != null)
                                   Padding(
                                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),

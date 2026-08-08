@@ -233,3 +233,79 @@ def search_users(query: str, exclude_id: str, limit: int = 20) -> List[Dict[str,
         if len(results) >= limit:
             break
     return results
+
+
+# ---------------- Messages (messagerie directe) ----------------
+# Stockées à plat dans messages.json (une liste, comme reviews.json) plutôt
+# qu'indexées par conversation - un utilisateur peut avoir des dizaines de
+# conversations, mais chacune reste petite ; filtrer une liste plate à la
+# lecture est largement assez rapide à cette échelle, et ça évite de
+# dupliquer chaque message dans deux "boîtes" (risque de désynchronisation).
+
+def _conversation_key(a: str, b: str) -> str:
+    """Clé stable pour une paire d'utilisateurs, indépendante de l'ordre
+    (A→B et B→A sont la MÊME conversation)."""
+    return "|".join(sorted([a, b]))
+
+
+def get_conversation(user_a: str, user_b: str) -> List[Dict[str, Any]]:
+    key = _conversation_key(user_a, user_b)
+    msgs = [m for m in _read(MESSAGES_FILE) if _conversation_key(m["from_id"], m["to_id"]) == key]
+    msgs.sort(key=lambda m: m["created_at"])
+    return msgs
+
+
+def send_message(from_id: str, to_id: str, text: str) -> Dict[str, Any]:
+    with _lock:
+        msgs = _read(MESSAGES_FILE)
+        msg = {
+            "id": new_id(),
+            "from_id": from_id,
+            "to_id": to_id,
+            "text": text,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "read": False,
+        }
+        msgs.append(msg)
+        _write(MESSAGES_FILE, msgs)
+        return msg
+
+
+def mark_conversation_read(reader_id: str, other_id: str) -> None:
+    """Marque comme lus tous les messages que reader_id a REÇUS de other_id
+    (jamais ceux qu'il a envoyés - on ne modifie que sa propre boîte de
+    réception)."""
+    with _lock:
+        msgs = _read(MESSAGES_FILE)
+        changed = False
+        for m in msgs:
+            if m["to_id"] == reader_id and m["from_id"] == other_id and not m["read"]:
+                m["read"] = True
+                changed = True
+        if changed:
+            _write(MESSAGES_FILE, msgs)
+
+
+def get_inbox(user_id: str) -> List[Dict[str, Any]]:
+    """Une ligne par conversation (dernier message + nombre de non-lus),
+    triée par activité récente - la vue "liste des discussions" classique."""
+    msgs = _read(MESSAGES_FILE)
+    by_partner: Dict[str, Dict[str, Any]] = {}
+    for m in msgs:
+        if m["from_id"] == user_id:
+            partner = m["to_id"]
+        elif m["to_id"] == user_id:
+            partner = m["from_id"]
+        else:
+            continue
+        entry = by_partner.setdefault(partner, {"last": None, "unread": 0})
+        if entry["last"] is None or m["created_at"] > entry["last"]["created_at"]:
+            entry["last"] = m
+        if m["to_id"] == user_id and not m["read"]:
+            entry["unread"] += 1
+    results = [
+        {"partner_id": pid, "last_message": e["last"], "unread_count": e["unread"]}
+        for pid, e in by_partner.items()
+    ]
+    results.sort(key=lambda r: r["last_message"]["created_at"], reverse=True)
+    return results

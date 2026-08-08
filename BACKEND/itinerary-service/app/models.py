@@ -31,3 +31,7 @@ class ItineraryUpdate(BaseModel):
 
 class VisibilityUpdate(BaseModel):
     is_public: bool
+
+
+class CommentCreate(BaseModel):
+    text: str = Field(min_length=1, max_length=1000)

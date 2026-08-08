@@ -118,6 +118,41 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                   Text('About', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 8),
                   Text(destination.description, style: theme.textTheme.bodyLarge),
+                  if (destination.foundedYear != null || destination.history != null) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.history_edu_outlined,
+                              size: 20, color: theme.colorScheme.primary),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (destination.foundedYear != null)
+                                  Text(
+                                    'Fondé en ${destination.foundedYear}',
+                                    style: theme.textTheme.titleSmall
+                                        ?.copyWith(fontWeight: FontWeight.w700),
+                                  ),
+                                if (destination.history != null) ...[
+                                  if (destination.foundedYear != null) const SizedBox(height: 4),
+                                  Text(destination.history!, style: theme.textTheme.bodyMedium),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 20),
                   Wrap(
                     spacing: 8,

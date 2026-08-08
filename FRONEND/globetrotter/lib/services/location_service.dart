@@ -65,6 +65,21 @@ class LocationService {
     return 2 * r * math.asin(math.sqrt(a));
   }
 
+  /// Cap (bearing) en degrés [0, 360) du point 1 vers le point 2, mesuré
+  /// depuis le nord géographique - formule de navigation standard, utilisée
+  /// pour la flèche directionnelle (voir DirectionArrow) : c'est LA
+  /// direction absolue vers laquelle il faudrait marcher, indépendamment
+  /// de l'orientation actuelle du téléphone.
+  static double bearingBetween(double lat1, double lng1, double lat2, double lng2) {
+    final p1 = lat1 * math.pi / 180;
+    final p2 = lat2 * math.pi / 180;
+    final dlambda = (lng2 - lng1) * math.pi / 180;
+    final y = math.sin(dlambda) * math.cos(p2);
+    final x = math.cos(p1) * math.sin(p2) - math.sin(p1) * math.cos(p2) * math.cos(dlambda);
+    final theta = math.atan2(y, x);
+    return (theta * 180 / math.pi + 360) % 360;
+  }
+
   static String formatKm(double km) {
     if (km < 1) return '${(km * 1000).round()} m';
     return '${km.toStringAsFixed(1)} km';

@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../models/friend.dart';
 import '../providers/friends_provider.dart';
 import '../providers/settings_provider.dart';
+import 'conversation_screen.dart';
 
 class FriendsScreen extends StatefulWidget {
   const FriendsScreen({super.key});
@@ -210,9 +211,22 @@ class _UserTile extends StatelessWidget {
       ),
       title: Text(user.fullName),
       subtitle: Text(user.email),
-      trailing: isFollowing
-          ? OutlinedButton(onPressed: onUnfollow, child: Text(s.unfollow))
-          : FilledButton(onPressed: onFollow, child: Text(s.follow)),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.chat_bubble_outline),
+            tooltip: s.messages,
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) =>
+                    ConversationScreen(partnerId: user.id, partnerName: user.fullName))),
+          ),
+          const SizedBox(width: 4),
+          isFollowing
+              ? OutlinedButton(onPressed: onUnfollow, child: Text(s.unfollow))
+              : FilledButton(onPressed: onFollow, child: Text(s.follow)),
+        ],
+      ),
     );
   }
 }

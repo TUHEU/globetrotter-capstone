@@ -11,6 +11,8 @@ SECRET_KEY = os.getenv("SECRET_KEY", "globetrotter-phase2-secret-change-me")
 ALGORITHM = "HS256"
 
 ITINERARIES_FILE = DATA_DIR / "itineraries.json"
+COMMENTS_FILE = DATA_DIR / "comments.json"
+LIKES_FILE = DATA_DIR / "likes.json"
 
 # Where to find the Recommendation Service, which owns destinations.
 # Override with an env var in docker-compose / prod (e.g. http://recommendation-service:8003)

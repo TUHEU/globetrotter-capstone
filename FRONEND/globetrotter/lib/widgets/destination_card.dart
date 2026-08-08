@@ -89,7 +89,8 @@ class DestinationCard extends StatelessWidget {
                     customBorder: const CircleBorder(),
                     onTap: () => ShareService.shareText(
                       context.read<SettingsProvider>().s.shareDestinationText(
-                          destination.name, destination.quartier),
+                          destination.name, destination.quartier,
+                          ApiConstants.destinationLink(destination.id)),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(8),

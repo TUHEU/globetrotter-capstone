@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:maplibre_gl/maplibre_gl.dart' show LatLng;
 
@@ -6,6 +8,7 @@ import 'package:geolocator/geolocator.dart' as geo;
 import '../models/destination.dart';
 import '../services/directions_service.dart';
 import '../services/location_service.dart';
+import '../widgets/direction_arrow.dart';
 import '../widgets/map3d_view.dart';
 
 /// "Get Directions" pour UNE destination : carte 3D avec le trajet à pied
@@ -26,11 +29,18 @@ class _DirectionsScreenState extends State<DirectionsScreen> {
   RouteResult? _route;
   bool _loading = true;
   String? _error;
+  StreamSubscription<geo.Position>? _positionSub;
 
   @override
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _positionSub?.cancel();
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -61,6 +71,14 @@ class _DirectionsScreenState extends State<DirectionsScreen> {
       _myPosition = pos;
       _route = route;
       _loading = false;
+    });
+
+    // Une fois le premier point + trajet obtenus, on passe en écoute
+    // continue - la flèche directionnelle (DirectionArrow) et le point
+    // "vous êtes ici" sur la carte se mettent à jour en marchant, sans
+    // avoir à quitter puis rouvrir cet écran.
+    _positionSub = LocationService.watchPosition().listen((p) {
+      if (mounted) setState(() => _myPosition = p);
     });
   }
 
@@ -111,12 +129,31 @@ class _DirectionsScreenState extends State<DirectionsScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                         child: Row(
                           children: [
-                            Icon(Icons.directions_walk, color: scheme.onPrimaryContainer, size: 20),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Trajet à pied : ${_route!.distanceLabel} · ${_route!.durationLabel}',
-                              style: TextStyle(
-                                  color: scheme.onPrimaryContainer, fontWeight: FontWeight.w600),
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Icon(Icons.directions_walk,
+                                      color: scheme.onPrimaryContainer, size: 20),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'Trajet à pied : ${_route!.distanceLabel} · ${_route!.durationLabel}',
+                                      style: TextStyle(
+                                          color: scheme.onPrimaryContainer,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // La flèche vit ICI (pas seulement sur la carte) pour
+                            // rester visible même quand on regarde la liste des
+                            // instructions plus bas plutôt que la carte elle-même.
+                            DirectionArrow(
+                              myLat: _myPosition?.latitude,
+                              myLng: _myPosition?.longitude,
+                              targetLat: d.lat,
+                              targetLng: d.lng,
                             ),
                           ],
                         ),

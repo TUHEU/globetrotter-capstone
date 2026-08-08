@@ -1,9 +1,44 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+
+/// Cache mémoire partagé entre TOUTES les instances de [NetworkImageSafe]
+/// (mobile uniquement - le Web utilise déjà le cache HTTP natif du
+/// navigateur via de vraies balises <img>, donc n'a besoin de rien de plus).
+///
+/// Pourquoi c'est nécessaire : sans lui, quitter un écran puis y revenir,
+/// ou simplement faire défiler une longue liste (les cartes hors-écran
+/// sont détruites et reconstruites par ListView), redéclenchait un
+/// téléchargement complet de la MÊME image à chaque fois - lent sur une
+/// connexion faible, et un gaspillage de données à chaque fois. Avec ce
+/// cache, une image déjà vue s'affiche instantanément la fois suivante.
+///
+/// LRU simple (LinkedHashMap conserve l'ordre d'insertion ; on retire et
+/// réinsère une entrée consultée pour la ramener en fin de liste = "la
+/// plus récemment utilisée"). Plafonné pour ne pas grossir indéfiniment
+/// sur une session avec beaucoup d'images différentes.
+class _ImageByteCache {
+  static const int _maxEntries = 150;
+  static final LinkedHashMap<String, Uint8List> _cache = LinkedHashMap();
+
+  static Uint8List? get(String url) {
+    final bytes = _cache.remove(url);
+    if (bytes != null) _cache[url] = bytes; // ré-insérer = "toucher" (LRU)
+    return bytes;
+  }
+
+  static void put(String url, Uint8List bytes) {
+    _cache.remove(url);
+    _cache[url] = bytes;
+    if (_cache.length > _maxEntries) {
+      _cache.remove(_cache.keys.first); // évince la moins récemment utilisée
+    }
+  }
+}
 
 /// Image réseau qui fonctionne même quand le serveur distant (ex: Wikimedia
 /// Commons) n'envoie pas d'en-têtes CORS, ET qui reste utilisable sur une
@@ -66,7 +101,17 @@ class _NetworkImageSafeState extends State<NetworkImageSafe> {
   @override
   void initState() {
     super.initState();
-    if (!kIsWeb) _load();
+    if (!kIsWeb) {
+      // Réponse instantanée si on a déjà vu cette image durant la session -
+      // pas d'appel réseau du tout dans ce cas.
+      final cached = _ImageByteCache.get(widget.url);
+      if (cached != null) {
+        _bytes = cached;
+        _state = _LoadState.success;
+      } else {
+        _load();
+      }
+    }
   }
 
   @override
@@ -79,9 +124,15 @@ class _NetworkImageSafeState extends State<NetworkImageSafe> {
       _cancelToken?.cancel('url changed');
       _retryTimer?.cancel();
       _attempt = 0;
-      _state = _LoadState.loading;
-      _bytes = null;
-      if (!kIsWeb) _load();
+      final cached = _ImageByteCache.get(widget.url);
+      if (cached != null) {
+        _bytes = cached;
+        _state = _LoadState.success;
+      } else {
+        _state = _LoadState.loading;
+        _bytes = null;
+        if (!kIsWeb) _load();
+      }
     }
   }
 
@@ -127,9 +178,11 @@ class _NetworkImageSafeState extends State<NetworkImageSafe> {
         );
         final data = res.data;
         if (data == null) throw Exception('empty body');
+        final bytes = Uint8List.fromList(data);
+        _ImageByteCache.put(widget.url, bytes);
         if (!mounted) return;
         setState(() {
-          _bytes = Uint8List.fromList(data);
+          _bytes = bytes;
           _state = _LoadState.success;
         });
         return;

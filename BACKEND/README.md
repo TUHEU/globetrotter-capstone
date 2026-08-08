@@ -68,7 +68,7 @@ cd api-gateway && pip install -r requirements.txt --break-system-packages
 uvicorn main:app --reload --port 8000
 ```
 
-Then point the Flutter app (or curl / Postman) at `http://localhost:8000` —
+Then point the Flutter app (or curl / Postman) at `http://localhost:4200` —
 the Gateway — for everything. Never call 8001/8002/8003 directly except to
 poke at each service's own `/docs` page while debugging.
 
@@ -93,15 +93,15 @@ Gateway should be publicly reachable.
 
 ```bash
 # Register through the Gateway
-curl -X POST http://localhost:8000/register \
+curl -X POST http://localhost:4200/register \
   -H "Content-Type: application/json" \
   -d '{"full_name":"Test User","email":"test@example.com","password":"secret123","preferences":["nature","food"]}'
 
 # Search destinations through the Gateway
-curl http://localhost:8000/destinations?tag=nature
+curl http://localhost:4200/destinations?tag=nature
 
 # Get personalized recommendations (use the access_token from register/login)
-curl http://localhost:8000/recommendations \
+curl http://localhost:4200/recommendations \
   -H "Authorization: Bearer YOUR_TOKEN_HERE"
 ```
 

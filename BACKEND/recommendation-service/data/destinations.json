@@ -86,11 +86,11 @@
       "hiking",
       "romance"
     ],
-    "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Vue%20sur%20Yaound%C3%A9%20depuis%20le%20mont%20F%C3%A9b%C3%A9%20en%20octobre%201972.jpg?width=800",
     "avg_price_fcfa": 1000,
     "best_time": "16h - 18h30",
     "popularity": 86,
-    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "image_source": "Wikimedia Commons (photo d'époque, 1972 - le point de vue reste le même aujourd'hui)",
     "lat": 3.893,
     "lng": 11.5237
   },
@@ -282,7 +282,9 @@
     "popularity": 45,
     "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
     "lat": 3.8815,
-    "lng": 11.494
+    "lng": 11.494,
+    "founded_year": 1982,
+    "history": "Première pierre posée en 1975, inauguré le 12 mai 1982 - fruit d'une coopération sino-camerounaise. Le bâtiment s'étend sur 180 000 m² répartis en plusieurs salles pouvant accueillir de 25 à 2 000 personnes."
   },
   {
     "id": "y016",
@@ -338,7 +340,9 @@
     "popularity": 80,
     "image_source": "Wikimedia Commons (CC BY-SA)",
     "lat": 3.8667,
-    "lng": 11.5167
+    "lng": 11.5167,
+    "founded_year": 1974,
+    "history": "Ouvert en 1974, ce fut l'un des premiers hôtels internationaux 5 étoiles du Cameroun et reste une référence pour les conférences et évènements diplomatiques à Yaoundé."
   },
   {
     "id": "y019",
@@ -506,7 +510,9 @@
     "popularity": 55,
     "image_source": "Wikimedia Commons",
     "lat": 3.8628,
-    "lng": 11.5083
+    "lng": 11.5083,
+    "founded_year": 1962,
+    "history": "Fondée en 1962 sous le nom d'Université Fédérale du Cameroun, c'est la plus ancienne université du pays et l'héritière directe de l'ancien Institut des Hautes Études."
   },
   {
     "id": "y028",
@@ -523,7 +529,9 @@
     "popularity": 40,
     "image_source": "Unsplash (placeholder générique - pas le vrai campus)",
     "lat": 3.9527,
-    "lng": 11.5166
+    "lng": 11.5166,
+    "founded_year": 2010,
+    "history": "Fondée en 2010 par le Pr Victor Mbarika, accréditée par le Ministère camerounais de l'Enseignement Supérieur en 2012. Le campus se trouve précisément aux coordonnées ci-contre, à Zoatoupsi/Messassi."
   },
   {
     "id": "y029",
@@ -536,13 +544,15 @@
       "events",
       "landmark"
     ],
-    "image": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Stade%20Omnisports%20Ahmadou%20Ahidjo%20Yaound%C3%A9%2001.jpg?width=800",
     "avg_price_fcfa": 2000,
     "best_time": "Jour de match",
     "popularity": 65,
-    "image_source": "Unsplash (placeholder générique - pas le vrai stade)",
+    "image_source": "Wikimedia Commons (photo réelle du stade)",
     "lat": 3.88556,
-    "lng": 11.54056
+    "lng": 11.54056,
+    "founded_year": 1972,
+    "history": "Inauguré en 1972, agrandi et rénové en 2005 puis en 2015-2016 pour la CAN féminine. Sa capacité actuelle est d'environ 42 500 places ; il a accueilli un record d'affluence estimé à 120 000 spectateurs dans les années 1980."
   },
   {
     "id": "y030",
@@ -685,7 +695,8 @@
     "popularity": 35,
     "image_source": "Unsplash (placeholder générique)",
     "lat": 3.858,
-    "lng": 11.501
+    "lng": 11.501,
+    "founded_year": 1952
   },
   {
     "id": "y038",
@@ -702,7 +713,8 @@
     "popularity": 28,
     "image_source": "Unsplash (placeholder générique)",
     "lat": 3.902,
-    "lng": 11.512
+    "lng": 11.512,
+    "founded_year": 1956
   },
   {
     "id": "y039",
@@ -736,7 +748,8 @@
     "popularity": 18,
     "image_source": "Unsplash (placeholder générique) — localisation approximative, à vérifier",
     "lat": 3.97,
-    "lng": 11.61
+    "lng": 11.61,
+    "founded_year": 2009
   },
   {
     "id": "y041",
@@ -753,7 +766,9 @@
     "popularity": 30,
     "image_source": "Unsplash (placeholder générique)",
     "lat": 3.8714,
-    "lng": 11.5104
+    "lng": 11.5104,
+    "founded_year": 1933,
+    "history": "L'un des plus anciens hôpitaux du Cameroun, fondé en 1933 durant la période coloniale française ; il reste aujourd'hui le principal centre hospitalier de référence du pays."
   },
   {
     "id": "y042",
@@ -770,7 +785,8 @@
     "popularity": 27,
     "image_source": "Unsplash (placeholder générique)",
     "lat": 3.9066,
-    "lng": 11.5414
+    "lng": 11.5414,
+    "founded_year": 1985
   },
   {
     "id": "y043",
@@ -787,7 +803,8 @@
     "popularity": 22,
     "image_source": "Unsplash (placeholder générique)",
     "lat": 3.8752,
-    "lng": 11.5299
+    "lng": 11.5299,
+    "founded_year": 2002
   },
   {
     "id": "y044",
@@ -821,7 +838,8 @@
     "popularity": 24,
     "image_source": "Unsplash (placeholder générique)",
     "lat": 3.874,
-    "lng": 11.512
+    "lng": 11.512,
+    "founded_year": 2009
   },
   {
     "id": "y046",

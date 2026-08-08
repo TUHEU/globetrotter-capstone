@@ -43,6 +43,7 @@ def create_itinerary(body: ItineraryCreate, current=Depends(get_current_user)):
 @router.get("/itineraries")
 def my_itineraries(current=Depends(get_current_user)):
     items = storage.get_itineraries_for_user(current["id"])
+    items = [storage.enrich_with_social(i, current["id"]) for i in items]
     return {"count": len(items), "results": items}
 
 
@@ -54,6 +55,7 @@ def friends_feed(current=Depends(get_current_user), token: str = Depends(get_raw
     """
     following_ids = clients.get_following(token)
     items = storage.get_public_itineraries_for_owners(following_ids)
+    items = [storage.enrich_with_social(i, current["id"]) for i in items]
     return {"count": len(items), "results": items}
 
 
@@ -62,6 +64,7 @@ def public_itineraries_for_user(owner_id: str, current=Depends(get_current_user)
     """A specific friend's public trips - e.g. when viewing their profile,
     regardless of whether the caller follows them yet."""
     items = storage.get_public_itineraries_for_owner(owner_id)
+    items = [storage.enrich_with_social(i, current["id"]) for i in items]
     return {"count": len(items), "results": items}
 
 
@@ -81,9 +84,9 @@ def get_itinerary(it_id: str, current=Depends(get_current_user)):
     if not it:
         raise HTTPException(status_code=404, detail="Itinerary not found")
     if it["owner_id"] != current["id"] and current["id"] not in it.get("shared_with", []) \
-            and current["email"] not in it.get("shared_with", []):
+            and current["email"] not in it.get("shared_with", []) and not it.get("is_public", False):
         raise HTTPException(status_code=403, detail="Not allowed to view this itinerary")
-    return it
+    return storage.enrich_with_social(it, current["id"])
 
 
 @router.put("/itineraries/{it_id}")

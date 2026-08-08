@@ -5,6 +5,32 @@ import '../models/itinerary.dart';
 
 class ItineraryProvider extends ChangeNotifier {
   List<Itinerary> itineraries = [];
+
+  /// Remplace un itinéraire dans la liste locale par sa version mise à
+  /// jour (ex: après un like/unlike) sans re-télécharger toute la liste -
+  /// utilisé par LikeCommentBar depuis l'onglet "Mes sorties".
+  void updateLocal(Itinerary updated) {
+    final i = itineraries.indexWhere((it) => it.id == updated.id);
+    if (i != -1) {
+      itineraries[i] = updated;
+      notifyListeners();
+    }
+  }
+
+  /// Récupère UN itinéraire par id, quel que soit son propriétaire (utile
+  /// pour ouvrir un lien de partage reçu d'un ami) - contrairement à
+  /// [itineraries], qui ne contient que les sorties DE l'utilisateur
+  /// courant. Renvoie null si non trouvé ou non autorisé (404/403) plutôt
+  /// que de lever une exception, pour un écran d'accueil qui ne doit
+  /// jamais planter à cause d'un lien invalide ou périmé.
+  Future<Itinerary?> fetchById(String id) async {
+    try {
+      final res = await ApiClient.instance.dio.get('/itineraries/$id');
+      return Itinerary.fromJson(res.data);
+    } catch (_) {
+      return null;
+    }
+  }
   bool loading = false;
   Object? _lastException;
 

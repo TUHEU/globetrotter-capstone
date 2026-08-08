@@ -17,6 +17,7 @@ ROUTES = [
     ("/favorites", USER_SERVICE_URL),      # destinations sauvegardées
     ("/users", USER_SERVICE_URL),          # recherche d'utilisateurs (amis)
     ("/follow", USER_SERVICE_URL),         # suivre / ne plus suivre
+    ("/messages", USER_SERVICE_URL),       # messagerie directe
     ("/itineraries", ITINERARY_SERVICE_URL),
     ("/recommendations", RECOMMENDATION_SERVICE_URL),
     ("/destinations", RECOMMENDATION_SERVICE_URL),

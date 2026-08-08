@@ -13,6 +13,8 @@ class Destination {
   final List<String> reasons;
   final double lat;
   final double lng;
+  final int? foundedYear;
+  final String? history;
 
   Destination({
     required this.id,
@@ -29,6 +31,8 @@ class Destination {
     this.reasons = const [],
     this.lat = 3.8480,
     this.lng = 11.5021,
+    this.foundedYear,
+    this.history,
   });
 
   factory Destination.fromJson(Map<String, dynamic> j) => Destination(
@@ -46,5 +50,7 @@ class Destination {
         reasons: List<String>.from(j['reasons'] ?? []),
         lat: (j['lat'] as num?)?.toDouble() ?? 3.8480,
         lng: (j['lng'] as num?)?.toDouble() ?? 11.5021,
+        foundedYear: (j['founded_year'] as num?)?.toInt(),
+        history: j['history'],
       );
 }

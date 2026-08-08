@@ -9,7 +9,7 @@ Docs: http://localhost:8001/docs
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import auth, reviews, favorites, social
+from app.routers import auth, reviews, favorites, social, messages
 
 app = FastAPI(
     title="GlobeTrotter - User Service",
@@ -30,6 +30,7 @@ app.include_router(auth.router)
 app.include_router(reviews.router)
 app.include_router(favorites.router)
 app.include_router(social.router)
+app.include_router(messages.router)
 
 
 @app.get("/health")

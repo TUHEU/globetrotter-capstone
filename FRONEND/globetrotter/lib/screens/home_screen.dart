@@ -7,15 +7,19 @@ import '../providers/destination_provider.dart';
 import '../providers/favorites_provider.dart';
 import '../providers/friends_provider.dart';
 import '../providers/itinerary_provider.dart';
+import '../providers/messages_provider.dart';
 import '../providers/settings_provider.dart';
+import '../services/deep_link_service.dart';
 import '../services/share_service.dart';
 import '../widgets/destination_card.dart';
+import '../widgets/like_comment_bar.dart';
 import 'create_itinerary_screen.dart';
 import 'assistant_screen.dart';
 import 'destination_detail_screen.dart';
 import 'favorites_screen.dart';
 import 'friends_feed_screen.dart';
 import 'friends_screen.dart';
+import 'inbox_screen.dart';
 import 'itinerary_map_screen.dart';
 import 'login_screen.dart';
 import 'reviews_screen.dart';
@@ -30,6 +34,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _index = 0;
+  // Cache la bulle IA pendant un défilement vers le bas (elle flotte
+  // au-dessus du contenu et le cachait en fin de liste) - remonte via
+  // NotificationListener<UserScrollNotification>, qui capte le scroll de
+  // N'IMPORTE QUEL ListView descendant (Explore, Trips, Profil...) sans
+  // que chaque onglet ait besoin de son propre ScrollController branché
+  // manuellement au parent.
+  bool _hideBubble = false;
 
   @override
   void initState() {
@@ -40,7 +51,35 @@ class _HomeScreenState extends State<HomeScreen> {
       context.read<DestinationProvider>().loadRecommendations();
       context.read<ItineraryProvider>().load();
       context.read<FavoritesProvider>().load();
+      context.read<MessagesProvider>().loadInbox();
+      _handleDeepLink();
     });
+  }
+
+  /// Si l'app a été ouverte via un lien partagé (voir DeepLinkService),
+  /// va chercher la destination/sortie visée et l'ouvre directement -
+  /// après un court délai pour laisser le premier écran finir de
+  /// s'afficher (sinon Navigator.push trop tôt peut être ignoré pendant
+  /// la toute première frame).
+  Future<void> _handleDeepLink() async {
+    final link = DeepLinkService.consumePending();
+    if (link == null || !mounted) return;
+    await Future.delayed(const Duration(milliseconds: 300));
+    if (!mounted) return;
+
+    if (link.type == 'destination') {
+      final dest = await context.read<DestinationProvider>().fetchById(link.id);
+      if (dest != null && mounted) {
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => DestinationDetailScreen(destination: dest)));
+      }
+    } else if (link.type == 'itinerary') {
+      final it = await context.read<ItineraryProvider>().fetchById(link.id);
+      if (it != null && mounted) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => ItineraryMapScreen(itinerary: it)));
+      }
+    }
   }
 
   @override
@@ -55,39 +94,65 @@ class _HomeScreenState extends State<HomeScreen> {
     final wide = MediaQuery.of(context).size.width >= 760;
 
     return Scaffold(
-      body: Stack(
-        children: [
-          Row(children: [
-            if (wide)
-              NavigationRail(
-                selectedIndex: _index,
-                onDestinationSelected: (i) => setState(() => _index = i),
-                labelType: NavigationRailLabelType.all,
-                destinations: [
-                  NavigationRailDestination(
-                      icon: const Icon(Icons.explore_outlined), label: Text(s.navExplore)),
-                  NavigationRailDestination(
-                      icon: const Icon(Icons.auto_awesome_outlined), label: Text(s.navForYou)),
-                  NavigationRailDestination(
-                      icon: const Icon(Icons.map_outlined), label: Text(s.navTrips)),
-                  NavigationRailDestination(
-                      icon: const Icon(Icons.person_outline), label: Text(s.navProfile)),
-                ],
+      body: NotificationListener<UserScrollNotification>(
+        onNotification: (notification) {
+          if (notification.direction == ScrollDirection.reverse && !_hideBubble) {
+            setState(() => _hideBubble = true);
+          } else if (notification.direction == ScrollDirection.forward && _hideBubble) {
+            setState(() => _hideBubble = false);
+          }
+          // false = laisse la notification continuer à remonter (au cas où
+          // un ancêtre plus haut voudrait aussi la lire un jour).
+          return false;
+        },
+        child: Stack(
+          children: [
+            Row(children: [
+              if (wide)
+                NavigationRail(
+                  selectedIndex: _index,
+                  onDestinationSelected: (i) => setState(() => _index = i),
+                  labelType: NavigationRailLabelType.all,
+                  destinations: [
+                    NavigationRailDestination(
+                        icon: const Icon(Icons.explore_outlined), label: Text(s.navExplore)),
+                    NavigationRailDestination(
+                        icon: const Icon(Icons.auto_awesome_outlined), label: Text(s.navForYou)),
+                    NavigationRailDestination(
+                        icon: const Icon(Icons.map_outlined), label: Text(s.navTrips)),
+                    NavigationRailDestination(
+                        icon: const Icon(Icons.person_outline), label: Text(s.navProfile)),
+                  ],
+                ),
+              Expanded(child: pages[_index]),
+            ]),
+            // Bulle IA flottante, visible sur TOUS les onglets (pas seulement
+            // dans le profil) — accès direct à l'assistant en un tap, où que
+            // l'utilisateur se trouve dans l'app. Disparaît pendant un
+            // défilement actif vers le bas (voir _hideBubble ci-dessus) pour
+            // ne jamais rester plaquée sur du contenu qu'on essaie de lire.
+            Positioned(
+              right: 16,
+              bottom: 16,
+              child: IgnorePointer(
+                ignoring: _hideBubble,
+                child: AnimatedSlide(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOut,
+                  offset: _hideBubble ? const Offset(0, 0.4) : Offset.zero,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 200),
+                    opacity: _hideBubble ? 0 : 1,
+                    child: _AssistantBubble(
+                      onTap: () => Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (_) => const AssistantScreen())),
+                    ),
+                  ),
+                ),
               ),
-            Expanded(child: pages[_index]),
-          ]),
-          // Bulle IA flottante, visible sur TOUS les onglets (pas seulement
-          // dans le profil) — accès direct à l'assistant en un tap, où que
-          // l'utilisateur se trouve dans l'app.
-          Positioned(
-            right: 16,
-            bottom: 16,
-            child: _AssistantBubble(
-              onTap: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (_) => const AssistantScreen())),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       bottomNavigationBar: wide
           ? null
@@ -322,6 +387,12 @@ class _ExploreTabState extends State<_ExploreTab> {
                       : RefreshIndicator(
                           onRefresh: () => p.search(),
                           child: ListView.builder(
+                            // 96 = assez pour dégager la bulle IA flottante
+                            // (bottom:16 + ~56 de diamètre + marge) qui vit
+                            // au-dessus de ce contenu dans le Stack parent -
+                            // sans ça, la dernière carte reste coincée
+                            // derrière elle en fin de liste.
+                            padding: const EdgeInsets.only(bottom: 96),
                             itemCount: p.destinations.length,
                             itemBuilder: (_, i) => DestinationCard(
                               destination: p.destinations[i],
@@ -353,6 +424,7 @@ class _RecommendationsTab extends StatelessWidget {
           : RefreshIndicator(
               onRefresh: () => p.loadRecommendations(),
               child: ListView(
+                padding: const EdgeInsets.only(bottom: 96),
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
@@ -395,6 +467,7 @@ class _TripsTab extends StatelessWidget {
     final p = context.watch<ItineraryProvider>();
     final destProvider = context.watch<DestinationProvider>();
     final s = context.watch<SettingsProvider>().s;
+    final unread = context.watch<MessagesProvider>().totalUnread;
     return SafeArea(
       child: Column(
         children: [
@@ -414,6 +487,35 @@ class _TripsTab extends StatelessWidget {
                   icon: const Icon(Icons.dynamic_feed_outlined),
                   onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute(builder: (_) => const FriendsFeedScreen())),
+                ),
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    IconButton(
+                      tooltip: s.messages,
+                      icon: const Icon(Icons.mail_outline),
+                      onPressed: () => Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (_) => const InboxScreen())),
+                    ),
+                    if (unread > 0)
+                      Positioned(
+                        right: 6,
+                        top: 6,
+                        child: Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.error,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                          child: Text(
+                            unread > 9 ? '9+' : '$unread',
+                            style: const TextStyle(color: Colors.white, fontSize: 9),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
                 IconButton(
                   tooltip: s.friends,
@@ -437,7 +539,7 @@ class _TripsTab extends StatelessWidget {
                     : RefreshIndicator(
                   onRefresh: () => p.load(),
                   child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 96),
                     itemCount: p.itineraries.length,
                     itemBuilder: (_, i) {
                       final it = p.itineraries[i];
@@ -470,6 +572,13 @@ class _TripsTab extends StatelessWidget {
                               s.sharedWith(it.sharedWith.length),
                           ].join(' · ')),
                           children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              child: LikeCommentBar(
+                                itinerary: it,
+                                onChanged: (updated) => p.updateLocal(updated),
+                              ),
+                            ),
                             if (it.description != null)
                               Padding(
                                 padding:
@@ -506,8 +615,9 @@ class _TripsTab extends StatelessWidget {
                                 IconButton(
                                   tooltip: s.share,
                                   icon: const Icon(Icons.share_outlined),
-                                  onPressed: () => ShareService.shareText(
-                                      s.shareItineraryText(it.title, it.stops.length)),
+                                  onPressed: () => ShareService.shareText(s.shareItineraryText(
+                                      it.title, it.stops.length,
+                                      ApiConstants.itineraryLink(it.id))),
                                 ),
                                 if (it.stops.isNotEmpty)
                                   TextButton.icon(
@@ -556,6 +666,7 @@ class _ProfileTab extends StatelessWidget {
 
     return SafeArea(
       child: ListView(
+        padding: const EdgeInsets.only(bottom: 96),
         padding: const EdgeInsets.all(20),
         children: [
           CircleAvatar(
@@ -666,6 +777,7 @@ class _ProfileTab extends StatelessWidget {
               if (context.mounted) {
                 context.read<FavoritesProvider>().clear();
                 context.read<FriendsProvider>().clear();
+                context.read<MessagesProvider>().clear();
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (_) => const LoginScreen()),
                     (_) => false);

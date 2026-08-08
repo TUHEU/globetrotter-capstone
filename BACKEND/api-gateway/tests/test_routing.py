@@ -24,6 +24,8 @@ from app.config import USER_SERVICE_URL, ITINERARY_SERVICE_URL, RECOMMENDATION_S
     ("/follow/abc123", USER_SERVICE_URL),
     ("/follow/following", USER_SERVICE_URL),
     ("/follow/followers", USER_SERVICE_URL),
+    ("/messages/inbox", USER_SERVICE_URL),
+    ("/messages/abc123", USER_SERVICE_URL),
     ("/itineraries", ITINERARY_SERVICE_URL),
     ("/itineraries/abc123", ITINERARY_SERVICE_URL),
     ("/itineraries/feed", ITINERARY_SERVICE_URL),

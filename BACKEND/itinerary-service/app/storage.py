@@ -5,7 +5,8 @@ import uuid
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from .config import ITINERARIES_FILE, DATA_DIR
+from .config import ITINERARIES_FILE, COMMENTS_FILE, LIKES_FILE, DATA_DIR
+from datetime import datetime, timezone
 
 _lock = threading.Lock()
 
@@ -82,4 +83,88 @@ def delete_itinerary(it_id: str) -> bool:
         if len(new_items) == len(items):
             return False
         _write(ITINERARIES_FILE, new_items)
+        return True
+
+
+# ---------------- Likes ----------------
+# Stockés comme {"itinerary_id": ["user_id", ...]} - juste assez pour
+# compter ET savoir si LE viewer courant a déjà aimé (liked_by_me), sans
+# avoir besoin d'une seconde structure inversée.
+
+def _read_likes() -> Dict[str, List[str]]:
+    raw = _read(LIKES_FILE)
+    return raw if isinstance(raw, dict) else {}
+
+
+def toggle_like(it_id: str, user_id: str) -> Dict[str, Any]:
+    with _lock:
+        likes = _read_likes()
+        current = likes.get(it_id, [])
+        if user_id in current:
+            current.remove(user_id)
+            liked = False
+        else:
+            current.append(user_id)
+            liked = True
+        likes[it_id] = current
+        _write(LIKES_FILE, likes)
+        return {"liked": liked, "like_count": len(current)}
+
+
+def like_info(it_id: str, viewer_id: Optional[str]) -> Dict[str, Any]:
+    likers = _read_likes().get(it_id, [])
+    return {"like_count": len(likers), "liked_by_me": viewer_id in likers if viewer_id else False}
+
+
+def enrich_with_social(it: Dict[str, Any], viewer_id: Optional[str]) -> Dict[str, Any]:
+    """Ajoute like_count/liked_by_me/comment_count à un itinéraire avant de
+    le renvoyer au client - centralisé ici pour que /itineraries,
+    /itineraries/feed, /itineraries/public/{id} et /itineraries/{id} restent
+    tous cohérents entre eux plutôt que de dupliquer cette logique dans
+    chaque route."""
+    info = like_info(it["id"], viewer_id)
+    return {
+        **it,
+        "like_count": info["like_count"],
+        "liked_by_me": info["liked_by_me"],
+        "comment_count": len(get_comments(it["id"])),
+    }
+
+
+# ---------------- Comments ----------------
+# À plat dans comments.json (comme messages.json côté User Service) -
+# chaque commentaire porte déjà son itinerary_id, donc filtrer une liste
+# plate à la lecture suffit largement à cette échelle.
+
+def get_comments(it_id: str) -> List[Dict[str, Any]]:
+    comments = [c for c in _read(COMMENTS_FILE) if c["itinerary_id"] == it_id]
+    comments.sort(key=lambda c: c["created_at"])
+    return comments
+
+
+def add_comment(it_id: str, user_id: str, user_name: str, text: str) -> Dict[str, Any]:
+    with _lock:
+        comments = _read(COMMENTS_FILE)
+        comment = {
+            "id": new_id(),
+            "itinerary_id": it_id,
+            "user_id": user_id,
+            "user_name": user_name,
+            "text": text,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }
+        comments.append(comment)
+        _write(COMMENTS_FILE, comments)
+        return comment
+
+
+def delete_comment(comment_id: str, user_id: str) -> bool:
+    """Only the comment's own author can delete it - checked here, not just
+    in the router, so this invariant holds no matter which route calls it."""
+    with _lock:
+        comments = _read(COMMENTS_FILE)
+        target = next((c for c in comments if c["id"] == comment_id), None)
+        if not target or target["user_id"] != user_id:
+            return False
+        _write(COMMENTS_FILE, [c for c in comments if c["id"] != comment_id])
         return True

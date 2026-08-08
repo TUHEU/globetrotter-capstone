@@ -42,27 +42,21 @@ class ApiConstants {
   /// ================================================================
   static const String googleWebClientId =
       '73728796488-gqeqqmhbp26j8amg3m75lqkvi9h323a9.apps.googleusercontent.com';
+
+  /// Lien "profond" partageable (voir DeepLinkService pour le pourquoi du
+  /// format en "#"). Toujours basé sur prodUrl, MÊME en dev - un lien
+  /// partagé doit fonctionner pour la personne qui le reçoit, qui n'a pas
+  /// ton backend local sur son téléphone.
+  static String destinationLink(String id) => '$prodUrl/app/#/d/$id';
+  static String itineraryLink(String id) => '$prodUrl/app/#/i/$id';
 }
 
 /// Interests used for personalized recommendations (registration + explore filters).
 class PreferenceTags {
   static const List<String> all = [
-    'food',
-    'culture',
-    'nature',
-    'history',
-    'art',
-    'shopping',
-    'nightlife',
-    'family',
-    'relax',
-    'romance',
-    'photo',
-    'sport',
-    'wildlife',
-    'hiking',
-    'luxury',
-    'events',
+    'food', 'culture', 'nature', 'history', 'art', 'shopping',
+    'nightlife', 'family', 'relax', 'romance', 'photo', 'sport',
+    'wildlife', 'hiking', 'luxury', 'events',
   ];
 }
 

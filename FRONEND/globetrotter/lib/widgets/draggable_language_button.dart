@@ -29,6 +29,9 @@ class _DraggableLanguageButtonState extends State<DraggableLanguageButton> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     const bubbleSize = 52.0;
+    // Marge de contact invisible ajoutée tout autour du cercle visuel - voir
+    // le commentaire sur HitTestBehavior.opaque plus bas.
+    const hitPadding = 12.0;
 
     // Position initiale calculée une seule fois (coin haut-droit, sous
     // la zone sûre) — dx négatif dans initialOffset signifie "depuis la
@@ -44,9 +47,19 @@ class _DraggableLanguageButtonState extends State<DraggableLanguageButton> {
     final isFr = settings.languageCode == 'fr';
 
     return Positioned(
-      left: _position!.dx,
-      top: _position!.dy,
+      left: _position!.dx - hitPadding,
+      top: _position!.dy - hitPadding,
       child: Listener(
+        // `HitTestBehavior.opaque` : rend TOUTE la zone du Listener
+        // cliquable/glissable, même les parties où l'enfant ne "peint"
+        // rien de visible (ex: coins hors du cercle du globe, dans le
+        // padding invisible ajouté ci-dessous). Sans ça, le comportement
+        // par défaut (`deferToChild`) peut laisser des zones mortes selon
+        // exactement quel RenderObject se trouve sous le doigt - une
+        // marge d'erreur qu'on ne peut pas se permettre sur un écran
+        // tactile où le contact est bien moins précis qu'un curseur de
+        // souris.
+        behavior: HitTestBehavior.opaque,
         // IMPORTANT : `Listener` reçoit les événements de pointeur bruts et
         // NE PASSE PAS par l'arène de gestes Flutter (GestureArenaManager).
         // `GestureDetector.onPan*` en revanche doit *gagner* cette arène
@@ -83,7 +96,15 @@ class _DraggableLanguageButtonState extends State<DraggableLanguageButton> {
             settings.setLanguage(isFr ? 'en' : 'fr');
           }
         },
-        child: Material(
+        child: Padding(
+          // Zone de contact invisible mais bien réelle, PLUS GRANDE que le
+          // cercle visuel (52dp -> ~76dp de zone de contact totale) - la
+          // cible tactile recommandée par Material est 48dp, mais sur une
+          // bulle flottante qu'on doit à la fois taper ET glisser avec
+          // précision, plus de marge d'erreur vaut mieux qu'un échec
+          // silencieux répété.
+          padding: EdgeInsets.all(hitPadding),
+          child: Material(
           color: Colors.transparent,
           shape: const CircleBorder(),
           elevation: 6,
@@ -138,6 +159,7 @@ class _DraggableLanguageButtonState extends State<DraggableLanguageButton> {
           ),
         ),
       ),
+    ),
     );
   }
 }

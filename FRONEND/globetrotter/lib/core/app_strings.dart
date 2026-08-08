@@ -167,10 +167,37 @@ class AppStrings {
       ? 'Impossible de changer la visibilité'
       : 'Could not change visibility';
   String get share => isFr ? 'Partager' : 'Share';
-  String shareItineraryText(String title, int stops) => isFr
-      ? 'Découvre mon itinéraire "$title" sur GlobeTrotter Yaoundé ($stops étape(s)) !'
-      : 'Check out my itinerary "$title" on GlobeTrotter Yaoundé ($stops stop(s))!';
-  String shareDestinationText(String name, String quartier) => isFr
-      ? 'Va voir $name ($quartier) sur GlobeTrotter Yaoundé !'
-      : 'Check out $name ($quartier) on GlobeTrotter Yaoundé!';
+  String shareItineraryText(String title, int stops, String url) => isFr
+      ? 'Découvre mon itinéraire "$title" sur GlobeTrotter Yaoundé ($stops étape(s)) ! $url'
+      : 'Check out my itinerary "$title" on GlobeTrotter Yaoundé ($stops stop(s))! $url';
+  String shareDestinationText(String name, String quartier, String url) => isFr
+      ? 'Va voir $name ($quartier) sur GlobeTrotter Yaoundé ! $url'
+      : 'Check out $name ($quartier) on GlobeTrotter Yaoundé! $url';
+
+  // ---------- Messagerie ----------
+  String get messages => isFr ? 'Messages' : 'Messages';
+  String get inboxEmpty => isFr
+      ? 'Aucune conversation pour l\'instant.\nEnvoyez un message à un ami !'
+      : 'No conversations yet.\nSend a friend a message!';
+  String get typeMessage => isFr ? 'Écrire un message…' : 'Type a message…';
+  String get messageFailed =>
+      isFr ? 'Échec de l\'envoi du message' : 'Failed to send message';
+  String get startConversation =>
+      isFr ? 'Démarrer une conversation' : 'Start a conversation';
+  String get canOnlyMessageFriends => isFr
+      ? 'Vous devez suivre cette personne (ou être suivi par elle) pour lui écrire.'
+      : 'You need to follow this person (or be followed by them) to message them.';
+
+  // ---------- Commentaires / likes ----------
+  String get comments => isFr ? 'Commentaires' : 'Comments';
+  String get noComments =>
+      isFr ? 'Aucun commentaire. Soyez le premier !' : 'No comments yet. Be the first!';
+  String get addComment => isFr ? 'Ajouter un commentaire…' : 'Add a comment…';
+  String get deleteComment => isFr ? 'Supprimer' : 'Delete';
+  String likesCount(int n) => isFr
+      ? (n == 0 ? 'Aucun like' : n == 1 ? '1 like' : '$n likes')
+      : (n == 0 ? 'No likes' : n == 1 ? '1 like' : '$n likes');
+  String commentsCount(int n) => isFr
+      ? (n == 0 ? 'Aucun commentaire' : n == 1 ? '1 commentaire' : '$n commentaires')
+      : (n == 0 ? 'No comments' : n == 1 ? '1 comment' : '$n comments');
 }
