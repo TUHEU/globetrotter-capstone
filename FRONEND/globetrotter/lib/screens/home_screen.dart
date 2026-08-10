@@ -333,15 +333,42 @@ class _ExploreTab extends StatefulWidget {
 
 class _ExploreTabState extends State<_ExploreTab> {
   final _search = TextEditingController();
+  // Rétrécit/masque le bandeau d'accueil ("Bonjour, ..." + statistiques)
+  // pendant un défilement actif vers le bas dans la liste des lieux, pour
+  // libérer de la place à l'écran - séparé de _hideBubble dans HomeScreen
+  // (qui masque la bulle IA flottante) : deux préoccupations différentes,
+  // donc deux `NotificationListener` distincts plutôt qu'un état partagé
+  // entre widgets qui n'ont pas de raison de se connaître.
+  bool _hideHeader = false;
 
   @override
   Widget build(BuildContext context) {
     final p = context.watch<DestinationProvider>();
     final s = context.watch<SettingsProvider>().s;
     return SafeArea(
-      child: Column(children: [
-        const _DashboardHeader(),
-        Padding(
+      child: NotificationListener<UserScrollNotification>(
+        onNotification: (notification) {
+          if (notification.direction == ScrollDirection.reverse && !_hideHeader) {
+            setState(() => _hideHeader = true);
+          } else if (notification.direction == ScrollDirection.forward && _hideHeader) {
+            setState(() => _hideHeader = false);
+          }
+          return false;
+        },
+        child: Column(children: [
+          // AnimatedSize (pas juste AnimatedOpacity) : l'espace qu'occupait
+          // le bandeau doit vraiment se libérer pour la liste en dessous,
+          // pas juste devenir invisible en gardant sa hauteur réservée.
+          AnimatedSize(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOut,
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 180),
+              opacity: _hideHeader ? 0 : 1,
+              child: _hideHeader ? const SizedBox(width: double.infinity) : const _DashboardHeader(),
+            ),
+          ),
+          Padding(
           padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
           child: SearchBar(
             controller: _search,
@@ -406,6 +433,7 @@ class _ExploreTabState extends State<_ExploreTab> {
                         ),
         ),
       ]),
+      ),
     );
   }
 }
