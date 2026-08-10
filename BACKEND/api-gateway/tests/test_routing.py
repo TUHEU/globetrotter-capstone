@@ -21,6 +21,7 @@ from app.config import USER_SERVICE_URL, ITINERARY_SERVICE_URL, RECOMMENDATION_S
     ("/favorites", USER_SERVICE_URL),
     ("/favorites/y001", USER_SERVICE_URL),
     ("/users/search", USER_SERVICE_URL),
+    ("/users/discover", USER_SERVICE_URL),
     ("/follow/abc123", USER_SERVICE_URL),
     ("/follow/following", USER_SERVICE_URL),
     ("/follow/followers", USER_SERVICE_URL),

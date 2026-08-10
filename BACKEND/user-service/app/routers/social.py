@@ -25,6 +25,18 @@ def search_users(q: str = Query("", min_length=0), current=Depends(get_current_u
     return {"count": len(results), "results": [_public(u) for u in results]}
 
 
+@router.get("/users/discover")
+def discover_users(current=Depends(get_current_user)):
+    """Écran 'Découvrir' : liste de personnes à suivre, sans avoir à taper
+    une recherche - contrairement à /users/search (qui exige une requête
+    non vide), pensé pour être parcouru plutôt que cherché. Exclut les
+    personnes déjà suivies, puisque le but est de trouver du NOUVEAU
+    monde à suivre."""
+    already_following = storage.get_following(current["id"])
+    results = storage.discover_users(exclude_id=current["id"], exclude_ids=already_following)
+    return {"count": len(results), "results": [_public(u) for u in results]}
+
+
 @router.post("/follow/{user_id}", status_code=201)
 def follow(user_id: str, current=Depends(get_current_user)):
     if user_id == current["id"]:

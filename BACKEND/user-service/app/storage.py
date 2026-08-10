@@ -235,6 +235,17 @@ def search_users(query: str, exclude_id: str, limit: int = 20) -> List[Dict[str,
     return results
 
 
+def discover_users(exclude_id: str, exclude_ids: List[str], limit: int = 50) -> List[Dict[str, Any]]:
+    """Tout le monde SAUF soi-même et les gens déjà suivis (pas d'intérêt à
+    les revoir dans un écran de découverte) - les plus récemment inscrits
+    en premier, pour que les nouveaux venus soient visibles rapidement
+    plutôt que noyés en fin de liste."""
+    excluded = set(exclude_ids) | {exclude_id}
+    users = [u for u in get_users() if u["id"] not in excluded]
+    users.sort(key=lambda u: u.get("created_at", ""), reverse=True)
+    return users[:limit]
+
+
 # ---------------- Messages (messagerie directe) ----------------
 # Stockées à plat dans messages.json (une liste, comme reviews.json) plutôt
 # qu'indexées par conversation - un utilisateur peut avoir des dizaines de

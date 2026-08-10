@@ -90,3 +90,16 @@ def test_follow_status_reflects_current_state(client, registered_user, second_us
     client.post(f"/follow/{second_user['user_id']}", headers=registered_user["headers"])
     res = client.get(f"/follow/status/{second_user['user_id']}", headers=registered_user["headers"])
     assert res.json()["is_following"] is True
+
+
+def test_discover_excludes_self_and_already_followed(client, registered_user, second_user):
+    res = client.get("/users/discover", headers=registered_user["headers"])
+    assert res.status_code == 200
+    ids = [u["id"] for u in res.json()["results"]]
+    assert registered_user["user_id"] not in ids
+    assert second_user["user_id"] in ids
+
+    client.post(f"/follow/{second_user['user_id']}", headers=registered_user["headers"])
+    res = client.get("/users/discover", headers=registered_user["headers"])
+    ids = [u["id"] for u in res.json()["results"]]
+    assert second_user["user_id"] not in ids
