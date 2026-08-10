@@ -6,6 +6,16 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
+// Import conditionnel : sur le Web, bascule vers l'implémentation réelle
+// (network_image_safe_web.dart, qui a besoin de dart:js_util - une
+// bibliothèque qui n'existe QUE pour le Web). Sur toutes les autres
+// plateformes (Android/iOS/Windows), utilise le stub à la place, qui ne
+// fait jamais rien de réel mais permet au fichier de COMPILER - même
+// schéma que le bouton Google Sign-In Web ailleurs dans ce projet
+// (voir services/google_web_button_web.dart + _stub.dart).
+import 'network_image_safe_stub.dart'
+    if (dart.library.html) 'network_image_safe_web.dart';
+
 /// Cache mémoire partagé entre TOUTES les instances de [NetworkImageSafe]
 /// (mobile uniquement - le Web utilise déjà le cache HTTP natif du
 /// navigateur via de vraies balises <img>, donc n'a besoin de rien de plus).
@@ -203,7 +213,7 @@ class _NetworkImageSafeState extends State<NetworkImageSafe> {
   @override
   Widget build(BuildContext context) {
     if (kIsWeb) {
-      return _WebImg(
+      return WebImg(
         url: widget.url,
         fit: widget.fit,
         placeholder: widget.placeholder,
@@ -226,119 +236,5 @@ class _NetworkImageSafeState extends State<NetworkImageSafe> {
           child: widget.placeholder?.call(context) ?? const SizedBox.shrink(),
         );
     }
-  }
-}
-
-/// Rendu Web via une vraie balise <img>, avec gestion de l'échec (onerror)
-/// et réessai automatique — HtmlElementView seul n'exposait aucun des deux.
-class _WebImg extends StatefulWidget {
-  final String url;
-  final BoxFit fit;
-  final Widget Function(BuildContext context)? placeholder;
-
-  const _WebImg({required this.url, required this.fit, this.placeholder});
-
-  @override
-  State<_WebImg> createState() => _WebImgState();
-}
-
-class _WebImgState extends State<_WebImg> {
-  bool _failed = false;
-  bool _loaded = false;
-  int _retryCount = 0;
-  dynamic _imgElement;
-  Timer? _stuckTimer;
-
-  void _applySrc() {
-    if (_imgElement == null) return;
-    // Cache-buster sur les réessais pour éviter une réponse d'erreur mise
-    // en cache par le navigateur.
-    final src = _retryCount == 0
-        ? widget.url
-        : '${widget.url}${widget.url.contains('?') ? '&' : '?'}_retry=$_retryCount';
-    _imgElement.src = src;
-
-    // Filet de sécurité : si ni onload ni onerror ne se déclenchent dans un
-    // délai raisonnable (requête bloquée/qui traîne indéfiniment - DNS,
-    // CDN très lent, etc.), on bascule sur le placeholder "appuyer pour
-    // réessayer" au lieu de laisser l'image bloquée sur du vide pour
-    // toujours. Sans ça, une image qui ne charge JAMAIS (contrairement à
-    // une qui échoue proprement) restait invisible indéfiniment, sans
-    // aucun recours pour l'utilisateur autre que rafraîchir toute la page.
-    _stuckTimer?.cancel();
-    _stuckTimer = Timer(const Duration(seconds: 15), () {
-      if (mounted && !_loaded && !_failed) setState(() => _failed = true);
-    });
-  }
-
-  @override
-  void dispose() {
-    _stuckTimer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_failed) {
-      return GestureDetector(
-        onTap: () {
-          setState(() {
-            _failed = false;
-            _loaded = false;
-            _retryCount++;
-          });
-          _applySrc();
-        },
-        child: widget.placeholder?.call(context) ?? const SizedBox.shrink(),
-      );
-    }
-
-    // Stack plutôt qu'un seul widget : SANS ça, pendant que l'image charge
-    // (potentiellement plusieurs secondes sur une connexion lente), rien
-    // n'était affiché du tout - ni le placeholder, ni aucun indicateur -
-    // juste un espace vide qui donnait l'impression que "l'image ne
-    // s'affiche pas", alors qu'elle était en réalité encore en train de
-    // charger en arrière-plan. Le placeholder reste visible EN DESSOUS
-    // jusqu'à ce que `onload` confirme que l'image est prête à l'écran.
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        if (!_loaded) widget.placeholder?.call(context) ?? Container(color: Colors.grey.shade200),
-        HtmlElementView.fromTagName(
-          tagName: 'img',
-          onElementCreated: (Object element) {
-            // `dynamic` ici est volontaire : on évite un import conditionnel
-            // dart:html / package:web séparé juste pour poser 3 propriétés
-            // CSS + deux écouteurs. Ce code ne s'exécute que sur le Web.
-            final img = element as dynamic;
-            _imgElement = img;
-            img.style.width = '100%';
-            img.style.height = '100%';
-            img.style.objectFit = widget.fit == BoxFit.cover ? 'cover' : 'contain';
-            img.onload = (dynamic _) {
-              _stuckTimer?.cancel();
-              if (mounted) setState(() => _loaded = true);
-            };
-            img.onerror = (dynamic _) {
-              if (mounted) {
-                // Un seul réessai automatique (réseau lent/transitoire) avant
-                // de basculer sur le placeholder "appuyer pour réessayer".
-                if (_retryCount == 0) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (!mounted) return;
-                    setState(() => _retryCount = 1);
-                    Future.delayed(const Duration(milliseconds: 800), _applySrc);
-                  });
-                } else {
-                  _stuckTimer?.cancel();
-                  setState(() => _failed = true);
-                }
-              }
-            };
-            _applySrc();
-          },
-        ),
-      ],
-    );
   }
 }
