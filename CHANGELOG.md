@@ -8,6 +8,57 @@ de la Phase 1 (Monolithe) jusqu'à la Phase 2 (Microservices) en production.
 
 ---
 
+## [2.9.0] — Découverte, navigation vers un lieu & corrections d'affichage
+### Ajouté
+- **Écran "Découvrir"** (`GET /users/discover`, user-service) : parcourir
+  tout le monde utilisant l'app (hors soi-même et les personnes déjà
+  suivies), sans avoir à taper une recherche — nouvel onglet dans l'écran
+  Amis, complémentaire à la recherche par nom/email qui existait déjà
+- **"Le chemin pour y aller" depuis une sortie enregistrée** : `Itinerary
+  MapScreen` ne montrait que le trajet ENTRE les arrêts d'une sortie, jamais
+  depuis la position actuelle de l'utilisateur jusqu'au premier arrêt.
+  Ajout d'un bouton "Itinéraire depuis ma position" qui ouvre le même
+  `DirectionsScreen` (flèche boussole + trajet OSRM en direct) déjà utilisé
+  depuis la fiche d'un lieu
+- Diagrammes d'architecture (SVG interactif + source PlantUML) documentant
+  la pile complète : clients → Nginx → passerelle → 4 microservices (avec
+  leur propre stockage) → API externes gratuites, plus le détail du
+  déploiement (VPS, Docker Compose, dépôt du site séparé)
+
+### Corrigé
+- **Images qui ne s'affichaient pas / chargeaient lentement sur le Web**
+  (fonctionnaient déjà correctement sur mobile) : pendant le chargement
+  d'une image, `_WebImg` n'affichait RIEN — ni le placeholder, ni aucun
+  indicateur — un espace vide facilement interprété comme "l'image ne
+  s'affiche pas" alors qu'elle chargeait simplement encore. Le placeholder
+  reste désormais visible jusqu'à confirmation du chargement (`onload`) ;
+  ajout d'un filet de sécurité de 15s (bascule vers "appuyer pour
+  réessayer") pour les requêtes qui ne se terminent jamais (ni succès ni
+  échec), un cas qui pouvait laisser une image bloquée indéfiniment
+- **Bouton de langue toujours injoignable au doigt sur l'écran de connexion**,
+  malgré deux séries de correctifs précédentes (geste, taille de la zone de
+  contact) — la cause réelle n'était pas dans le bouton lui-même : dans
+  `AuthScaffold`, le bouton était placé AVANT le `SafeArea`/`SingleChild
+  ScrollView` du formulaire dans le `Stack`. Ce dernier se dimensionne sur
+  tout l'écran disponible (pas seulement la carte visible) et, arrivant
+  après dans la liste des enfants, était peint ET testé au toucher PAR-DESSUS
+  le bouton — absorbant chaque toucher avant qu'il n'atteigne le bouton en
+  dessous, quels que soient les réglages de geste appliqués dans le bouton
+  lui-même. Corrigé en plaçant le bouton en DERNIER enfant du `Stack`
+  (explique aussi pourquoi il semblait "rester coincé à recouvrir du
+  contenu" : impossible à faire glisser ailleurs puisqu'il ne recevait
+  jamais l'évènement de glissement)
+
+### Recherché (sans changement de code)
+- Nouvelle recherche d'images réelles pour Boulangerie Calafatas,
+  Supermarché Dôvv et Marché Artisanal (Tsinga) : adresses et historique
+  confirmés, mais aucune photo Wikimedia Commons trouvée pour ces trois
+  lieux — laissés en placeholder générique honnête plutôt que d'inventer
+  une URL non vérifiée (voir la note de sécurité v2.8.0 sur le même sujet
+  avec le fichier fourni par ChatGPT)
+
+---
+
 ## [2.8.0] — Qualité, données & infrastructure
 ### Ajouté
 - `founded_year` / `history` sur les destinations (année de fondation +
