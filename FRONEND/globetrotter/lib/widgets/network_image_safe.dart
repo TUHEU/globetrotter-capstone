@@ -244,8 +244,10 @@ class _WebImg extends StatefulWidget {
 
 class _WebImgState extends State<_WebImg> {
   bool _failed = false;
+  bool _loaded = false;
   int _retryCount = 0;
   dynamic _imgElement;
+  Timer? _stuckTimer;
 
   void _applySrc() {
     if (_imgElement == null) return;
@@ -255,6 +257,24 @@ class _WebImgState extends State<_WebImg> {
         ? widget.url
         : '${widget.url}${widget.url.contains('?') ? '&' : '?'}_retry=$_retryCount';
     _imgElement.src = src;
+
+    // Filet de sécurité : si ni onload ni onerror ne se déclenchent dans un
+    // délai raisonnable (requête bloquée/qui traîne indéfiniment - DNS,
+    // CDN très lent, etc.), on bascule sur le placeholder "appuyer pour
+    // réessayer" au lieu de laisser l'image bloquée sur du vide pour
+    // toujours. Sans ça, une image qui ne charge JAMAIS (contrairement à
+    // une qui échoue proprement) restait invisible indéfiniment, sans
+    // aucun recours pour l'utilisateur autre que rafraîchir toute la page.
+    _stuckTimer?.cancel();
+    _stuckTimer = Timer(const Duration(seconds: 15), () {
+      if (mounted && !_loaded && !_failed) setState(() => _failed = true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _stuckTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -264,6 +284,7 @@ class _WebImgState extends State<_WebImg> {
         onTap: () {
           setState(() {
             _failed = false;
+            _loaded = false;
             _retryCount++;
           });
           _applySrc();
@@ -272,34 +293,52 @@ class _WebImgState extends State<_WebImg> {
       );
     }
 
-    return HtmlElementView.fromTagName(
-      tagName: 'img',
-      onElementCreated: (Object element) {
-        // `dynamic` ici est volontaire : on évite un import conditionnel
-        // dart:html / package:web séparé juste pour poser 3 propriétés
-        // CSS + un écouteur d'erreur. Ce code ne s'exécute que sur le Web.
-        final img = element as dynamic;
-        _imgElement = img;
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.objectFit = widget.fit == BoxFit.cover ? 'cover' : 'contain';
-        img.onerror = (dynamic _) {
-          if (mounted) {
-            // Un seul réessai automatique (réseau lent/transitoire) avant
-            // de basculer sur le placeholder "appuyer pour réessayer".
-            if (_retryCount == 0) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (!mounted) return;
-                setState(() => _retryCount = 1);
-                Future.delayed(const Duration(milliseconds: 800), _applySrc);
-              });
-            } else {
-              setState(() => _failed = true);
-            }
-          }
-        };
-        _applySrc();
-      },
+    // Stack plutôt qu'un seul widget : SANS ça, pendant que l'image charge
+    // (potentiellement plusieurs secondes sur une connexion lente), rien
+    // n'était affiché du tout - ni le placeholder, ni aucun indicateur -
+    // juste un espace vide qui donnait l'impression que "l'image ne
+    // s'affiche pas", alors qu'elle était en réalité encore en train de
+    // charger en arrière-plan. Le placeholder reste visible EN DESSOUS
+    // jusqu'à ce que `onload` confirme que l'image est prête à l'écran.
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        if (!_loaded) widget.placeholder?.call(context) ?? Container(color: Colors.grey.shade200),
+        HtmlElementView.fromTagName(
+          tagName: 'img',
+          onElementCreated: (Object element) {
+            // `dynamic` ici est volontaire : on évite un import conditionnel
+            // dart:html / package:web séparé juste pour poser 3 propriétés
+            // CSS + deux écouteurs. Ce code ne s'exécute que sur le Web.
+            final img = element as dynamic;
+            _imgElement = img;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = widget.fit == BoxFit.cover ? 'cover' : 'contain';
+            img.onload = (dynamic _) {
+              _stuckTimer?.cancel();
+              if (mounted) setState(() => _loaded = true);
+            };
+            img.onerror = (dynamic _) {
+              if (mounted) {
+                // Un seul réessai automatique (réseau lent/transitoire) avant
+                // de basculer sur le placeholder "appuyer pour réessayer".
+                if (_retryCount == 0) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (!mounted) return;
+                    setState(() => _retryCount = 1);
+                    Future.delayed(const Duration(milliseconds: 800), _applySrc);
+                  });
+                } else {
+                  _stuckTimer?.cancel();
+                  setState(() => _failed = true);
+                }
+              }
+            };
+            _applySrc();
+          },
+        ),
+      ],
     );
   }
 }

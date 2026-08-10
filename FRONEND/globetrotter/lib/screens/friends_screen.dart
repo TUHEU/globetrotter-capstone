@@ -23,10 +23,12 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     Future.microtask(() {
       if (!mounted) return;
-      context.read<FriendsProvider>().loadFollowLists();
+      final p = context.read<FriendsProvider>();
+      p.loadFollowLists();
+      p.loadDiscover();
     });
   }
 
@@ -57,6 +59,7 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
         bottom: TabBar(
           controller: _tabController,
           tabs: [
+            Tab(text: s.discoverPeople),
             Tab(text: '${s.following} (${friendsProvider.following.length})'),
             Tab(text: '${s.followers} (${friendsProvider.followers.length})'),
           ],
@@ -107,6 +110,15 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
                 controller: _tabController,
                 children: [
                   _FollowList(
+                    users: friendsProvider.discover,
+                    emptyText: s.discoverEmpty,
+                    loading: friendsProvider.loadingDiscover,
+                    isFollowingTab: false,
+                    friendsProvider: friendsProvider,
+                    s: s,
+                    onRefresh: () => friendsProvider.loadDiscover(),
+                  ),
+                  _FollowList(
                     users: friendsProvider.following,
                     emptyText: s.notFollowingAnyone,
                     loading: friendsProvider.loadingLists,
@@ -138,6 +150,7 @@ class _FollowList extends StatelessWidget {
   final bool isFollowingTab;
   final FriendsProvider friendsProvider;
   final dynamic s;
+  final Future<void> Function()? onRefresh;
 
   const _FollowList({
     required this.users,
@@ -146,6 +159,7 @@ class _FollowList extends StatelessWidget {
     required this.isFollowingTab,
     required this.friendsProvider,
     required this.s,
+    this.onRefresh,
   });
 
   @override
@@ -162,7 +176,7 @@ class _FollowList extends StatelessWidget {
       );
     }
     return RefreshIndicator(
-      onRefresh: () => friendsProvider.loadFollowLists(),
+      onRefresh: onRefresh ?? () => friendsProvider.loadFollowLists(),
       child: ListView.builder(
         itemCount: users.length,
         itemBuilder: (_, i) {

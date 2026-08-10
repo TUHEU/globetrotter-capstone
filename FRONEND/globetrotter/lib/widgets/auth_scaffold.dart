@@ -38,10 +38,6 @@ class AuthScaffold extends StatelessWidget {
           // Soft decorative glows
           const Positioned(top: -90, right: -60, child: _Glow(color: Color(0xFFFCD116), size: 320)),
           const Positioned(bottom: 120, left: -80, child: _Glow(color: Color(0xFFCE1126), size: 260)),
-          // Sélecteur de langue flottant et déplaçable (appui = changer de
-          // langue, glisser = repositionner) — remplace l'ancien bouton
-          // fixe en haut à droite, difficile à toucher sur mobile.
-          const DraggableLanguageButton(),
           // Yaoundé hills silhouette
           Positioned(
             bottom: 0,
@@ -81,6 +77,20 @@ class AuthScaffold extends StatelessWidget {
                     ),
                   ),
           ),
+          // Sélecteur de langue flottant et déplaçable (appui = changer de
+          // langue, glisser = repositionner). DOIT rester le DERNIER enfant
+          // de ce Stack : un Stack peint et teste ses enfants dans l'ordre
+          // (le dernier = tout en haut). Le SafeArea/SingleChildScrollView
+          // juste au-dessus se dimensionne sur TOUT l'espace disponible
+          // (pas seulement la carte visible au centre) - placé APRÈS ce
+          // bouton comme c'était le cas avant, sa zone de détection tactile
+          // invisible recouvrait tout l'écran, y compris l'endroit où se
+          // trouve ce bouton, et absorbait donc chaque toucher avant même
+          // qu'il n'atteigne le bouton en dessous. C'est ce qui rendait le
+          // bouton injoignable au doigt, quels que soient les réglages de
+          // geste appliqués DANS le bouton lui-même - il ne recevait jamais
+          // l'évènement en premier lieu.
+          const DraggableLanguageButton(),
         ],
       ),
     );

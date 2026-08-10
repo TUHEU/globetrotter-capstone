@@ -11,6 +11,7 @@ import '../services/directions_service.dart';
 import '../services/location_service.dart';
 import '../services/weather_service.dart';
 import '../widgets/map3d_view.dart';
+import 'directions_screen.dart';
 
 /// Affiche un itinéraire sur une carte 3D (immeubles en relief, façon Google
 /// Maps/Plans) — MapLibre GL + OpenFreeMap, gratuit, sans clé API :
@@ -109,7 +110,25 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
         _myPosition != null ? LatLng(_myPosition!.latitude, _myPosition!.longitude) : null;
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.itinerary.title)),
+      appBar: AppBar(
+        title: Text(widget.itinerary.title),
+        actions: [
+          // "Le chemin pour y aller" - CE QUE cet écran ne montrait pas
+          // avant : le trajet entre les arrêts de la sortie (ci-dessous)
+          // n'inclut PAS la position actuelle de l'utilisateur - seulement
+          // les arrêts entre eux. Ce bouton ouvre le même DirectionsScreen
+          // (flèche boussole live + itinéraire OSRM) que sur la fiche d'un
+          // lieu, mais ciblant le PREMIER arrêt du jour - pour vraiment
+          // "aller sur son voyage" depuis où on se trouve maintenant.
+          if (_points.isNotEmpty)
+            IconButton(
+              tooltip: 'Itinéraire depuis ma position',
+              icon: const Icon(Icons.directions_outlined),
+              onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => DirectionsScreen(destination: _points.first.destination))),
+            ),
+        ],
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null

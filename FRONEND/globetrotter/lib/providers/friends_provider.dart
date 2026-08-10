@@ -6,11 +6,29 @@ class FriendsProvider extends ChangeNotifier {
   List<Friend> searchResults = [];
   List<Friend> following = [];
   List<Friend> followers = [];
+  List<Friend> discover = [];
   bool searching = false;
   bool loadingLists = false;
+  bool loadingDiscover = false;
 
   Set<String> get followingIds => following.map((f) => f.id).toSet();
   bool isFollowing(String userId) => followingIds.contains(userId);
+
+  /// Écran "Découvrir" : tout le monde ayant l'app, pas seulement les
+  /// résultats d'une recherche tapée - pour parcourir plutôt que chercher.
+  Future<void> loadDiscover() async {
+    loadingDiscover = true;
+    notifyListeners();
+    try {
+      final res = await ApiClient.instance.dio.get('/users/discover');
+      discover = (res.data['results'] as List).map((j) => Friend.fromJson(j)).toList();
+    } catch (_) {
+      // Garde la liste précédente plutôt que de la vider brutalement.
+    } finally {
+      loadingDiscover = false;
+      notifyListeners();
+    }
+  }
 
   Future<void> search(String query) async {
     if (query.trim().isEmpty) {
@@ -53,11 +71,15 @@ class FriendsProvider extends ChangeNotifier {
   Future<void> follow(Friend user) async {
     // Mise à jour optimiste, comme FavoritesProvider.toggle().
     following = [...following, user];
+    // Disparaît aussi de "Découvrir" - suivre quelqu'un depuis cet écran ne
+    // doit pas le laisser affiché comme "à découvrir" juste après.
+    discover = discover.where((f) => f.id != user.id).toList();
     notifyListeners();
     try {
       await ApiClient.instance.dio.post('/follow/${user.id}');
     } catch (_) {
       following = following.where((f) => f.id != user.id).toList();
+      discover = [...discover, user];
       notifyListeners();
     }
   }
@@ -78,6 +100,7 @@ class FriendsProvider extends ChangeNotifier {
     searchResults = [];
     following = [];
     followers = [];
+    discover = [];
     notifyListeners();
   }
 }

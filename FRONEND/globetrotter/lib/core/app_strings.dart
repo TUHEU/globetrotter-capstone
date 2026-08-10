@@ -187,6 +187,10 @@ class AppStrings {
   String get canOnlyMessageFriends => isFr
       ? 'Vous devez suivre cette personne (ou être suivi par elle) pour lui écrire.'
       : 'You need to follow this person (or be followed by them) to message them.';
+  String get discoverPeople => isFr ? 'Découvrir' : 'Discover';
+  String get discoverEmpty => isFr
+      ? 'Personne d\'autre à découvrir pour l\'instant.\nRevenez plus tard !'
+      : 'No one else to discover right now.\nCheck back later!';
 
   // ---------- Commentaires / likes ----------
   String get comments => isFr ? 'Commentaires' : 'Comments';
