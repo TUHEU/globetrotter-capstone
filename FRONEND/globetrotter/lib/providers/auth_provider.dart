@@ -262,9 +262,17 @@ class AuthProvider extends ChangeNotifier {
         // ce n'est pas une erreur à afficher, juste une annulation silencieuse.
         return false;
       }
+      // Journalisé explicitement : sans ça, l'UI affiche seulement le
+      // message générique "Something went wrong" (ApiClient.errorMessage
+      // ne sait rien faire d'un GoogleSignInException, qui n'est pas un
+      // DioException) - impossible de savoir QUEL code d'erreur Google a
+      // réellement renvoyé (config Android incorrecte ? empreinte SHA-1 ?
+      // Play Services indisponible ?) sans regarder ici.
+      debugPrint('[GoogleSignIn] ${e.code} — ${e.description}');
       _lastException = e;
       return false;
     } catch (e) {
+      debugPrint('[GoogleSignIn] Unexpected error: $e');
       _lastException = e;
       return false;
     } finally {

@@ -7,11 +7,11 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 // Import conditionnel : sur le Web, bascule vers l'implémentation réelle
-// (network_image_safe_web.dart, qui a besoin de dart:js_util - une
-// bibliothèque qui n'existe QUE pour le Web). Sur toutes les autres
-// plateformes (Android/iOS/Windows), utilise le stub à la place, qui ne
-// fait jamais rien de réel mais permet au fichier de COMPILER - même
-// schéma que le bouton Google Sign-In Web ailleurs dans ce projet
+// (network_image_safe_web.dart, qui a besoin de package:web/dart:js_interop
+// - des bibliothèques qui n'existent QUE pour le Web). Sur toutes les
+// autres plateformes (Android/iOS/Windows), utilise le stub à la place,
+// qui ne fait jamais rien de réel mais permet au fichier de COMPILER -
+// même schéma que le bouton Google Sign-In Web ailleurs dans ce projet
 // (voir services/google_web_button_web.dart + _stub.dart).
 import 'network_image_safe_stub.dart'
     if (dart.library.html) 'network_image_safe_web.dart';
