@@ -725,11 +725,11 @@
       "education",
       "history"
     ],
-    "image": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/College%20Lerclerc%20Yaound%C3%A9.jpg?width=800",
     "avg_price_fcfa": 0,
     "best_time": "Journée (jours ouvrés)",
     "popularity": 35,
-    "image_source": "Unsplash (placeholder générique)",
+    "image_source": "Wikimedia Commons (photo réelle, vérifiée)",
     "lat": 3.858,
     "lng": 11.501,
     "founded_year": 1952,
@@ -876,11 +876,11 @@
     "tags": [
       "sports"
     ],
-    "image": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Palais%20des%20Sports%20Foule.jpg?width=800",
     "avg_price_fcfa": 1000,
     "best_time": "Soirée (événements)",
     "popularity": 24,
-    "image_source": "Unsplash (placeholder générique)",
+    "image_source": "Wikimedia Commons (photo réelle, vérifiée)",
     "lat": 3.874,
     "lng": 11.512,
     "founded_year": 2009,
