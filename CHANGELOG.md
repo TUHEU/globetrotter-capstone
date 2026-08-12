@@ -8,6 +8,129 @@ de la Phase 1 (Monolithe) jusqu'à la Phase 2 (Microservices) en production.
 
 ---
 
+## [2.13.0] — Assistant IA : fiabilité et vitesse
+### Corrigé
+- **"L'IA ne répond pas / répond lentement"** : le client HTTP global a un
+  délai d'attente de 15s, pensé pour de simples appels REST (destinations,
+  connexion...). Le pire cas côté serveur pour UN message à l'assistant
+  pouvait légitimement dépasser ce délai : jusqu'à 5s pour récupérer les
+  destinations + jusqu'à 5s pour les itinéraires de l'utilisateur (les deux
+  À LA SUITE, pas en parallèle) + jusqu'à 20s pour Gemini + jusqu'à 20s de
+  PLUS si Gemini échoue et qu'on bascule sur OpenRouter — jusqu'à 50s au
+  total. Le client abandonnait souvent avant même que le serveur ait fini
+  de générer une réponse pourtant valide, perçu comme "ne répond pas du
+  tout" alors que la réponse arrivait simplement trop tard pour un appel
+  déjà expiré. `AssistantProvider.send()` utilise désormais un délai dédié
+  de 60s pour cet appel précis, sans toucher au délai des 15s ailleurs
+  dans l'app
+
+### Modifié
+- `ai-service/app/clients.py` : les deux appels de "grounding" (destinations
+  + itinéraires de l'utilisateur) tournent désormais EN PARALLÈLE
+  (`ThreadPoolExecutor`) plutôt qu'à la suite — jusqu'à 5s de gagnées sur
+  CHAQUE message, avant même d'atteindre Gemini/OpenRouter
+- Bulle "en train d'écrire" (`AssistantScreen`) : affiche "Encore un
+  instant…" après 6 secondes d'attente, pour qu'une réponse légitimement
+  lente (normal pour une IA, surtout sur le chemin de repli OpenRouter) ne
+  donne plus l'impression que l'app est plantée
+
+---
+
+## [2.12.0] — Données des lieux : liens Google Maps & fabrications rejetées
+### Ajouté
+- **`maps_url` sur les 50 destinations** + bouton "Voir sur Google Maps"
+  sur la fiche de chaque lieu (`url_launcher`) : liens Google Maps réels,
+  fournis un par un pour chaque lieu — contrairement aux photos (voir
+  Corrigé ci-dessous), ceux-ci ouvrent directement l'app/le navigateur
+  Google Maps avec de vraies photos, avis et itinéraires, sans qu'on ait
+  besoin de les héberger ou de les vérifier nous-mêmes
+
+### Corrigé (fabrications rejetées, sans changement de données)
+- Deux nouveaux jeux de données d'images "prêts à coller" fournis pour les
+  50 lieux, tous deux rejetés après vérification — même schéma que
+  l'incident déjà documenté en v2.8.0 (fichier ChatGPT), mais à l'échelle
+  du jeu de données complet cette fois :
+  - Lot 1 : URLs `upload.wikimedia.org/wikipedia/commons/X/XY/...` — le
+    préfixe `X/XY` correspond au hash MD5 réel du fichier calculé par les
+    serveurs Wikimedia ; il ne peut pas être deviné. Confirmé cassé par
+    l'utilisateur lui-même après application (plus aucune image nulle
+    part, mobile inclus)
+  - Lot 2 : URLs `lh3.googleusercontent.com/p/AF1Qip...` (format Google
+    Photos) — le caractère juste après "AF1Qip" suivait l'ordre alphabé-
+    tique puis numérique EXACT des 50 entrées (M→N→P...→Z→a→b...→9→10),
+    la preuve qu'il s'agit d'un compteur habillé en identifiant, pas d'un
+    vrai jeton opaque Google
+  - `destinations.json` restauré à la dernière version fiable (17 photos
+    Wikimedia vérifiées + 33 placeholders Unsplash honnêtes) dans les deux
+    cas
+- Recherches supplémentaires infructueuses pour Hôpital Central de
+  Yaoundé, Bibliothèque Nationale, aéroport de Nsimalen : catégorie
+  Wikimedia Commons existante par le NOM (référencée sur Wikidata) mais
+  aucun fichier réel trouvé à l'intérieur — même signal d'alerte que
+  Palais des Congrès (v2.8.0), laissés en placeholder plutôt que de
+  deviner une URL
+
+---
+
+## [2.11.0] — Fiabilité VPS & sécurité
+### Corrigé
+- **Panne complète de `api-gateway` sur le VPS** (502 Bad Gateway sur
+  tout le site, y compris `POST /auth/google` — d'abord suspecté à tort
+  comme un problème de configuration Google Sign-In) : le conteneur
+  s'était arrêté proprement (`Exited (0)`, aucune trace d'erreur/crash)
+  et n'avait pas redémarré tout seul malgré `restart: unless-stopped` —
+  cohérent avec un arrêt EXPLICITE (`docker stop`/`docker compose stop`)
+  plutôt qu'un plantage, cette politique ne redémarre jamais un conteneur
+  arrêté volontairement. `docker compose ps` (sans `-a`) masquait le
+  problème en n'affichant que les conteneurs EN COURS D'EXÉCUTION,
+  cachant totalement `api-gateway` de la liste plutôt que de le montrer
+  arrêté. Résolu par `docker compose up --build -d`
+
+### Sécurité
+- `backend/.env` ne définissait pas `SECRET_KEY` (utilisé pour signer les
+  JWT) — chaque service se rabattait silencieusement sur la valeur par
+  défaut codée en dur dans le code source, visible par quiconque a accès
+  au dépôt. Recommandé : générer une vraie valeur
+  (`python3 -c "import secrets; print(secrets.token_hex(32))"`) - invalide
+  toutes les sessions actives une fois appliqué, à faire en connaissance
+  de cause
+- Clés API (Gemini, OpenRouter) de nouveau collées en clair dans une
+  conversation de travail (`cat .env`) — même recommandation de rotation
+  qu'en v2.8.0 ; éviter `cat .env` pour vérifier qu'une clé est définie,
+  préférer `grep -c "CLE=." .env` (affiche 1/0 sans jamais montrer la
+  valeur)
+
+---
+
+## [2.10.0] — Cartes 3D sur le Web
+### Corrigé
+- **Carte vide sur le Web** (fonctionnait déjà sur mobile) : `maplibre_gl`
+  dessine les cartes via la bibliothèque JavaScript MapLibre GL JS dans le
+  navigateur — contrairement à Android/iOS, qui utilisent leurs propres
+  bindings natifs. `web/index.html` ne chargeait jamais cette bibliothèque
+  (absente du fichier depuis le début du projet, jamais remarqué car
+  aucune erreur bruyante ne s'affichait). Ajout des deux balises
+  `<script>`/`<link>` MapLibre GL JS (version 5.24.0, alignée sur
+  `maplibre_gl: ^0.26.2`), avant `flutter_bootstrap.js` comme requis
+- **`Target of URI doesn't exist: 'dart:js_util'`** (bloquait la
+  compilation sur TOUTES les plateformes, pas seulement le Web) : le
+  correctif d'images du Web (v2.9.0) utilisait `dart:js_util`, une
+  bibliothèque qui n'existe que dans le SDK Dart compilé pour le Web —
+  absente pour Android/iOS/Windows. Un `kIsWeb` est une vérification
+  D'EXÉCUTION, pas une exclusion à la COMPILATION : chaque import doit se
+  résoudre pour CHAQUE plateforme ciblée. Remplacé par `dart:js_interop` +
+  `package:web` (le remplacement actuel, activement maintenu, documenté
+  officiellement par Flutter) ; `network_image_safe_web.dart` extrait dans
+  son propre fichier avec import conditionnel (`if (dart.library.html)`),
+  même schéma que `google_web_button_web.dart` pour Google Sign-In
+
+### Modifié
+- `pubspec.yaml` : `flutter_map`/`latlong2` (déjà retirés en v2.8.0)
+  étaient réapparus dans une version locale du fichier — retirés à
+  nouveau ; ajout de `web: ^1.1.0` (nécessaire pour `dart:js_interop`)
+
+---
+
 ## [2.9.0] — Découverte, navigation vers un lieu & corrections d'affichage
 ### Ajouté
 - **Écran "Découvrir"** (`GET /users/discover`, user-service) : parcourir
@@ -461,3 +584,4 @@ de la Phase 1 (Monolithe) jusqu'à la Phase 2 (Microservices) en production.
 | Sauvegardes site | `/var/www/GLOBE_backups/` | Automatiques à chaque `update.sh` du site, 10 dernières conservées |
 | Dépôt de code (backend) | GitHub (`TUHEU/BACKEND-GLOBE`) | Historique nettoyé (`git filter-repo`) ; `.gitignore` + `.env.example` (v2.8.0) ; `git pull` automatique via `update.sh` |
 | Dépôt de code (site) | GitHub (`TUHEU/GLOBE`) | Build Flutter Web + APK + zip Windows, mis à jour via son propre `update.sh` |
+| Vérification de conteneurs | VPS | `docker compose ps -a` (inclut les conteneurs ARRÊTÉS) recommandé plutôt que `docker compose ps` seul, qui masque un service tombé silencieusement (voir v2.11.0) |
