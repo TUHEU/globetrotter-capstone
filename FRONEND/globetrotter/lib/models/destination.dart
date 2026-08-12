@@ -15,6 +15,7 @@ class Destination {
   final double lng;
   final int? foundedYear;
   final String? history;
+  final String? mapsUrl;
 
   Destination({
     required this.id,
@@ -33,6 +34,7 @@ class Destination {
     this.lng = 11.5021,
     this.foundedYear,
     this.history,
+    this.mapsUrl,
   });
 
   factory Destination.fromJson(Map<String, dynamic> j) => Destination(
@@ -52,5 +54,6 @@ class Destination {
         lng: (j['lng'] as num?)?.toDouble() ?? 11.5021,
         foundedYear: (j['founded_year'] as num?)?.toInt(),
         history: j['history'],
+        mapsUrl: j['maps_url'],
       );
 }

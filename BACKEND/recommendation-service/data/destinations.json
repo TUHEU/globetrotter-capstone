@@ -5,14 +5,19 @@
     "quartier": "Ngoa-Ekelle",
     "category": "attraction",
     "description": "Emblème de Yaoundé : la tour spiralée célébrant la réunification du Cameroun francophone et anglophone. Incontournable pour les photos.",
-    "tags": ["history", "culture", "photo"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/2/23/Monument_de_la_r%C3%A9unification_Yaound%C3%A9_01.JPG",
+    "tags": [
+      "history",
+      "culture",
+      "photo"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Monument_de_la_r%C3%A9unification_Yaound%C3%A9_01.JPG?width=800",
     "avg_price_fcfa": 1000,
     "best_time": "Journée",
     "popularity": 90,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Wikimedia Commons (CC BY-SA)",
     "lat": 3.8525,
-    "lng": 11.5134
+    "lng": 11.5134,
+    "maps_url": "https://share.google/6Iibyuzc9FUYI1VD6"
   },
   {
     "id": "y002",
@@ -20,14 +25,19 @@
     "quartier": "Centre-ville",
     "category": "museum",
     "description": "Ancien palais présidentiel devenu musée : art, traditions et histoire des différentes régions du Cameroun.",
-    "tags": ["history", "culture", "art"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Mus%C3%A9e_National_du_Cameroun_01.JPG",
+    "tags": [
+      "history",
+      "culture",
+      "art"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Mus%C3%A9e_National_du_Cameroun_01.JPG?width=800",
     "avg_price_fcfa": 1500,
     "best_time": "Mar - Dim, journée",
     "popularity": 75,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Wikimedia Commons (CC BY-SA)",
     "lat": 3.8667,
-    "lng": 11.5167
+    "lng": 11.5167,
+    "maps_url": "https://share.google/COZUXlFo4dMkLCe5O"
   },
   {
     "id": "y003",
@@ -35,14 +45,19 @@
     "quartier": "Mvolyé",
     "category": "attraction",
     "description": "Impressionnante basilique sur la colline de Mvolyé, haut lieu spirituel avec une belle vue sur la ville.",
-    "tags": ["culture", "history", "photo"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/d/d4/Basilique_Mari-Reine_des_apotres_de_Mvolye.JPG",
+    "tags": [
+      "culture",
+      "history",
+      "photo"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Basilique_Mari-Reine_des_apotres_de_Mvolye.JPG?width=800",
     "avg_price_fcfa": 0,
     "best_time": "Matin",
     "popularity": 70,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Wikimedia Commons (CC BY-SA)",
     "lat": 3.8579,
-    "lng": 11.5074
+    "lng": 11.5074,
+    "maps_url": "https://share.google/NenhNiZahQ2ES0pgy"
   },
   {
     "id": "y004",
@@ -50,14 +65,18 @@
     "quartier": "Centre-ville",
     "category": "attraction",
     "description": "La cathédrale du centre-ville, à l'architecture remarquable, cœur historique de la capitale.",
-    "tags": ["culture", "history"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Cath%C3%A9drale_Notre_Dame_de_Victoire_de_Yaound%C3%A9-01.jpg",
+    "tags": [
+      "culture",
+      "history"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Cath%C3%A9drale_de_Yaound%C3%A9.jpg?width=800",
     "avg_price_fcfa": 0,
     "best_time": "Journée",
     "popularity": 65,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Wikimedia Commons (CC BY-SA)",
     "lat": 3.8682,
-    "lng": 11.5157
+    "lng": 11.5157,
+    "maps_url": "https://share.google/7bqWPgykit05g5NBF"
   },
   {
     "id": "y005",
@@ -65,14 +84,20 @@
     "quartier": "Fébé",
     "category": "nature",
     "description": "Le point de vue panoramique sur toute la ville des sept collines. Idéal au coucher du soleil, avec le monastère bénédictin et son musée d'art camerounais.",
-    "tags": ["nature", "photo", "hiking", "romance"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/3/36/Vue_sur_Yaound%C3%A9_depuis_le_mont_F%C3%A9b%C3%A9_en_octobre_1972.jpg",
+    "tags": [
+      "nature",
+      "photo",
+      "hiking",
+      "romance"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Vue%20sur%20Yaound%C3%A9%20depuis%20le%20mont%20F%C3%A9b%C3%A9%20en%20octobre%201972.jpg?width=800",
     "avg_price_fcfa": 1000,
     "best_time": "16h - 18h30",
     "popularity": 86,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Wikimedia Commons (photo d'époque, 1972 - le point de vue reste le même aujourd'hui)",
     "lat": 3.893,
-    "lng": 11.5237
+    "lng": 11.5237,
+    "maps_url": "https://share.google/C0GrdnAOJuavNqvt7"
   },
   {
     "id": "y006",
@@ -80,14 +105,19 @@
     "quartier": "Mvog-Betsi",
     "category": "nature",
     "description": "Le jardin zoologique de Yaoundé : primates, félins et oiseaux. Parfait pour une sortie en famille.",
-    "tags": ["nature", "wildlife", "family"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Yaound%C3%A9_Mvog_B%C3%A9tsi.jpg",
+    "tags": [
+      "nature",
+      "wildlife",
+      "family"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Yaound%C3%A9_Mvog_B%C3%A9tsi.jpg?width=800",
     "avg_price_fcfa": 2000,
     "best_time": "Matin",
     "popularity": 68,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Wikimedia Commons (CC BY-SA)",
     "lat": 3.858,
-    "lng": 11.487
+    "lng": 11.487,
+    "maps_url": "https://share.google/aoMuY2KuN2uo225KP"
   },
   {
     "id": "y007",
@@ -95,14 +125,20 @@
     "quartier": "Périphérie (45 min)",
     "category": "nature",
     "description": "Sanctuaire de primates géré par Ape Action Africa : gorilles, chimpanzés et mandrills sauvés du braconnage. Excursion d'une demi-journée depuis Yaoundé.",
-    "tags": ["nature", "wildlife", "adventure", "family"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Chimpanz%C3%A9_-_Primate_reserve_Sanctuary_Mefou.jpg",
+    "tags": [
+      "nature",
+      "wildlife",
+      "adventure",
+      "family"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Chimpanz%C3%A9_-_Primate_reserve_Sanctuary_Mefou.jpg?width=800",
     "avg_price_fcfa": 7500,
     "best_time": "Matin, sur réservation",
     "popularity": 72,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Wikimedia Commons (CC BY-SA)",
     "lat": 3.6333,
-    "lng": 11.6167
+    "lng": 11.6167,
+    "maps_url": "https://share.google/SRUrZi8dBEtCWS9da"
   },
   {
     "id": "y008",
@@ -110,14 +146,19 @@
     "quartier": "Centre-ville",
     "category": "nature",
     "description": "Parc urbain ombragé au cœur de la ville : détente, snacks et espace enfants.",
-    "tags": ["nature", "family", "relax"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Bois_Sainte_Anastasie%2C_Yaound%C3%A9.JPG",
+    "tags": [
+      "nature",
+      "family",
+      "relax"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Bois_Sainte_Anastasie%2C_Yaound%C3%A9.JPG?width=800",
     "avg_price_fcfa": 1000,
     "best_time": "Après-midi",
     "popularity": 60,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Wikimedia Commons (CC BY-SA)",
     "lat": 3.8655,
-    "lng": 11.5183
+    "lng": 11.5183,
+    "maps_url": "https://share.google/79i6dKJAx8MfoMzF3"
   },
   {
     "id": "y009",
@@ -125,14 +166,20 @@
     "quartier": "Centre-ville",
     "category": "nature",
     "description": "Le lac du centre-ville, agréable pour une promenade et des photos en fin de journée.",
-    "tags": ["nature", "photo", "relax", "romance"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/5/5e/Beaut%C3%A9_du_Lac_municipal_de_Yaounde.jpg",
+    "tags": [
+      "nature",
+      "photo",
+      "relax",
+      "romance"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Beaut%C3%A9_du_Lac_municipal_de_Yaounde.jpg?width=800",
     "avg_price_fcfa": 0,
     "best_time": "Fin d'après-midi",
     "popularity": 55,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Wikimedia Commons (CC BY-SA)",
     "lat": 3.8687,
-    "lng": 11.5187
+    "lng": 11.5187,
+    "maps_url": "https://share.google/UYkKWDh1e3PVhjt5d"
   },
   {
     "id": "y010",
@@ -140,14 +187,19 @@
     "quartier": "Centre-ville",
     "category": "market",
     "description": "Le grand marché de Yaoundé : tissus, pagnes, épices, artisanat. Ambiance garantie — venez négocier !",
-    "tags": ["shopping", "culture", "food"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/3/3c/March%C3%A9_central_-_Central_market_%28interior%29_in_Yaound%C3%A9.JPG",
+    "tags": [
+      "shopping",
+      "culture",
+      "food"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/March%C3%A9_central_-_Central_market_%28interior%29_in_Yaound%C3%A9.JPG?width=800",
     "avg_price_fcfa": 5000,
     "best_time": "Matin en semaine",
     "popularity": 78,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Wikimedia Commons (CC BY-SA)",
     "lat": 3.8647,
-    "lng": 11.5152
+    "lng": 11.5152,
+    "maps_url": "https://share.google/uiLXiKFHsiAZOl8Aa"
   },
   {
     "id": "y011",
@@ -155,14 +207,18 @@
     "quartier": "Mokolo",
     "category": "market",
     "description": "L'un des plus grands marchés d'Afrique centrale : friperie, tissus, tout se trouve à Mokolo.",
-    "tags": ["shopping", "culture"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/1/14/March%C3%A9_Mokolo_%C3%A0_Yaound%C3%A9.jpg",
+    "tags": [
+      "shopping",
+      "culture"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/March%C3%A9_Mokolo_%C3%A0_Yaound%C3%A9.jpg?width=800",
     "avg_price_fcfa": 5000,
     "best_time": "Matin",
     "popularity": 70,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Wikimedia Commons (CC BY-SA)",
     "lat": 3.873,
-    "lng": 11.505
+    "lng": 11.505,
+    "maps_url": "https://share.google/oCCXAaDUzT1GgUi3G"
   },
   {
     "id": "y012",
@@ -170,14 +226,19 @@
     "quartier": "Tsinga",
     "category": "market",
     "description": "Sculptures, masques, bijoux et souvenirs made in Cameroon. L'endroit idéal pour les cadeaux.",
-    "tags": ["shopping", "art", "culture"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Centre_artisanal_de_Yaound%C3%A9_01.JPG",
+    "tags": [
+      "shopping",
+      "art",
+      "culture"
+    ],
+    "image": "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?w=800",
     "avg_price_fcfa": 10000,
     "best_time": "Journée",
     "popularity": 62,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
     "lat": 3.88,
-    "lng": 11.495
+    "lng": 11.495,
+    "maps_url": "https://share.google/fpX1l3ijBZvtmmTWD"
   },
   {
     "id": "y013",
@@ -185,14 +246,19 @@
     "quartier": "Nlongkak",
     "category": "museum",
     "description": "Collection privée d'art traditionnel africain : trônes, masques et objets royaux.",
-    "tags": ["art", "culture", "history"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/0/07/BLackitude_Museum.jpg",
+    "tags": [
+      "art",
+      "culture",
+      "history"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/BLackitude%20Museum.jpg?width=800",
     "avg_price_fcfa": 2000,
     "best_time": "Sur rendez-vous",
     "popularity": 50,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Wikimedia Commons (via Wikidata Q15961646)",
     "lat": 3.875,
-    "lng": 11.52
+    "lng": 11.52,
+    "maps_url": "https://share.google/1YAUvO7hUz3k2lZTS"
   },
   {
     "id": "y014",
@@ -200,14 +266,19 @@
     "quartier": "Fébé",
     "category": "museum",
     "description": "Au monastère bénédictin : une des plus belles collections d'art traditionnel camerounais (bronzes, bois, perles).",
-    "tags": ["art", "culture", "history"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Monast%C3%A8re_b%C3%A9n%C3%A9dictin_du_Mont_F%C3%A9b%C3%A9.jpg",
+    "tags": [
+      "art",
+      "culture",
+      "history"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Monast%C3%A8re%20b%C3%A9n%C3%A9dictin%20du%20Mont%20F%C3%A9b%C3%A9.jpg?width=800",
     "avg_price_fcfa": 1000,
     "best_time": "Week-end après-midi",
     "popularity": 48,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Wikimedia Commons (Monastère bénédictin du Mont Fébé)",
     "lat": 3.8945,
-    "lng": 11.5227
+    "lng": 11.5227,
+    "maps_url": "https://share.google/5PiARq6IQ0A0erYU5"
   },
   {
     "id": "y015",
@@ -215,16 +286,20 @@
     "quartier": "Tsinga",
     "category": "attraction",
     "description": "Le grand centre de conférences sur la colline, siège des grands événements culturels et concerts.",
-    "tags": ["culture", "events"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/2/29/Palais_des_congr%C3%A8s_de_Yaound%C3%A9_01.jpg",
+    "tags": [
+      "culture",
+      "events"
+    ],
+    "image": "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=800",
     "avg_price_fcfa": 0,
     "best_time": "Selon événements",
     "popularity": 45,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
     "lat": 3.8815,
     "lng": 11.494,
     "founded_year": 1982,
-    "history": "Inauguré le 12 mai 1982, fruit d'une coopération sino-camerounaise."
+    "history": "Première pierre posée en 1975, inauguré le 12 mai 1982 - fruit d'une coopération sino-camerounaise. Le bâtiment s'étend sur 180 000 m² répartis en plusieurs salles pouvant accueillir de 25 à 2 000 personnes.",
+    "maps_url": "https://share.google/3zwEQjvJ0ZsV2fr3L"
   },
   {
     "id": "y016",
@@ -232,14 +307,18 @@
     "quartier": "Mfandena",
     "category": "entertainment",
     "description": "Le stade mythique de Yaoundé : matchs des Lions Indomptables et grandes rencontres du championnat.",
-    "tags": ["sport", "events"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/8/87/Stade_Ahmadou_Ahidjo_2014_%281%29.JPG",
+    "tags": [
+      "sport",
+      "events"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Stade_Ahmadou_Ahidjo_2014_%281%29.JPG?width=800",
     "avg_price_fcfa": 3000,
     "best_time": "Jours de match",
     "popularity": 66,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Wikimedia Commons (CC BY-SA)",
     "lat": 3.873,
-    "lng": 11.519
+    "lng": 11.519,
+    "maps_url": "https://share.google/h5iHW8OqaIL0IVhLC"
   },
   {
     "id": "y017",
@@ -247,14 +326,19 @@
     "quartier": "Warda",
     "category": "entertainment",
     "description": "Salle de cinéma et de spectacles moderne : films récents, concerts et événements.",
-    "tags": ["events", "family", "relax"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/4/4b/CanalOlympia_Yaound%C3%A9.jpg",
+    "tags": [
+      "events",
+      "family",
+      "relax"
+    ],
+    "image": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800",
     "avg_price_fcfa": 3500,
     "best_time": "Soirée",
     "popularity": 64,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
     "lat": 3.85,
-    "lng": 11.51
+    "lng": 11.51,
+    "maps_url": "https://share.google/QKSYyphUtgDJUrgqg"
   },
   {
     "id": "y018",
@@ -262,15 +346,21 @@
     "quartier": "Centre-ville",
     "category": "hotel",
     "description": "L'hôtel 5 étoiles de référence au centre-ville : piscine, restaurants et vue panoramique.",
-    "tags": ["luxury", "food", "relax"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Hilton_Hotel_Yaound%C3%A9.JPG",
+    "tags": [
+      "luxury",
+      "food",
+      "relax"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Hilton_Hotel_Yaound%C3%A9.JPG?width=800",
     "avg_price_fcfa": 120000,
     "best_time": "Toute l'année",
     "popularity": 80,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Wikimedia Commons (CC BY-SA)",
     "lat": 3.8667,
     "lng": 11.5167,
-    "founded_year": 1974
+    "founded_year": 1974,
+    "history": "Ouvert en 1974, ce fut l'un des premiers hôtels internationaux 5 étoiles du Cameroun et reste une référence pour les conférences et évènements diplomatiques à Yaoundé.",
+    "maps_url": "https://share.google/nkldIZRPDMotRaaSQ"
   },
   {
     "id": "y019",
@@ -278,14 +368,20 @@
     "quartier": "Fébé",
     "category": "hotel",
     "description": "Hôtel historique sur les hauteurs avec golf 9 trous, piscine et la plus belle vue de Yaoundé.",
-    "tags": ["luxury", "nature", "relax", "romance"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/2/2a/H%C3%B4tel_Mont_F%C3%A9b%C3%A9.jpg",
+    "tags": [
+      "luxury",
+      "nature",
+      "relax",
+      "romance"
+    ],
+    "image": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800",
     "avg_price_fcfa": 90000,
     "best_time": "Toute l'année",
     "popularity": 74,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
     "lat": 3.8918,
-    "lng": 11.5253
+    "lng": 11.5253,
+    "maps_url": "https://share.google/RcN7puTjCxdYXL8gG"
   },
   {
     "id": "y020",
@@ -293,14 +389,18 @@
     "quartier": "Centre-ville",
     "category": "hotel",
     "description": "Hôtel 4 étoiles apprécié des voyageurs d'affaires : restaurant, piscine et salles de réunion.",
-    "tags": ["luxury", "relax"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/5/53/Djeuga_Palace_Hotel_Yaound%C3%A9.jpg",
+    "tags": [
+      "luxury",
+      "relax"
+    ],
+    "image": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800",
     "avg_price_fcfa": 75000,
     "best_time": "Toute l'année",
     "popularity": 60,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
     "lat": 3.8682,
-    "lng": 11.5157
+    "lng": 11.5157,
+    "maps_url": "https://share.google/GGydilVfQsrVb8xig"
   },
   {
     "id": "y021",
@@ -308,14 +408,18 @@
     "quartier": "Centre-ville",
     "category": "cafe",
     "description": "Institution de Yaoundé depuis des générations : pains, viennoiseries et pâtisseries au cœur de la ville.",
-    "tags": ["food", "relax"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/1/18/Boulangerie_Calafatas_Yaounde.jpg",
+    "tags": [
+      "food",
+      "relax"
+    ],
+    "image": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800",
     "avg_price_fcfa": 2500,
     "best_time": "Matin",
     "popularity": 67,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
     "lat": 3.8655,
-    "lng": 11.5183
+    "lng": 11.5183,
+    "maps_url": "https://share.google/TL5Pl9s4oP1OtBrL8"
   },
   {
     "id": "y022",
@@ -323,14 +427,17 @@
     "quartier": "Centre-ville",
     "category": "restaurant",
     "description": "Le restaurant chinois historique de Yaoundé, une valeur sûre appréciée depuis des décennies.",
-    "tags": ["food"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/e/e4/Chez_Wou_Yaounde.jpg",
+    "tags": [
+      "food"
+    ],
+    "image": "https://images.unsplash.com/photo-1526318896980-cf78c088247c?w=800",
     "avg_price_fcfa": 12000,
     "best_time": "Déjeuner & dîner",
     "popularity": 58,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
     "lat": 3.8687,
-    "lng": 11.5187
+    "lng": 11.5187,
+    "maps_url": "https://share.google/xeeSFKH2C8uGuWn3V"
   },
   {
     "id": "y023",
@@ -338,14 +445,19 @@
     "quartier": "Centre-ville",
     "category": "restaurant",
     "description": "Table gastronomique réputée mêlant cuisine française et saveurs camerounaises.",
-    "tags": ["food", "luxury", "romance"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Restaurant_La_Fourchette_Yaounde.jpg",
+    "tags": [
+      "food",
+      "luxury",
+      "romance"
+    ],
+    "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800",
     "avg_price_fcfa": 20000,
     "best_time": "Dîner, réserver",
     "popularity": 63,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
     "lat": 3.8647,
-    "lng": 11.5152
+    "lng": 11.5152,
+    "maps_url": "https://share.google/FSfbvOki7SwmUf6yT"
   },
   {
     "id": "y024",
@@ -353,14 +465,19 @@
     "quartier": "Bastos",
     "category": "entertainment",
     "description": "Le quartier diplomatique et ses nombreux restaurants, cafés et lounges : l'épicentre des sorties à Yaoundé.",
-    "tags": ["food", "nightlife", "relax"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/b/b2/Bastos_Yaounde_street.jpg",
+    "tags": [
+      "food",
+      "nightlife",
+      "relax"
+    ],
+    "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800",
     "avg_price_fcfa": 15000,
     "best_time": "Soirée",
     "popularity": 76,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
     "lat": 3.888,
-    "lng": 11.518
+    "lng": 11.518,
+    "maps_url": "https://share.google/VRAgupI6BcpC2EUPo"
   },
   {
     "id": "y025",
@@ -368,14 +485,19 @@
     "quartier": "Briqueterie",
     "category": "restaurant",
     "description": "Le temple du soya (brochettes) et du poisson braisé : street food authentique dans une ambiance 100% yaoundéenne.",
-    "tags": ["food", "culture", "nightlife"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/0/08/Grillades_Briqueterie_Yaounde.jpg",
+    "tags": [
+      "food",
+      "culture",
+      "nightlife"
+    ],
+    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?w=800",
     "avg_price_fcfa": 3000,
     "best_time": "Soirée",
     "popularity": 71,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
     "lat": 3.885,
-    "lng": 11.51
+    "lng": 11.51,
+    "maps_url": "https://share.google/tMvv3Io5tK1Kbyr68"
   },
   {
     "id": "y026",
@@ -383,14 +505,19 @@
     "quartier": "Mokolo",
     "category": "restaurant",
     "description": "Poisson braisé, bâton de manioc et ambiance populaire : l'expérience culinaire locale par excellence.",
-    "tags": ["food", "culture", "nightlife"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/7/73/Poisson_braise_Yaounde.jpg",
+    "tags": [
+      "food",
+      "culture",
+      "nightlife"
+    ],
+    "image": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=800",
     "avg_price_fcfa": 4000,
     "best_time": "Soirée",
     "popularity": 59,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
     "lat": 3.8745,
-    "lng": 11.504
+    "lng": 11.504,
+    "maps_url": "https://share.google/NugwmEoRIYEGTPJ4O"
   },
   {
     "id": "y027",
@@ -398,31 +525,41 @@
     "quartier": "Ngoa-Ekelle",
     "category": "education",
     "description": "La plus ancienne et plus grande université du Cameroun, sur les hauteurs de Ngoa-Ekelle. Campus historique avec vue sur la ville.",
-    "tags": ["education", "history", "landmark"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/8/85/Universit%C3%A9_de_Yaound%C3%A9_I.jpg",
+    "tags": [
+      "education",
+      "history",
+      "landmark"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Universit%C3%A9_de_Yaound%C3%A9_I.jpg?width=800",
     "avg_price_fcfa": 0,
     "best_time": "Journée (jours ouvrés)",
     "popularity": 55,
     "image_source": "Wikimedia Commons",
     "lat": 3.8628,
     "lng": 11.5083,
-    "founded_year": 1962
+    "founded_year": 1962,
+    "history": "Fondée en 1962 sous le nom d'Université Fédérale du Cameroun, c'est la plus ancienne université du pays et l'héritière directe de l'ancien Institut des Hautes Études.",
+    "maps_url": "https://share.google/ykK9lLBzJD2Mhetqm"
   },
   {
     "id": "y028",
     "name": "ICT University",
     "quartier": "Zoatoupsi (Messassi)",
     "category": "education",
-    "description": "Université privée accréditée, spécialisée en TIC et management.",
-    "tags": ["education"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/6/67/ICT_University_Cameroon_Campus.jpg",
+    "description": "Université privée accréditée, spécialisée en TIC et management. Adresse : 1 Avenue Dispensaire Messassi, Zoatoupsi.",
+    "tags": [
+      "education"
+    ],
+    "image": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800",
     "avg_price_fcfa": 0,
     "best_time": "Journée (jours ouvrés)",
     "popularity": 40,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai campus)",
     "lat": 3.9527,
     "lng": 11.5166,
-    "founded_year": 2010
+    "founded_year": 2010,
+    "history": "Fondée en 2010 par le Pr Victor Mbarika, accréditée par le Ministère camerounais de l'Enseignement Supérieur en 2012. Le campus se trouve précisément aux coordonnées ci-contre, à Zoatoupsi/Messassi.",
+    "maps_url": "https://share.google/vbRjNMISY3B7IcKL3"
   },
   {
     "id": "y029",
@@ -430,60 +567,79 @@
     "quartier": "Mfandena",
     "category": "sports",
     "description": "Principal stade de Yaoundé, haut lieu du football camerounais et des grands événements sportifs et culturels.",
-    "tags": ["sport", "events", "landmark"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/3/30/Stade_Omnisports_Ahmadou_Ahidjo_Yaound%C3%A9_01.jpg",
+    "tags": [
+      "sport",
+      "events",
+      "landmark"
+    ],
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Stade%20Omnisports%20Ahmadou%20Ahidjo%20Yaound%C3%A9%2001.jpg?width=800",
     "avg_price_fcfa": 2000,
     "best_time": "Jour de match",
     "popularity": 65,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Wikimedia Commons (photo réelle du stade)",
     "lat": 3.88556,
     "lng": 11.54056,
-    "founded_year": 1972
+    "founded_year": 1972,
+    "history": "Inauguré en 1972, agrandi et rénové en 2005 puis en 2015-2016 pour la CAN féminine. Sa capacité actuelle est d'environ 42 500 places ; il a accueilli un record d'affluence estimé à 120 000 spectateurs dans les années 1980.",
+    "maps_url": "https://share.google/1QXEhR9h0SlkIUagj"
   },
   {
     "id": "y030",
     "name": "Grillades de la Briqueterie",
     "quartier": "Briqueterie",
     "category": "restaurant",
-    "description": "Le haut lieu du poisson braisé et des grillades de rue à Yaoundé, animé jusque tard le soir.",
-    "tags": ["food", "nightlife", "affordable"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/0/08/Grillades_Briqueterie_Yaounde.jpg",
+    "description": "Le haut lieu du poisson braisé et des grillades de rue à Yaoundé, animé jusque tard le soir. Ambiance conviviale et prix très abordables.",
+    "tags": [
+      "food",
+      "nightlife",
+      "affordable"
+    ],
+    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?w=800",
     "avg_price_fcfa": 3000,
     "best_time": "Soirée",
     "popularity": 70,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
     "lat": 3.885,
-    "lng": 11.5085
+    "lng": 11.5085,
+    "maps_url": "https://share.google/3NqdWeCklaIXmBy2b"
   },
   {
     "id": "y031",
     "name": "Supermarché Santa Lucia",
     "quartier": "Bastos",
     "category": "supermarket",
-    "description": "Chaîne de supermarchés camerounaise bien fournie, produits locaux et importés.",
-    "tags": ["shopping", "family"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Santa_Lucia_Bastos_Yaounde.jpg",
+    "description": "Chaîne de supermarchés camerounaise bien fournie, produits locaux et importés. L'un des repères pratiques du quartier Bastos.",
+    "tags": [
+      "shopping",
+      "family"
+    ],
+    "image": "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=800",
     "avg_price_fcfa": 0,
     "best_time": "Journée",
     "popularity": 45,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai magasin)",
     "lat": 3.888,
-    "lng": 11.5195
+    "lng": 11.5195,
+    "maps_url": "https://share.google/R6s9WorP5jxjWEKTi"
   },
   {
     "id": "y032",
     "name": "Supermarché Dovv",
     "quartier": "Centre-ville",
     "category": "supermarket",
-    "description": "Chaîne de supermarchés camerounaise parmi les plus connues du pays.",
-    "tags": ["shopping", "family"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Dovv_Supermarket_Yaounde.jpg",
+    "description": "Chaîne de supermarchés camerounaise parmi les plus connues du pays, plusieurs rayons et produits du quotidien.",
+    "tags": [
+      "shopping",
+      "family"
+    ],
+    "image": "https://images.unsplash.com/photo-1601599963565-b7f49deb2fca?w=800",
     "avg_price_fcfa": 0,
     "best_time": "Journée",
     "popularity": 42,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai magasin)",
     "lat": 3.867,
-    "lng": 11.5175
+    "lng": 11.5175,
+    "maps_url": "https://share.google/9OaQ9U4p249Vl1u6n"
   },
   {
     "id": "y033",
@@ -491,44 +647,55 @@
     "quartier": "Ngoa-Ekelle",
     "category": "education",
     "description": "Principale bibliothèque publique de Yaoundé, collections nationales et espace de lecture calme.",
-    "tags": ["education", "culture"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/9/91/Biblioth%C3%A8que_Nationale_du_Cameroun.jpg",
+    "tags": [
+      "education",
+      "culture"
+    ],
+    "image": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800",
     "avg_price_fcfa": 0,
     "best_time": "Journée (jours ouvrés)",
     "popularity": 35,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
     "lat": 3.864,
-    "lng": 11.51
+    "lng": 11.51,
+    "maps_url": "https://share.google/ZABJAxJamEWczSpb7"
   },
   {
     "id": "y034",
     "name": "Librairie des Éditions CLE",
     "quartier": "Centre-ville",
     "category": "education",
-    "description": "Librairie historique de Yaoundé, ouvrages camerounais et africains, manuels scolaires.",
-    "tags": ["education", "shopping"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Editions_CLE_Yaounde.jpg",
+    "description": "Librairie historique de Yaoundé, ouvrages camerounais et africains, manuels scolaires et universitaires.",
+    "tags": [
+      "education",
+      "shopping"
+    ],
+    "image": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800",
     "avg_price_fcfa": 0,
     "best_time": "Journée",
     "popularity": 30,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
     "lat": 3.8668,
-    "lng": 11.5178
+    "lng": 11.5178,
+    "maps_url": "https://share.google/OVbVgv1gfkFyLjuky"
   },
   {
     "id": "y035",
     "name": "Préfecture du Mfoundi",
     "quartier": "Centre-ville",
     "category": "administrative",
-    "description": "Siège administratif du département du Mfoundi — démarches officielles et autorisations.",
-    "tags": ["administrative"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/3/39/Prefecture_du_Mfoundi_Yaounde.jpg",
+    "description": "Siège administratif du département du Mfoundi — démarches officielles, actes administratifs, autorisations.",
+    "tags": [
+      "administrative"
+    ],
+    "image": "https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=800",
     "avg_price_fcfa": 0,
     "best_time": "Matinée (jours ouvrés)",
     "popularity": 25,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai bâtiment)",
     "lat": 3.869,
-    "lng": 11.5165
+    "lng": 11.5165,
+    "maps_url": "https://share.google/IwQstKnLZdPWHCIhh"
   },
   {
     "id": "y036",
@@ -536,14 +703,17 @@
     "quartier": "Centre-ville",
     "category": "administrative",
     "description": "Services fiscaux pour les démarches d'immatriculation et de déclaration.",
-    "tags": ["administrative"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/1/12/Centre_des_impots_Yaounde.jpg",
+    "tags": [
+      "administrative"
+    ],
+    "image": "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800",
     "avg_price_fcfa": 0,
     "best_time": "Matinée (jours ouvrés)",
     "popularity": 22,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique - pas le vrai bâtiment)",
     "lat": 3.8675,
-    "lng": 11.5145
+    "lng": 11.5145,
+    "maps_url": "https://share.google/5JfbXOLF0oRk4XQW4"
   },
   {
     "id": "y037",
@@ -551,15 +721,19 @@
     "quartier": "Ngoa-Ekélé",
     "category": "education",
     "description": "Le plus grand lycée public du Cameroun, fondé en 1952, environ 7000 élèves.",
-    "tags": ["education", "history"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/4/47/Lyc%C3%A9e_G%C3%A9n%C3%A9ral_Leclerc_Yaound%C3%A9.jpg",
+    "tags": [
+      "education",
+      "history"
+    ],
+    "image": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800",
     "avg_price_fcfa": 0,
     "best_time": "Journée (jours ouvrés)",
     "popularity": 35,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique)",
     "lat": 3.858,
     "lng": 11.501,
-    "founded_year": 1952
+    "founded_year": 1952,
+    "maps_url": "https://share.google/uRPFkLwZsYvAm8gYm"
   },
   {
     "id": "y038",
@@ -567,15 +741,18 @@
     "quartier": "Etoudi",
     "category": "education",
     "description": "Collège catholique privé fondé en 1956, l'un des établissements secondaires réputés de Yaoundé.",
-    "tags": ["education"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/8/82/Coll%C3%A8ge_Jean-Tabi_Yaound%C3%A9.jpg",
+    "tags": [
+      "education"
+    ],
+    "image": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800",
     "avg_price_fcfa": 0,
     "best_time": "Journée (jours ouvrés)",
     "popularity": 28,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique)",
     "lat": 3.902,
     "lng": 11.512,
-    "founded_year": 1956
+    "founded_year": 1956,
+    "maps_url": "https://share.google/TOLOHeUHrR8Y0mNAZ"
   },
   {
     "id": "y039",
@@ -583,30 +760,36 @@
     "quartier": "Mvolyé",
     "category": "education",
     "description": "Collège catholique historique de Yaoundé, situé dans le quartier de Mvolyé.",
-    "tags": ["education"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Coll%C3%A8ge_Vogt_Yaound%C3%A9.jpg",
+    "tags": [
+      "education"
+    ],
+    "image": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800",
     "avg_price_fcfa": 0,
     "best_time": "Journée (jours ouvrés)",
     "popularity": 26,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique)",
     "lat": 3.869,
-    "lng": 11.515
+    "lng": 11.515,
+    "maps_url": "https://share.google/IoVU2wE0PmzGs9dxV"
   },
   {
     "id": "y040",
     "name": "Bitame Lucia International School",
     "quartier": "Nkolfoulou",
     "category": "education",
-    "description": "École primaire et maternelle bilingue fondée en 2009 à Nkolfoulou.",
-    "tags": ["education"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/7/70/Bitame_Lucia_International_School.jpg",
+    "description": "École primaire et maternelle bilingue (anglais/français) fondée en 2009 à Nkolfoulou, à environ 12 km de Yaoundé.",
+    "tags": [
+      "education"
+    ],
+    "image": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800",
     "avg_price_fcfa": 0,
     "best_time": "Journée (jours ouvrés)",
     "popularity": 18,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique) — localisation approximative, à vérifier",
     "lat": 3.97,
     "lng": 11.61,
-    "founded_year": 2009
+    "founded_year": 2009,
+    "maps_url": "https://share.google/JOo7WvITU5AKyou3C"
   },
   {
     "id": "y041",
@@ -614,15 +797,19 @@
     "quartier": "Centre-ville",
     "category": "health",
     "description": "Le plus grand hôpital du Cameroun, fondé en 1933, ouvert 24h/24 et 7j/7.",
-    "tags": ["health"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/6/60/H%C3%B4pital_Central_de_Yaound%C3%A9.jpg",
+    "tags": [
+      "health"
+    ],
+    "image": "https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=800",
     "avg_price_fcfa": 0,
     "best_time": "24h/24",
     "popularity": 30,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique)",
     "lat": 3.8714,
     "lng": 11.5104,
-    "founded_year": 1933
+    "founded_year": 1933,
+    "history": "L'un des plus anciens hôpitaux du Cameroun, fondé en 1933 durant la période coloniale française ; il reste aujourd'hui le principal centre hospitalier de référence du pays.",
+    "maps_url": "https://share.google/u2rPfC23bxfaoWsns"
   },
   {
     "id": "y042",
@@ -630,15 +817,18 @@
     "quartier": "Ngousso",
     "category": "health",
     "description": "Hôpital de référence (médecine, chirurgie, obstétrique, pédiatrie), ouvert en 1985.",
-    "tags": ["health"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/8/89/H%C3%B4pital_G%C3%A9n%C3%A9ral_de_Yaound%C3%A9.jpg",
+    "tags": [
+      "health"
+    ],
+    "image": "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800",
     "avg_price_fcfa": 0,
     "best_time": "24h/24",
     "popularity": 27,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique)",
     "lat": 3.9066,
     "lng": 11.5414,
-    "founded_year": 1985
+    "founded_year": 1985,
+    "maps_url": "https://share.google/L5PIWQ9kxTtHL52DJ"
   },
   {
     "id": "y043",
@@ -646,15 +836,18 @@
     "quartier": "Ngousso",
     "category": "health",
     "description": "Hôpital spécialisé dans la santé de la femme et de l'enfant, ouvert en 2002.",
-    "tags": ["health"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/3/37/HGOPY_Yaounde.jpg",
+    "tags": [
+      "health"
+    ],
+    "image": "https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=800",
     "avg_price_fcfa": 0,
     "best_time": "24h/24",
     "popularity": 22,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique)",
     "lat": 3.8752,
     "lng": 11.5299,
-    "founded_year": 2002
+    "founded_year": 2002,
+    "maps_url": "https://share.google/hK3iexdjowmgbhGwM"
   },
   {
     "id": "y044",
@@ -662,45 +855,55 @@
     "quartier": "Nsimalen",
     "category": "transport",
     "description": "Principal aéroport international du Cameroun, à environ 27 km au sud du centre-ville.",
-    "tags": ["transport"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/9/91/Yaound%C3%A9_Nsimalen_International_Airport.jpg",
+    "tags": [
+      "transport"
+    ],
+    "image": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800",
     "avg_price_fcfa": 0,
     "best_time": "24h/24",
     "popularity": 32,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique)",
     "lat": 3.7226,
-    "lng": 11.5533
+    "lng": 11.5533,
+    "maps_url": "https://share.google/yAU95qKnlkihaULF8"
   },
   {
     "id": "y045",
     "name": "Palais Polyvalent des Sports de Yaoundé",
     "quartier": "Centre-ville",
     "category": "sports",
-    "description": "Salle omnisports couverte (5263 places), inaugurée en 2009.",
-    "tags": ["sports"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/1/10/Palais_des_sports_de_Yaound%C3%A9.jpg",
+    "description": "Salle omnisports couverte (5263 places), inaugurée en 2009, accueille basketball et autres sports en salle.",
+    "tags": [
+      "sports"
+    ],
+    "image": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800",
     "avg_price_fcfa": 1000,
     "best_time": "Soirée (événements)",
     "popularity": 24,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique)",
     "lat": 3.874,
     "lng": 11.512,
-    "founded_year": 2009
+    "founded_year": 2009,
+    "maps_url": "https://share.google/sxxApbOmjPMUrI4r0"
   },
   {
     "id": "y046",
     "name": "Marché Mvog-Mbi",
     "quartier": "Mvog-Mbi",
     "category": "market",
-    "description": "Marché de quartier animé au sud de Yaoundé, connu pour ses produits vivriers.",
-    "tags": ["shopping", "food"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/e/e0/March%C3%A9_Mvog-Mbi_Yaound%C3%A9.jpg",
+    "description": "Marché de quartier animé au sud de Yaoundé, connu pour ses produits vivriers et son ambiance.",
+    "tags": [
+      "shopping",
+      "food"
+    ],
+    "image": "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?w=800",
     "avg_price_fcfa": 0,
     "best_time": "Matinée",
     "popularity": 20,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique)",
     "lat": 3.855,
-    "lng": 11.515
+    "lng": 11.515,
+    "maps_url": "https://share.google/DhpMQFxnIKMNPRxZn"
   },
   {
     "id": "y047",
@@ -708,14 +911,18 @@
     "quartier": "Briqueterie",
     "category": "attraction",
     "description": "Principale mosquée de Yaoundé, située dans le quartier de la Briqueterie.",
-    "tags": ["culture", "religion"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/7/7d/Grande_mosqu%C3%A9e_de_la_Briqueterie_Yaound%C3%A9.jpg",
+    "tags": [
+      "culture",
+      "religion"
+    ],
+    "image": "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=800",
     "avg_price_fcfa": 0,
     "best_time": "Journée",
     "popularity": 19,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique) — localisation approximative, à vérifier",
     "lat": 3.876,
-    "lng": 11.509
+    "lng": 11.509,
+    "maps_url": "https://share.google/S1PX1xtVBo98eCAbe"
   },
   {
     "id": "y048",
@@ -723,14 +930,17 @@
     "quartier": "Bastos",
     "category": "entertainment",
     "description": "Centre culturel franco-camerounais : expositions, cinéma, médiathèque, concerts.",
-    "tags": ["culture"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Institut_Fran%C3%A7ais_du_Cameroun_Yaound%C3%A9.jpg",
+    "tags": [
+      "culture"
+    ],
+    "image": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800",
     "avg_price_fcfa": 1000,
     "best_time": "Soirée",
     "popularity": 23,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique)",
     "lat": 3.883,
-    "lng": 11.519
+    "lng": 11.519,
+    "maps_url": "https://share.google/6dIpE1zoaAncWB4gd"
   },
   {
     "id": "y049",
@@ -738,14 +948,17 @@
     "quartier": "Centre-ville",
     "category": "attraction",
     "description": "Tour emblématique du centre-ville de Yaoundé, l'un des repères visuels de la skyline.",
-    "tags": ["landmark"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Immeuble_CNPS_Yaound%C3%A9.jpg",
+    "tags": [
+      "landmark"
+    ],
+    "image": "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=800",
     "avg_price_fcfa": 0,
     "best_time": "Journée",
     "popularity": 17,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique)",
     "lat": 3.867,
-    "lng": 11.517
+    "lng": 11.517,
+    "maps_url": "https://share.google/LbAnXBughlSnPDV6n"
   },
   {
     "id": "y050",
@@ -753,13 +966,17 @@
     "quartier": "Centre-ville",
     "category": "attraction",
     "description": "Place publique du centre-ville de Yaoundé, un des lieux symboliques de la capitale.",
-    "tags": ["landmark", "history"],
-    "image": "https://upload.wikimedia.org/wikipedia/commons/d/d1/Place_de_l%27Ind%C3%A9pendance_Yaound%C3%A9.jpg",
+    "tags": [
+      "landmark",
+      "history"
+    ],
+    "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800",
     "avg_price_fcfa": 0,
     "best_time": "Journée",
     "popularity": 16,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Unsplash (placeholder générique) — localisation approximative, à vérifier",
     "lat": 3.866,
-    "lng": 11.5155
+    "lng": 11.5155,
+    "maps_url": "https://share.google/rOUwHc4SxN4jsJI0E"
   }
 ]

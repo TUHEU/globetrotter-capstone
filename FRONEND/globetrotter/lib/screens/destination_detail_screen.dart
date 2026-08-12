@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../core/constants.dart';
 import '../models/destination.dart';
 import '../services/location_service.dart';
@@ -186,6 +187,17 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                       ),
                     ),
                   ),
+                  if (destination.mapsUrl != null) ...[
+                    const SizedBox(height: 10),
+                    OutlinedButton.icon(
+                      onPressed: () => launchUrl(
+                        Uri.parse(destination.mapsUrl!),
+                        mode: LaunchMode.externalApplication,
+                      ),
+                      icon: const Icon(Icons.map_outlined, size: 18),
+                      label: const Text('Voir sur Google Maps'),
+                    ),
+                  ],
                   const SizedBox(height: 24),
                   SizedBox(
                     width: double.infinity,
