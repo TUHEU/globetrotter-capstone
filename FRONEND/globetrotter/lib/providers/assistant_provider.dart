@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../core/api_client.dart';
 import '../core/app_strings.dart';
@@ -27,13 +28,29 @@ class AssistantProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final res = await ApiClient.instance.dio.post('/assistant/chat', data: {
-        'message': userMessage.content,
-        'history': _recentHistory
-            .where((m) => m != userMessage)
-            .map((m) => m.toJson())
-            .toList(),
-      });
+      // Timeout dédié, bien plus long que celui par défaut (15s, pensé pour
+      // de simples appels REST) : une réponse d'IA peut légitimement prendre
+      // du temps - jusqu'à 20s pour Gemini seul côté serveur, et jusqu'à 20s
+      // de PLUS si Gemini échoue et que le service bascule silencieusement
+      // sur OpenRouter (voir ai-service/app/routers/assistant.py). Avec le
+      // timeout global de 15s, le CLIENT abandonnait souvent avant même que
+      // le SERVEUR ait fini de générer une réponse pourtant valide - ce qui
+      // ressemblait à "l'IA ne répond pas du tout" alors qu'elle répondait
+      // simplement trop tard pour un appel déjà expiré.
+      final res = await ApiClient.instance.dio.post(
+        '/assistant/chat',
+        data: {
+          'message': userMessage.content,
+          'history': _recentHistory
+              .where((m) => m != userMessage)
+              .map((m) => m.toJson())
+              .toList(),
+        },
+        options: Options(
+          sendTimeout: const Duration(seconds: 60),
+          receiveTimeout: const Duration(seconds: 60),
+        ),
+      );
       messages.add(ChatMessage(role: ChatRole.assistant, content: res.data['reply']));
     } catch (e) {
       _lastException = e;

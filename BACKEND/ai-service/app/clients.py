@@ -1,6 +1,7 @@
 """AI Service - outbound calls to other services, to ground the assistant's
 answers in REAL data instead of letting Gemini invent Yaoundé places that
 don't exist in our own database."""
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List
 
 import httpx
@@ -40,3 +41,16 @@ def get_user_itineraries(token: str) -> List[Dict[str, Any]]:
     except httpx.RequestError:
         pass
     return []
+
+
+def get_grounding_data(token: str, limit: int = 20):
+    """Lance les deux appels ci-dessus EN PARALLÈLE plutôt qu'à la suite -
+    avant, un appel attendait la fin du premier (jusqu'à 5s) avant même de
+    commencer le second, ajoutant jusqu'à 5s de latence pure pour rien
+    (les deux sont indépendants) à CHAQUE message envoyé à l'assistant, en
+    plus du temps déjà pris par Gemini/OpenRouter. Ici, le pire cas passe
+    de ~10s à ~5s pour cette partie de la requête."""
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        destinations_future = pool.submit(get_top_destinations, limit)
+        itineraries_future = pool.submit(get_user_itineraries, token)
+        return destinations_future.result(), itineraries_future.result()

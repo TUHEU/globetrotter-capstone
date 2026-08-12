@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -191,8 +193,36 @@ class _MessageBubble extends StatelessWidget {
   }
 }
 
-class _TypingBubble extends StatelessWidget {
+class _TypingBubble extends StatefulWidget {
+/// Bulle "en train d'écrire" - devient un `StatefulWidget` (au lieu d'un
+/// simple spinner statique) pour afficher un message rassurant après
+/// quelques secondes. Sans ça, une réponse qui prend 15-30s (normal pour
+/// une IA, surtout si Gemini échoue et qu'on bascule sur OpenRouter en
+/// coulisses) donne l'impression que l'app est plantée, alors qu'elle
+/// travaille simplement encore.
   const _TypingBubble();
+
+  @override
+  State<_TypingBubble> createState() => _TypingBubbleState();
+}
+
+class _TypingBubbleState extends State<_TypingBubble> {
+  bool _showReassurance = false;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer(const Duration(seconds: 6), () {
+      if (mounted) setState(() => _showReassurance = true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -206,10 +236,18 @@ class _TypingBubble extends StatelessWidget {
           color: theme.colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(18),
         ),
-        child: const SizedBox(
-          width: 20,
-          height: 12,
-          child: Center(child: SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2)),
+            if (_showReassurance) ...[
+              const SizedBox(width: 10),
+              Text(
+                'Encore un instant…',
+                style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              ),
+            ],
+          ],
         ),
       ),
     );

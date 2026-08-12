@@ -56,8 +56,7 @@ def chat(
     current=Depends(get_current_user),
     token: str = Depends(get_raw_token),
 ):
-    destinations = clients.get_top_destinations(limit=20)
-    itineraries = clients.get_user_itineraries(token)
+    destinations, itineraries = clients.get_grounding_data(token)
     system_instruction = _build_system_instruction(current, destinations, itineraries)
 
     history = [{"role": m.role, "content": m.content} for m in body.history]
