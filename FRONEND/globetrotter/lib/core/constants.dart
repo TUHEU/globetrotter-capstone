@@ -49,6 +49,22 @@ class ApiConstants {
   /// ton backend local sur son téléphone.
   static String destinationLink(String id) => '$prodUrl/app/#/d/$id';
   static String itineraryLink(String id) => '$prodUrl/app/#/i/$id';
+
+  /// Les photos des destinations viennent maintenant du backend lui-même
+  /// (recommendation-service/static/images/*.jpg, servi via l'API Gateway
+  /// sous /static/...) plutôt que d'URLs externes (Unsplash/Wikimedia).
+  /// destinations.json ne contient donc plus qu'un CHEMIN relatif, ex:
+  /// "/static/images/y001.jpg" - il faut le préfixer avec baseUrl avant
+  /// de le passer à NetworkImageSafe. On garde la compatibilité avec une
+  /// URL déjà absolue (http/https) au cas où une destination future
+  /// pointerait encore vers une image externe.
+  static String resolveImageUrl(String image) {
+    if (image.isEmpty) return image;
+    if (image.startsWith('http://') || image.startsWith('https://')) {
+      return image;
+    }
+    return image.startsWith('/') ? '$baseUrl$image' : '$baseUrl/$image';
+  }
 }
 
 /// Interests used for personalized recommendations (registration + explore filters).

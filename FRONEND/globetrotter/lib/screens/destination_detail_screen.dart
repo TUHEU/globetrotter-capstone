@@ -66,7 +66,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                   style: const TextStyle(
                       shadows: [Shadow(blurRadius: 8, color: Colors.black54)])),
               background: NetworkImageSafe(
-                url: destination.image,
+                url: ApiConstants.resolveImageUrl(destination.image),
                 fit: BoxFit.cover,
                 placeholder: (_) => Container(color: theme.colorScheme.primaryContainer),
               ),

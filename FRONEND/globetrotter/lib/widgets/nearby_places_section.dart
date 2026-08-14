@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/api_client.dart';
+import '../core/constants.dart';
 import '../models/destination.dart';
 import '../screens/destination_detail_screen.dart';
 import 'network_image_safe.dart';
@@ -91,7 +92,7 @@ class _NearbyPlacesSectionState extends State<NearbyPlacesSection> {
                           height: 90,
                           width: 140,
                           child: NetworkImageSafe(
-                            url: d.image,
+                            url: ApiConstants.resolveImageUrl(d.image),
                             placeholder: (_) => Container(color: theme.colorScheme.primaryContainer),
                           ),
                         ),

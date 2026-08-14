@@ -40,7 +40,7 @@ class DestinationCard extends StatelessWidget {
               AspectRatio(
                 aspectRatio: 16 / 8,
                 child: NetworkImageSafe(
-                  url: destination.image,
+                  url: ApiConstants.resolveImageUrl(destination.image),
                   fit: BoxFit.cover,
                   placeholder: (_) => Container(
                     color: theme.colorScheme.primaryContainer,
