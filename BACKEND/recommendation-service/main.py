@@ -10,7 +10,9 @@ Docs: http://localhost:8003/docs
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
+from app.config import BASE_DIR
 from app.routers import destinations, recommendations
 
 app = FastAPI(
@@ -31,6 +33,12 @@ app.add_middleware(
 
 app.include_router(destinations.router)
 app.include_router(recommendations.router)
+
+# Real destination photos (replaces the old network/unsplash/wikimedia
+# "image" URLs in destinations.json). Files live in static/images/<id>.jpg
+# and are served at /static/images/<id>.jpg - the API Gateway forwards
+# that prefix straight through to this service (see api-gateway/app/config.py).
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 
 @app.get("/health")

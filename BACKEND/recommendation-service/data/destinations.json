@@ -10,11 +10,11 @@
       "culture",
       "photo"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Monument_de_la_r%C3%A9unification_Yaound%C3%A9_01.JPG?width=800",
+    "image": "/static/images/y001.jpg",
     "avg_price_fcfa": 1000,
     "best_time": "Journée",
     "popularity": 90,
-    "image_source": "Wikimedia Commons (CC BY-SA)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8525,
     "lng": 11.5134,
     "maps_url": "https://share.google/6Iibyuzc9FUYI1VD6"
@@ -30,11 +30,11 @@
       "culture",
       "art"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Mus%C3%A9e_National_du_Cameroun_01.JPG?width=800",
+    "image": "/static/images/y002.jpg",
     "avg_price_fcfa": 1500,
     "best_time": "Mar - Dim, journée",
     "popularity": 75,
-    "image_source": "Wikimedia Commons (CC BY-SA)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8667,
     "lng": 11.5167,
     "maps_url": "https://share.google/COZUXlFo4dMkLCe5O"
@@ -50,11 +50,11 @@
       "history",
       "photo"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Basilique_Mari-Reine_des_apotres_de_Mvolye.JPG?width=800",
+    "image": "/static/images/y003.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Matin",
     "popularity": 70,
-    "image_source": "Wikimedia Commons (CC BY-SA)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8579,
     "lng": 11.5074,
     "maps_url": "https://share.google/NenhNiZahQ2ES0pgy"
@@ -69,11 +69,11 @@
       "culture",
       "history"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Cath%C3%A9drale_de_Yaound%C3%A9.jpg?width=800",
+    "image": "/static/images/y004.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Journée",
     "popularity": 65,
-    "image_source": "Wikimedia Commons (CC BY-SA)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8682,
     "lng": 11.5157,
     "maps_url": "https://share.google/7bqWPgykit05g5NBF"
@@ -90,11 +90,11 @@
       "hiking",
       "romance"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Vue%20sur%20Yaound%C3%A9%20depuis%20le%20mont%20F%C3%A9b%C3%A9%20en%20octobre%201972.jpg?width=800",
+    "image": "/static/images/y005.jpg",
     "avg_price_fcfa": 1000,
     "best_time": "16h - 18h30",
     "popularity": 86,
-    "image_source": "Wikimedia Commons (photo d'époque, 1972 - le point de vue reste le même aujourd'hui)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.893,
     "lng": 11.5237,
     "maps_url": "https://share.google/C0GrdnAOJuavNqvt7"
@@ -110,11 +110,11 @@
       "wildlife",
       "family"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Yaound%C3%A9_Mvog_B%C3%A9tsi.jpg?width=800",
+    "image": "/static/images/y006.jpg",
     "avg_price_fcfa": 2000,
     "best_time": "Matin",
     "popularity": 68,
-    "image_source": "Wikimedia Commons (CC BY-SA)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.858,
     "lng": 11.487,
     "maps_url": "https://share.google/aoMuY2KuN2uo225KP"
@@ -131,11 +131,11 @@
       "adventure",
       "family"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Chimpanz%C3%A9_-_Primate_reserve_Sanctuary_Mefou.jpg?width=800",
+    "image": "/static/images/y007.jpg",
     "avg_price_fcfa": 7500,
     "best_time": "Matin, sur réservation",
     "popularity": 72,
-    "image_source": "Wikimedia Commons (CC BY-SA)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.6333,
     "lng": 11.6167,
     "maps_url": "https://share.google/SRUrZi8dBEtCWS9da"
@@ -151,11 +151,11 @@
       "family",
       "relax"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Bois_Sainte_Anastasie%2C_Yaound%C3%A9.JPG?width=800",
+    "image": "/static/images/y008.jpg",
     "avg_price_fcfa": 1000,
     "best_time": "Après-midi",
     "popularity": 60,
-    "image_source": "Wikimedia Commons (CC BY-SA)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8655,
     "lng": 11.5183,
     "maps_url": "https://share.google/79i6dKJAx8MfoMzF3"
@@ -172,11 +172,11 @@
       "relax",
       "romance"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Beaut%C3%A9_du_Lac_municipal_de_Yaounde.jpg?width=800",
+    "image": "/static/images/y009.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Fin d'après-midi",
     "popularity": 55,
-    "image_source": "Wikimedia Commons (CC BY-SA)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8687,
     "lng": 11.5187,
     "maps_url": "https://share.google/UYkKWDh1e3PVhjt5d"
@@ -192,11 +192,11 @@
       "culture",
       "food"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/March%C3%A9_central_-_Central_market_%28interior%29_in_Yaound%C3%A9.JPG?width=800",
+    "image": "/static/images/y010.jpg",
     "avg_price_fcfa": 5000,
     "best_time": "Matin en semaine",
     "popularity": 78,
-    "image_source": "Wikimedia Commons (CC BY-SA)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8647,
     "lng": 11.5152,
     "maps_url": "https://share.google/uiLXiKFHsiAZOl8Aa"
@@ -211,11 +211,11 @@
       "shopping",
       "culture"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/March%C3%A9_Mokolo_%C3%A0_Yaound%C3%A9.jpg?width=800",
+    "image": "/static/images/y011.jpg",
     "avg_price_fcfa": 5000,
     "best_time": "Matin",
     "popularity": 70,
-    "image_source": "Wikimedia Commons (CC BY-SA)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.873,
     "lng": 11.505,
     "maps_url": "https://share.google/oCCXAaDUzT1GgUi3G"
@@ -231,11 +231,11 @@
       "art",
       "culture"
     ],
-    "image": "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?w=800",
+    "image": "/static/images/y012.jpg",
     "avg_price_fcfa": 10000,
     "best_time": "Journée",
     "popularity": 62,
-    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.88,
     "lng": 11.495,
     "maps_url": "https://share.google/fpX1l3ijBZvtmmTWD"
@@ -251,11 +251,11 @@
       "culture",
       "history"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/BLackitude%20Museum.jpg?width=800",
+    "image": "/static/images/y013.jpg",
     "avg_price_fcfa": 2000,
     "best_time": "Sur rendez-vous",
     "popularity": 50,
-    "image_source": "Wikimedia Commons (via Wikidata Q15961646)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.875,
     "lng": 11.52,
     "maps_url": "https://share.google/1YAUvO7hUz3k2lZTS"
@@ -271,11 +271,11 @@
       "culture",
       "history"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Monast%C3%A8re%20b%C3%A9n%C3%A9dictin%20du%20Mont%20F%C3%A9b%C3%A9.jpg?width=800",
+    "image": "/static/images/y014.jpg",
     "avg_price_fcfa": 1000,
     "best_time": "Week-end après-midi",
     "popularity": 48,
-    "image_source": "Wikimedia Commons (Monastère bénédictin du Mont Fébé)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8945,
     "lng": 11.5227,
     "maps_url": "https://share.google/5PiARq6IQ0A0erYU5"
@@ -290,11 +290,11 @@
       "culture",
       "events"
     ],
-    "image": "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=800",
+    "image": "/static/images/y015.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Selon événements",
     "popularity": 45,
-    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8815,
     "lng": 11.494,
     "founded_year": 1982,
@@ -311,11 +311,11 @@
       "sport",
       "events"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Stade_Ahmadou_Ahidjo_2014_%281%29.JPG?width=800",
+    "image": "/static/images/y016.jpg",
     "avg_price_fcfa": 3000,
     "best_time": "Jours de match",
     "popularity": 66,
-    "image_source": "Wikimedia Commons (CC BY-SA)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.873,
     "lng": 11.519,
     "maps_url": "https://share.google/h5iHW8OqaIL0IVhLC"
@@ -331,11 +331,11 @@
       "family",
       "relax"
     ],
-    "image": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800",
+    "image": "/static/images/y017.jpg",
     "avg_price_fcfa": 3500,
     "best_time": "Soirée",
     "popularity": 64,
-    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.85,
     "lng": 11.51,
     "maps_url": "https://share.google/QKSYyphUtgDJUrgqg"
@@ -351,11 +351,11 @@
       "food",
       "relax"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Hilton_Hotel_Yaound%C3%A9.JPG?width=800",
+    "image": "/static/images/y018.jpg",
     "avg_price_fcfa": 120000,
     "best_time": "Toute l'année",
     "popularity": 80,
-    "image_source": "Wikimedia Commons (CC BY-SA)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8667,
     "lng": 11.5167,
     "founded_year": 1974,
@@ -374,11 +374,11 @@
       "relax",
       "romance"
     ],
-    "image": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800",
+    "image": "/static/images/y019.jpg",
     "avg_price_fcfa": 90000,
     "best_time": "Toute l'année",
     "popularity": 74,
-    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8918,
     "lng": 11.5253,
     "maps_url": "https://share.google/RcN7puTjCxdYXL8gG"
@@ -393,11 +393,11 @@
       "luxury",
       "relax"
     ],
-    "image": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800",
+    "image": "/static/images/y020.jpg",
     "avg_price_fcfa": 75000,
     "best_time": "Toute l'année",
     "popularity": 60,
-    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8682,
     "lng": 11.5157,
     "maps_url": "https://share.google/GGydilVfQsrVb8xig"
@@ -412,11 +412,11 @@
       "food",
       "relax"
     ],
-    "image": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800",
+    "image": "/static/images/y021.jpg",
     "avg_price_fcfa": 2500,
     "best_time": "Matin",
     "popularity": 67,
-    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8655,
     "lng": 11.5183,
     "maps_url": "https://share.google/TL5Pl9s4oP1OtBrL8"
@@ -430,11 +430,11 @@
     "tags": [
       "food"
     ],
-    "image": "https://images.unsplash.com/photo-1526318896980-cf78c088247c?w=800",
+    "image": "/static/images/y022.jpg",
     "avg_price_fcfa": 12000,
     "best_time": "Déjeuner & dîner",
     "popularity": 58,
-    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8687,
     "lng": 11.5187,
     "maps_url": "https://share.google/xeeSFKH2C8uGuWn3V"
@@ -450,11 +450,11 @@
       "luxury",
       "romance"
     ],
-    "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800",
+    "image": "/static/images/y023.jpg",
     "avg_price_fcfa": 20000,
     "best_time": "Dîner, réserver",
     "popularity": 63,
-    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8647,
     "lng": 11.5152,
     "maps_url": "https://share.google/FSfbvOki7SwmUf6yT"
@@ -470,11 +470,11 @@
       "nightlife",
       "relax"
     ],
-    "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800",
+    "image": "/static/images/y024.jpg",
     "avg_price_fcfa": 15000,
     "best_time": "Soirée",
     "popularity": 76,
-    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.888,
     "lng": 11.518,
     "maps_url": "https://share.google/VRAgupI6BcpC2EUPo"
@@ -490,11 +490,11 @@
       "culture",
       "nightlife"
     ],
-    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?w=800",
+    "image": "/static/images/y025.jpg",
     "avg_price_fcfa": 3000,
     "best_time": "Soirée",
     "popularity": 71,
-    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.885,
     "lng": 11.51,
     "maps_url": "https://share.google/tMvv3Io5tK1Kbyr68"
@@ -510,11 +510,11 @@
       "culture",
       "nightlife"
     ],
-    "image": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=800",
+    "image": "/static/images/y026.jpg",
     "avg_price_fcfa": 4000,
     "best_time": "Soirée",
     "popularity": 59,
-    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8745,
     "lng": 11.504,
     "maps_url": "https://share.google/NugwmEoRIYEGTPJ4O"
@@ -530,11 +530,11 @@
       "history",
       "landmark"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Universit%C3%A9_de_Yaound%C3%A9_I.jpg?width=800",
+    "image": "/static/images/y027.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Journée (jours ouvrés)",
     "popularity": 55,
-    "image_source": "Wikimedia Commons",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8628,
     "lng": 11.5083,
     "founded_year": 1962,
@@ -550,11 +550,11 @@
     "tags": [
       "education"
     ],
-    "image": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800",
+    "image": "/static/images/y028.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Journée (jours ouvrés)",
     "popularity": 40,
-    "image_source": "Unsplash (placeholder générique - pas le vrai campus)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.9527,
     "lng": 11.5166,
     "founded_year": 2010,
@@ -572,11 +572,11 @@
       "events",
       "landmark"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Stade%20Omnisports%20Ahmadou%20Ahidjo%20Yaound%C3%A9%2001.jpg?width=800",
+    "image": "/static/images/y029.jpg",
     "avg_price_fcfa": 2000,
     "best_time": "Jour de match",
     "popularity": 65,
-    "image_source": "Wikimedia Commons (photo réelle du stade)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.88556,
     "lng": 11.54056,
     "founded_year": 1972,
@@ -594,11 +594,11 @@
       "nightlife",
       "affordable"
     ],
-    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?w=800",
+    "image": "/static/images/y030.jpg",
     "avg_price_fcfa": 3000,
     "best_time": "Soirée",
     "popularity": 70,
-    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.885,
     "lng": 11.5085,
     "maps_url": "https://share.google/3NqdWeCklaIXmBy2b"
@@ -613,11 +613,11 @@
       "shopping",
       "family"
     ],
-    "image": "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=800",
+    "image": "/static/images/y031.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Journée",
     "popularity": 45,
-    "image_source": "Unsplash (placeholder générique - pas le vrai magasin)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.888,
     "lng": 11.5195,
     "maps_url": "https://share.google/R6s9WorP5jxjWEKTi"
@@ -632,11 +632,11 @@
       "shopping",
       "family"
     ],
-    "image": "https://images.unsplash.com/photo-1601599963565-b7f49deb2fca?w=800",
+    "image": "/static/images/y032.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Journée",
     "popularity": 42,
-    "image_source": "Unsplash (placeholder générique - pas le vrai magasin)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.867,
     "lng": 11.5175,
     "maps_url": "https://share.google/9OaQ9U4p249Vl1u6n"
@@ -651,11 +651,11 @@
       "education",
       "culture"
     ],
-    "image": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800",
+    "image": "/static/images/y033.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Journée (jours ouvrés)",
     "popularity": 35,
-    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.864,
     "lng": 11.51,
     "maps_url": "https://share.google/ZABJAxJamEWczSpb7"
@@ -670,11 +670,11 @@
       "education",
       "shopping"
     ],
-    "image": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800",
+    "image": "/static/images/y034.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Journée",
     "popularity": 30,
-    "image_source": "Unsplash (placeholder générique - pas le vrai lieu)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8668,
     "lng": 11.5178,
     "maps_url": "https://share.google/OVbVgv1gfkFyLjuky"
@@ -688,11 +688,11 @@
     "tags": [
       "administrative"
     ],
-    "image": "https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=800",
+    "image": "/static/images/y035.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Matinée (jours ouvrés)",
     "popularity": 25,
-    "image_source": "Unsplash (placeholder générique - pas le vrai bâtiment)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.869,
     "lng": 11.5165,
     "maps_url": "https://share.google/IwQstKnLZdPWHCIhh"
@@ -706,11 +706,11 @@
     "tags": [
       "administrative"
     ],
-    "image": "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800",
+    "image": "/static/images/y036.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Matinée (jours ouvrés)",
     "popularity": 22,
-    "image_source": "Unsplash (placeholder générique - pas le vrai bâtiment)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8675,
     "lng": 11.5145,
     "maps_url": "https://share.google/5JfbXOLF0oRk4XQW4"
@@ -725,11 +725,11 @@
       "education",
       "history"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/College%20Lerclerc%20Yaound%C3%A9.jpg?width=800",
+    "image": "/static/images/y037.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Journée (jours ouvrés)",
     "popularity": 35,
-    "image_source": "Wikimedia Commons (photo réelle, vérifiée)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.858,
     "lng": 11.501,
     "founded_year": 1952,
@@ -744,11 +744,11 @@
     "tags": [
       "education"
     ],
-    "image": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800",
+    "image": "/static/images/y038.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Journée (jours ouvrés)",
     "popularity": 28,
-    "image_source": "Unsplash (placeholder générique)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.902,
     "lng": 11.512,
     "founded_year": 1956,
@@ -763,11 +763,11 @@
     "tags": [
       "education"
     ],
-    "image": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800",
+    "image": "/static/images/y039.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Journée (jours ouvrés)",
     "popularity": 26,
-    "image_source": "Unsplash (placeholder générique)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.869,
     "lng": 11.515,
     "maps_url": "https://share.google/IoVU2wE0PmzGs9dxV"
@@ -781,11 +781,11 @@
     "tags": [
       "education"
     ],
-    "image": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800",
+    "image": "/static/images/y040.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Journée (jours ouvrés)",
     "popularity": 18,
-    "image_source": "Unsplash (placeholder générique) — localisation approximative, à vérifier",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.97,
     "lng": 11.61,
     "founded_year": 2009,
@@ -800,11 +800,11 @@
     "tags": [
       "health"
     ],
-    "image": "https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=800",
+    "image": "/static/images/y041.jpg",
     "avg_price_fcfa": 0,
     "best_time": "24h/24",
     "popularity": 30,
-    "image_source": "Unsplash (placeholder générique)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8714,
     "lng": 11.5104,
     "founded_year": 1933,
@@ -820,11 +820,11 @@
     "tags": [
       "health"
     ],
-    "image": "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800",
+    "image": "/static/images/y042.jpg",
     "avg_price_fcfa": 0,
     "best_time": "24h/24",
     "popularity": 27,
-    "image_source": "Unsplash (placeholder générique)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.9066,
     "lng": 11.5414,
     "founded_year": 1985,
@@ -839,11 +839,11 @@
     "tags": [
       "health"
     ],
-    "image": "https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=800",
+    "image": "/static/images/y043.jpg",
     "avg_price_fcfa": 0,
     "best_time": "24h/24",
     "popularity": 22,
-    "image_source": "Unsplash (placeholder générique)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.8752,
     "lng": 11.5299,
     "founded_year": 2002,
@@ -858,11 +858,11 @@
     "tags": [
       "transport"
     ],
-    "image": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800",
+    "image": "/static/images/y044.jpg",
     "avg_price_fcfa": 0,
     "best_time": "24h/24",
     "popularity": 32,
-    "image_source": "Unsplash (placeholder générique)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.7226,
     "lng": 11.5533,
     "maps_url": "https://share.google/yAU95qKnlkihaULF8"
@@ -876,11 +876,11 @@
     "tags": [
       "sports"
     ],
-    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Palais%20des%20Sports%20Foule.jpg?width=800",
+    "image": "/static/images/y045.jpg",
     "avg_price_fcfa": 1000,
     "best_time": "Soirée (événements)",
     "popularity": 24,
-    "image_source": "Wikimedia Commons (photo réelle, vérifiée)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.874,
     "lng": 11.512,
     "founded_year": 2009,
@@ -896,11 +896,11 @@
       "shopping",
       "food"
     ],
-    "image": "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?w=800",
+    "image": "/static/images/y046.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Matinée",
     "popularity": 20,
-    "image_source": "Unsplash (placeholder générique)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.855,
     "lng": 11.515,
     "maps_url": "https://share.google/DhpMQFxnIKMNPRxZn"
@@ -915,11 +915,11 @@
       "culture",
       "religion"
     ],
-    "image": "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=800",
+    "image": "/static/images/y047.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Journée",
     "popularity": 19,
-    "image_source": "Unsplash (placeholder générique) — localisation approximative, à vérifier",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.876,
     "lng": 11.509,
     "maps_url": "https://share.google/S1PX1xtVBo98eCAbe"
@@ -933,11 +933,11 @@
     "tags": [
       "culture"
     ],
-    "image": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800",
+    "image": "/static/images/y048.jpg",
     "avg_price_fcfa": 1000,
     "best_time": "Soirée",
     "popularity": 23,
-    "image_source": "Unsplash (placeholder générique)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.883,
     "lng": 11.519,
     "maps_url": "https://share.google/6dIpE1zoaAncWB4gd"
@@ -951,11 +951,11 @@
     "tags": [
       "landmark"
     ],
-    "image": "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=800",
+    "image": "/static/images/y049.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Journée",
     "popularity": 17,
-    "image_source": "Unsplash (placeholder générique)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.867,
     "lng": 11.517,
     "maps_url": "https://share.google/LbAnXBughlSnPDV6n"
@@ -970,13 +970,34 @@
       "landmark",
       "history"
     ],
-    "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800",
+    "image": "/static/images/y050.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Journée",
     "popularity": 16,
-    "image_source": "Unsplash (placeholder générique) — localisation approximative, à vérifier",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.866,
     "lng": 11.5155,
     "maps_url": "https://share.google/rOUwHc4SxN4jsJI0E"
+  },
+  {
+    "id": "y051",
+    "name": "Stade d'Olembé (Stade Omnisports Paul Biya)",
+    "quartier": "Olembé",
+    "category": "sports",
+    "description": "Le plus grand stade du Cameroun (60 000 places), au nord de Yaoundé. Site principal de la CAN 2021 et des grands matchs des Lions Indomptables.",
+    "tags": [
+      "sport",
+      "football",
+      "stade",
+      "evenement"
+    ],
+    "image": "/static/images/y051.jpg",
+    "avg_price_fcfa": 2000,
+    "best_time": "Jour de match",
+    "popularity": 70,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.95083,
+    "lng": 11.54056,
+    "maps_url": "https://maps.google.com/?q=3.95083,11.54056"
   }
 ]

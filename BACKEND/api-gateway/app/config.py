@@ -22,5 +22,6 @@ ROUTES = [
     ("/recommendations", RECOMMENDATION_SERVICE_URL),
     ("/destinations", RECOMMENDATION_SERVICE_URL),
     ("/categories", RECOMMENDATION_SERVICE_URL),
+    ("/static", RECOMMENDATION_SERVICE_URL),  # real destination photos (static/images/*.jpg)
     ("/assistant", AI_SERVICE_URL),        # chat IA
 ]
