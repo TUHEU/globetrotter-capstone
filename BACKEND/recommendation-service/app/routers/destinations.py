@@ -31,7 +31,14 @@ def search_destinations(
     tag: Optional[str] = Query(None, description="Filter by tag, e.g. food"),
     category: Optional[str] = Query(None, description="attraction | museum | nature | market | restaurant | cafe | hotel | entertainment"),
     quartier: Optional[str] = None,
-    limit: int = Query(50, ge=1, le=100),
+    # Le max autorisé (100) est aussi la valeur par défaut - avant, le
+    # défaut était 50, ce qui coupait silencieusement le catalogue dès
+    # qu'un appel sans "limit" explicite dépassait ce chiffre (exactement
+    # ce qui s'est produit avec la 51e destination, Stade d'Olembé,
+    # ajoutée après ce défaut : elle n'apparaissait jamais dans l'app,
+    # pas parce qu'elle manquait côté données, mais parce que l'API la
+    # tronquait avant même que le résultat n'atteigne le client).
+    limit: int = Query(100, ge=1, le=100),
 ):
     dests = storage.get_destinations()
     if q:
