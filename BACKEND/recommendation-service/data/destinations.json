@@ -10,11 +10,11 @@
       "culture",
       "photo"
     ],
-    "image": "/static/images/y001.jpg",
+    "image": "https://commons.wikimedia.org/wiki/Special:FilePath/Monument_de_la_r%C3%A9unification_Yaound%C3%A9_01.JPG?width=800",
     "avg_price_fcfa": 1000,
     "best_time": "Journée",
     "popularity": 90,
-    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "image_source": "Wikimedia Commons (CC BY-SA) - photo réelle fournie par l'utilisateur (static/images/y001.jpg) ne correspondait pas au monument, remplacée",
     "lat": 3.8525,
     "lng": 11.5134,
     "maps_url": "https://share.google/6Iibyuzc9FUYI1VD6"
@@ -800,11 +800,11 @@
     "tags": [
       "health"
     ],
-    "image": "/static/images/y041.jpg",
+    "image": "https://images.unsplash.com/photo-1587351021355-a479a299d2f9?w=800",
     "avg_price_fcfa": 0,
     "best_time": "24h/24",
     "popularity": 30,
-    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "image_source": "Unsplash (placeholder générique) - la photo fournie (static/images/y041.jpg) montrait en réalité l'Hôpital GÉNÉRAL (voir enseigne visible sur la photo), pas l'Hôpital CENTRAL - retirée pour éviter d'induire en erreur",
     "lat": 3.8714,
     "lng": 11.5104,
     "founded_year": 1933,
