@@ -1,7 +1,7 @@
 # Changelog — GlobeTrotter Yaoundé
 
 Projet capstone CS 4122 (Distributed Systems) — The ICT University
-Superviseur : Eng. Mughe Godlove · Équipe : Fahdil, Nsangou Hamed Mochtar Ben Bilal
+Superviseur : Eng. Daniel Moune · Équipe : Fahdil
 
 Ce changelog couvre tout le travail réalisé depuis le lancement du projet,
 de la Phase 1 (Monolithe) jusqu'à la Phase 2 (Microservices) en production.
