@@ -17,6 +17,7 @@ class ItineraryCreate(BaseModel):
     stops: List[ItineraryStop] = []
     shared_with: List[str] = []  # emails of friends/family
     is_public: bool = False  # visible to followers in GET /itineraries/feed
+    budget_fcfa: Optional[int] = Field(None, ge=0)  # budget prévu par l'utilisateur
 
 
 class ItineraryUpdate(BaseModel):
@@ -27,6 +28,7 @@ class ItineraryUpdate(BaseModel):
     stops: Optional[List[ItineraryStop]] = None
     shared_with: Optional[List[str]] = None
     is_public: Optional[bool] = None
+    budget_fcfa: Optional[int] = Field(None, ge=0)
 
 
 class VisibilityUpdate(BaseModel):

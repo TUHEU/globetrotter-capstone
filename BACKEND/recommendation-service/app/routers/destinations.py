@@ -25,6 +25,19 @@ def categories():
     return {"results": CATEGORIES}
 
 
+@router.get("/destinations/stats/public")
+def public_destination_stats():
+    """Voir la note dans user-service/app/routers/social.py:public_user_stats.
+    Compte le total RÉEL, pas la page renvoyée par GET /destinations (qui
+    est limitée par `limit`, 100 par défaut - actuellement sans incidence
+    puisque le catalogue a moins de 100 entrées, mais ce compteur reste
+    exact même si le catalogue dépasse un jour cette limite)."""
+    return {
+        "total_destinations": len(storage.get_destinations()),
+        "total_categories": len(CATEGORIES),
+    }
+
+
 @router.get("/destinations")
 def search_destinations(
     q: Optional[str] = Query(None, description="Free-text search (name, quartier, tags)"),

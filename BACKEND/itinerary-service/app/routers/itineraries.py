@@ -32,6 +32,7 @@ def create_itinerary(body: ItineraryCreate, current=Depends(get_current_user)):
         "stops": [s.model_dump() for s in body.stops],
         "shared_with": body.shared_with,
         "is_public": body.is_public,
+        "budget_fcfa": body.budget_fcfa,
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
     storage.create_itinerary(it)

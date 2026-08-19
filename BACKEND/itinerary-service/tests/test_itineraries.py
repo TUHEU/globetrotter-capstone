@@ -30,6 +30,30 @@ def test_create_rejects_unknown_destination(client, auth_headers):
     assert res.status_code == 400
 
 
+def test_create_with_budget(client, auth_headers):
+    res = _create(client, auth_headers, budget_fcfa=50000)
+    assert res.status_code == 201
+    assert res.json()["budget_fcfa"] == 50000
+
+
+def test_create_without_budget_defaults_to_none(client, auth_headers):
+    res = _create(client, auth_headers)
+    assert res.status_code == 201
+    assert res.json()["budget_fcfa"] is None
+
+
+def test_negative_budget_rejected(client, auth_headers):
+    res = _create(client, auth_headers, budget_fcfa=-1000)
+    assert res.status_code == 422
+
+
+def test_update_budget(client, auth_headers):
+    it = _create(client, auth_headers).json()
+    res = client.put(f"/itineraries/{it['id']}", json={"budget_fcfa": 75000}, headers=auth_headers)
+    assert res.status_code == 200
+    assert res.json()["budget_fcfa"] == 75000
+
+
 def test_create_requires_auth(client):
     res = _create(client, {})
     assert res.status_code == 401

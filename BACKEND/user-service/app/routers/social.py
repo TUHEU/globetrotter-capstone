@@ -74,3 +74,16 @@ def followers(current=Depends(get_current_user)):
 @router.get("/follow/status/{user_id}")
 def follow_status(user_id: str, current=Depends(get_current_user)):
     return {"is_following": user_id in storage.get_following(current["id"])}
+
+
+@router.get("/users/stats/public")
+def public_user_stats():
+    """Statistiques PUBLIQUES et anonymes, sans authentification - juste un
+    compteur, aucune donnée personnelle. Destiné au site vitrine
+    (TUHEU/GLOBE) pour afficher "X personnes utilisent déjà GlobeTrotter",
+    pas à un usage interne à l'app (qui a déjà /users/discover pour ça,
+    lui-même protégé par authentification).
+    Nom de route explicite en /public pour qu'il n'y ait jamais de doute
+    en le relisant plus tard sur le fait qu'il est volontairement ouvert.
+    """
+    return {"total_users": len(storage.get_users())}

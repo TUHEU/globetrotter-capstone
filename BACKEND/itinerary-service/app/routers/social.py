@@ -61,3 +61,16 @@ def remove_comment(it_id: str, comment_id: str, current=Depends(get_current_user
     ok = storage.delete_comment(comment_id, current["id"])
     if not ok:
         raise HTTPException(status_code=403, detail="Not allowed to delete this comment")
+
+
+@router.get("/itineraries/stats/public")
+def public_itinerary_stats():
+    """Voir la note dans user-service/app/routers/social.py:public_user_stats
+    - même principe : compteur public anonyme pour le site vitrine, aucune
+    donnée de sortie individuelle exposée (ni titre, ni destinations, ni
+    propriétaire)."""
+    all_its = storage.get_itineraries()
+    return {
+        "total_itineraries": len(all_its),
+        "public_itineraries": sum(1 for it in all_its if it.get("is_public")),
+    }
