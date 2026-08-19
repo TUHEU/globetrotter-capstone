@@ -63,6 +63,7 @@ class ItineraryProvider extends ChangeNotifier {
     required List<ItineraryStop> stops,
     List<String> sharedWith = const [],
     bool isPublic = false,
+    int? budgetFcfa,
   }) async {
     try {
       await ApiClient.instance.dio.post('/itineraries', data: {
@@ -73,6 +74,7 @@ class ItineraryProvider extends ChangeNotifier {
         'stops': stops.map((s) => s.toJson()).toList(),
         'shared_with': sharedWith,
         'is_public': isPublic,
+        'budget_fcfa': budgetFcfa,
       });
       await load();
       return null;
@@ -85,6 +87,22 @@ class ItineraryProvider extends ChangeNotifier {
     try {
       await ApiClient.instance.dio.patch('/itineraries/$id/visibility', data: {
         'is_public': isPublic,
+      });
+      await load();
+      return null;
+    } catch (e) {
+      return e;
+    }
+  }
+
+  /// Persiste un nouvel ordre d'arrêts (ex: après optimisation d'itinéraire
+  /// via RouteOptimizer) - réutilise PUT /itineraries/{id}, le même
+  /// endpoint qu'une modification manuelle, plutôt qu'une route dédiée :
+  /// réordonner reste une simple mise à jour partielle des arrêts.
+  Future<Object?> updateStops(String id, List<ItineraryStop> stops) async {
+    try {
+      await ApiClient.instance.dio.put('/itineraries/$id', data: {
+        'stops': stops.map((s) => s.toJson()).toList(),
       });
       await load();
       return null;

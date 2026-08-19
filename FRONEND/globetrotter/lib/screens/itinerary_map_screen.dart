@@ -7,9 +7,12 @@ import 'package:geolocator/geolocator.dart' as geo;
 import '../models/destination.dart';
 import '../models/itinerary.dart';
 import '../providers/destination_provider.dart';
+import '../providers/itinerary_provider.dart';
 import '../services/directions_service.dart';
 import '../services/location_service.dart';
+import '../services/route_optimizer.dart';
 import '../services/weather_service.dart';
+import '../widgets/budget_summary_card.dart';
 import '../widgets/map3d_view.dart';
 import 'directions_screen.dart';
 
@@ -94,6 +97,60 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
     });
   }
 
+  Future<void> _optimizeRoute() async {
+    final destProvider = context.read<DestinationProvider>();
+    final currentStops = widget.itinerary.stops;
+    final optimized = RouteOptimizer.optimize(currentStops, destProvider.byId);
+
+    final beforeKm = RouteOptimizer.totalDistanceKm(currentStops, destProvider.byId);
+    final afterKm = RouteOptimizer.totalDistanceKm(optimized, destProvider.byId);
+    final sameOrder = optimized.map((s) => s.destinationId).join(',') ==
+        currentStops.map((s) => s.destinationId).join(',');
+
+    if (!mounted) return;
+
+    if (sameOrder) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Cet itinéraire est déjà optimal.')),
+      );
+      return;
+    }
+
+    // Confirmation avant d'appliquer - on ne réordonne jamais silencieusement
+    // les arrêts d'une sortie déjà créée sans que l'utilisateur le valide.
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Optimiser le trajet ?'),
+        content: Text(
+          beforeKm > 0
+              ? 'Distance actuelle : ${beforeKm.toStringAsFixed(1)} km\n'
+                  'Distance optimisée : ${afterKm.toStringAsFixed(1)} km\n'
+                  '(soit ${(beforeKm - afterKm).toStringAsFixed(1)} km de moins)\n\n'
+                  'Le premier arrêt de chaque jour reste inchangé ; seuls les '
+                  'arrêts suivants sont réordonnés pour réduire les trajets.'
+              : 'Les arrêts vont être réordonnés pour réduire les trajets entre eux.',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Appliquer')),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final err = await context.read<ItineraryProvider>().updateStops(widget.itinerary.id, optimized);
+    if (!mounted) return;
+    if (err == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Trajet optimisé !')));
+      _load(); // recharge la carte/le trajet avec le nouvel ordre
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Échec de l'optimisation")));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -127,6 +184,15 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
               onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                   builder: (_) => DirectionsScreen(destination: _points.first.destination))),
             ),
+          // Optimisation du trajet (plus proche voisin, jour par jour) -
+          // désactivé sous 3 arrêts, où il n'y a de toute façon rien à
+          // réordonner (voir RouteOptimizer._optimizeDay).
+          if (widget.itinerary.stops.length >= 3)
+            IconButton(
+              tooltip: 'Optimiser le trajet',
+              icon: const Icon(Icons.route_outlined),
+              onPressed: _optimizeRoute,
+            ),
         ],
       ),
       body: _loading
@@ -135,6 +201,10 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
               ? Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(_error!)))
               : Column(
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                      child: BudgetSummaryCard(itinerary: widget.itinerary),
+                    ),
                     Expanded(
                       child: Map3DView(
                         stops: stops,

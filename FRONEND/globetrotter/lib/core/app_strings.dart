@@ -166,6 +166,23 @@ class AppStrings {
   String get visibilityUpdateFailed => isFr
       ? 'Impossible de changer la visibilité'
       : 'Could not change visibility';
+  String get budgetLabel => isFr ? 'Budget prévu (optionnel)' : 'Planned budget (optional)';
+  String get budgetHelper => isFr
+      ? 'Comparé automatiquement au coût estimé de vos arrêts'
+      : 'Automatically compared against your stops\' estimated cost';
+  String get budgetSummaryTitle => isFr ? 'Budget' : 'Budget';
+  String get budgetNoPriceData =>
+      isFr ? 'Coût non estimable pour cette sortie' : 'Cost cannot be estimated for this trip';
+  String budgetEstimated(String amount) =>
+      isFr ? 'Coût estimé : $amount' : 'Estimated cost: $amount';
+  String budgetPlanned(String amount) => isFr ? 'Budget prévu : $amount' : 'Planned budget: $amount';
+  String get budgetWithinBudget => isFr ? 'Dans le budget' : 'Within budget';
+  String get budgetNearBudget => isFr ? 'Proche du budget' : 'Near budget';
+  String get budgetOverBudget => isFr ? 'Dépasse le budget' : 'Over budget';
+  String get optimizeRoute => isFr ? 'Optimiser le trajet' : 'Optimize route';
+  String get routeOptimized => isFr
+      ? 'Ordre des arrêts optimisé pour réduire les trajets'
+      : 'Stop order optimized to reduce travel';
   String get share => isFr ? 'Partager' : 'Share';
   String shareItineraryText(String title, int stops, String url) => isFr
       ? 'Découvre mon itinéraire "$title" sur GlobeTrotter Yaoundé ($stops étape(s)) ! $url'

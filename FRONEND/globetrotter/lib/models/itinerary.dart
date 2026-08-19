@@ -29,6 +29,7 @@ class Itinerary {
   final int likeCount;
   final bool likedByMe;
   final int commentCount;
+  final int? budgetFcfa;
 
   Itinerary({
     required this.id,
@@ -44,6 +45,7 @@ class Itinerary {
     this.likeCount = 0,
     this.likedByMe = false,
     this.commentCount = 0,
+    this.budgetFcfa,
   });
 
   factory Itinerary.fromJson(Map<String, dynamic> j) => Itinerary(
@@ -60,6 +62,7 @@ class Itinerary {
         likeCount: j['like_count'] ?? 0,
         likedByMe: j['liked_by_me'] ?? false,
         commentCount: j['comment_count'] ?? 0,
+        budgetFcfa: (j['budget_fcfa'] as num?)?.toInt(),
       );
 
   Itinerary copyWith({int? likeCount, bool? likedByMe, int? commentCount}) => Itinerary(
@@ -76,5 +79,6 @@ class Itinerary {
         likeCount: likeCount ?? this.likeCount,
         likedByMe: likedByMe ?? this.likedByMe,
         commentCount: commentCount ?? this.commentCount,
+        budgetFcfa: budgetFcfa,
       );
 }

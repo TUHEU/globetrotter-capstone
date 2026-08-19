@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../core/api_client.dart';
 import '../models/destination.dart';
@@ -6,6 +7,7 @@ import '../models/itinerary.dart';
 import '../providers/destination_provider.dart';
 import '../providers/itinerary_provider.dart';
 import '../providers/settings_provider.dart';
+import '../services/location_service.dart';
 
 class CreateItineraryScreen extends StatefulWidget {
   final Destination? preselected;
@@ -27,6 +29,7 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
   final _title = TextEditingController();
   final _description = TextEditingController();
   final _sharedWith = TextEditingController();
+  final _budget = TextEditingController();
   DateTime? _start;
   DateTime? _end;
   bool _isPublic = false;
@@ -47,8 +50,77 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
     });
   }
 
+  @override
+  void dispose() {
+    // Aucun dispose() n'existait avant pour ces contrôleurs (fuite mineure
+    // pré-existante) - corrigé au passage puisque ce fichier était déjà
+    // ouvert pour ajouter le champ budget.
+    _title.dispose();
+    _description.dispose();
+    _sharedWith.dispose();
+    _budget.dispose();
+    for (final stop in _stops) {
+      stop.notes.dispose();
+    }
+    super.dispose();
+  }
+
   String _fmt(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+  /// Réordonne les arrêts JOUR PAR JOUR (jamais entre jours différents -
+  /// l'utilisateur a choisi ces regroupements volontairement, ce n'est pas
+  /// à optimiser) selon un algorithme glouton du plus proche voisin :
+  /// part du premier arrêt tel que saisi (respecte le point de départ
+  /// choisi par l'utilisateur, ex: son hôtel), puis choisit à chaque étape
+  /// l'arrêt restant le plus proche du précédent. Ce n'est pas la tournée
+  /// mathématiquement optimale (le problème du voyageur de commerce est
+  /// NP-difficile), mais un résultat glouton "raisonnable en pratique" -
+  /// largement suffisant ici : réduire concrètement les allers-retours
+  /// inutiles pour 2 à 6 arrêts par jour, pas calculer un itinéraire
+  /// parfait sur 50 villes.
+  void _optimizeStopOrder() {
+    final byDay = <int, List<_StopDraft>>{};
+    for (final s in _stops) {
+      byDay.putIfAbsent(s.day, () => []).add(s);
+    }
+
+    final optimized = <_StopDraft>[];
+    for (final day in byDay.keys.toList()..sort()) {
+      final remaining = List<_StopDraft>.from(byDay[day]!);
+      if (remaining.length <= 2) {
+        // Rien à réordonner en dessous de 3 arrêts - toutes les tournées
+        // possibles font la même distance totale (aller-retour A→B→A).
+        optimized.addAll(remaining);
+        continue;
+      }
+      var current = remaining.removeAt(0);
+      final dayOrdered = [current];
+      while (remaining.isNotEmpty) {
+        remaining.sort((a, b) {
+          final da = LocationService.haversineKm(
+              current.destination.lat, current.destination.lng, a.destination.lat, a.destination.lng);
+          final db = LocationService.haversineKm(
+              current.destination.lat, current.destination.lng, b.destination.lat, b.destination.lng);
+          return da.compareTo(db);
+        });
+        current = remaining.removeAt(0);
+        dayOrdered.add(current);
+      }
+      optimized.addAll(dayOrdered);
+    }
+
+    setState(() {
+      _stops
+        ..clear()
+        ..addAll(optimized);
+    });
+
+    if (mounted) {
+      final s = context.read<SettingsProvider>().s;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(s.routeOptimized)));
+    }
+  }
 
   Future<void> _pickDate(bool isStart) async {
     // BUG CORRIGÉ : firstDate soustrayait 1 jour, autorisant hier (et
@@ -115,6 +187,7 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
               .toList(),
           sharedWith: shared,
           isPublic: _isPublic,
+          budgetFcfa: _budget.text.trim().isEmpty ? null : int.tryParse(_budget.text.trim()),
         );
     if (!mounted) return;
     final s = context.read<SettingsProvider>().s;
@@ -184,6 +257,18 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
                     helperText: s.shareWithHelper,
                   ),
                 ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _budget,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: InputDecoration(
+                    labelText: s.budgetLabel,
+                    prefixIcon: const Icon(Icons.savings_outlined),
+                    suffixText: 'FCFA',
+                    helperText: s.budgetHelper,
+                  ),
+                ),
                 const SizedBox(height: 8),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
@@ -197,6 +282,11 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
                 Row(children: [
                   Text(s.stopsLabel, style: Theme.of(context).textTheme.titleMedium),
                   const Spacer(),
+                  if (_stops.length >= 3)
+                    TextButton.icon(
+                        onPressed: _optimizeStopOrder,
+                        icon: const Icon(Icons.route_outlined, size: 18),
+                        label: Text(s.optimizeRoute)),
                   TextButton.icon(
                       onPressed: _addStop,
                       icon: const Icon(Icons.add),
@@ -226,7 +316,10 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete_outline),
-                            onPressed: () => setState(() => _stops.removeAt(i)),
+                            onPressed: () => setState(() {
+                                  _stops[i].notes.dispose();
+                                  _stops.removeAt(i);
+                                }),
                           ),
                         ]),
                         TextField(
