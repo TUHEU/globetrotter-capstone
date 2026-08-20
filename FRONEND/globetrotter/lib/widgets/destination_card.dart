@@ -113,9 +113,14 @@ class DestinationCard extends StatelessWidget {
                             style: theme.textTheme.titleMedium
                                 ?.copyWith(fontWeight: FontWeight.w700)),
                       ),
-                      Text(formatFcfa(destination.avgPriceFcfa),
-                          style: theme.textTheme.labelLarge
-                              ?.copyWith(color: theme.colorScheme.primary)),
+                      Text(
+                        formatPrice(
+                          destination.avgPriceFcfa,
+                          currency: context.watch<SettingsProvider>().currency,
+                          isFr: context.watch<SettingsProvider>().s.isFr,
+                        ),
+                        style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.primary),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 2),

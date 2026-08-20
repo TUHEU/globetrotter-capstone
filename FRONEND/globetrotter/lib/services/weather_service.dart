@@ -37,6 +37,11 @@ class WeatherInfo {
     if (weatherCode >= 95) return '⛈️';
     return '🌡️';
   }
+
+  /// true pour bruine/pluie/averses/orage (codes météo WMO >= 51) - utilisé
+  /// pour l'avertissement météo sur une sortie complète (voir ItineraryMap
+  /// Screen), pas seulement l'affichage individuel sur une fiche lieu.
+  bool get isRainy => weatherCode >= 51;
 }
 
 class WeatherService {

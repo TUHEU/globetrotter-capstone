@@ -62,6 +62,22 @@ class SettingsScreen extends StatelessWidget {
             selected: {settings.languageCode},
             onSelectionChanged: (sel) => settings.setLanguage(sel.first),
           ),
+          const SizedBox(height: 32),
+          Text(s.currency,
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w700)),
+          const SizedBox(height: 4),
+          Text(s.currencyHelper, style: theme.textTheme.bodySmall),
+          const SizedBox(height: 12),
+          SegmentedButton<String>(
+            segments: const [
+              ButtonSegment(value: 'FCFA', label: Text('FCFA')),
+              ButtonSegment(value: 'USD', label: Text(r'USD ($)')),
+              ButtonSegment(value: 'EUR', label: Text('EUR (€)')),
+            ],
+            selected: {settings.currency},
+            onSelectionChanged: (sel) => settings.setCurrency(sel.first),
+          ),
         ],
       ),
     );

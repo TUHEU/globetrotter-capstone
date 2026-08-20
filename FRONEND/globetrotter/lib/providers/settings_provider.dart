@@ -7,6 +7,13 @@ import '../core/app_strings.dart';
 class SettingsProvider extends ChangeNotifier {
   ThemeMode themeMode = ThemeMode.system;
   String languageCode = 'fr';
+  // FCFA (XAF) est la devise native de toutes les données - "USD"/"EUR"
+  // sont un affichage converti pour l'utilisateur, jamais stocké ni
+  // envoyé au backend (voir currency_format.dart : la conversion est
+  // strictement côté client, avec un taux fixe étiqueté comme estimation
+  // plutôt que de prétendre à un taux de change en direct que nous
+  // n'avons pas intégré).
+  String currency = 'FCFA';
 
   AppStrings get s => AppStrings(languageCode);
 
@@ -19,6 +26,7 @@ class SettingsProvider extends ChangeNotifier {
       _ => ThemeMode.system,
     };
     languageCode = prefs.getString('language_code') ?? 'fr';
+    currency = prefs.getString('currency') ?? 'FCFA';
     notifyListeners();
   }
 
@@ -34,5 +42,12 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('language_code', code);
+  }
+
+  Future<void> setCurrency(String code) async {
+    currency = code;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('currency', code);
   }
 }

@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart' as geo;
 import '../models/destination.dart';
 import '../models/itinerary.dart';
 import '../providers/destination_provider.dart';
+import '../providers/settings_provider.dart';
 import '../providers/itinerary_provider.dart';
 import '../services/directions_service.dart';
 import '../services/location_service.dart';
@@ -35,6 +36,44 @@ class _StopPoint {
   final Destination destination;
   WeatherInfo? weather;
   _StopPoint(this.stop, this.destination);
+}
+
+/// Avertissement météo pour la sortie complète - vérifie chaque arrêt (la
+/// météo est déjà récupérée pour tous dans _load(), rien de nouveau à
+/// aller chercher ici) et liste nommément les lieux concernés par de la
+/// pluie plutôt qu'un message générique "il pleut quelque part".
+class _RainWarningBanner extends StatelessWidget {
+  final List<_StopPoint> points;
+  const _RainWarningBanner({required this.points});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final rainy = points.where((p) => p.weather?.isRainy == true).toList();
+    if (rainy.isEmpty) return const SizedBox.shrink();
+
+    final names = rainy.map((p) => p.destination.name).join(', ');
+    final s = context.watch<SettingsProvider>().s;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.blue.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('🌧️', style: TextStyle(fontSize: 18)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(s.rainWarning(names), style: theme.textTheme.bodySmall),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
@@ -201,6 +240,11 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
               ? Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(_error!)))
               : Column(
                   children: [
+                    if (_points.any((p) => p.weather?.isRainy == true))
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                        child: _RainWarningBanner(points: _points),
+                      ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
                       child: BudgetSummaryCard(itinerary: widget.itinerary),

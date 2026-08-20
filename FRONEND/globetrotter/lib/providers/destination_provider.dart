@@ -12,23 +12,40 @@ class DestinationProvider extends ChangeNotifier {
   String query = '';
   String? activeTag;
   String? activeCategory;
+  int? minPrice;
+  int? maxPrice;
 
   bool get hasError => _lastException != null;
   String? errorMessage(AppStrings s) =>
       _lastException == null ? null : ApiClient.errorMessage(_lastException!, s);
 
-  Future<void> search({String? q, String? tag, String? category}) async {
+  Future<void> search({String? q, String? tag, String? category, int? minPrice, int? maxPrice, bool resetPriceFilter = false}) async {
     loading = true;
     _lastException = null;
     query = q ?? query;
     activeTag = tag;
     activeCategory = category;
+    // resetPriceFilter distingue "aucun filtre passé, garder l'actuel"
+    // (appels existants qui ne connaissent pas ce paramètre, ex: taper
+    // dans la barre de recherche) de "l'utilisateur a explicitement
+    // effacé le filtre de prix" - sans cette distinction, un simple appel
+    // à search(q: '...') aurait sinon réinitialisé silencieusement un
+    // filtre de prix déjà actif à chaque frappe.
+    if (resetPriceFilter) {
+      this.minPrice = null;
+      this.maxPrice = null;
+    } else {
+      this.minPrice = minPrice ?? this.minPrice;
+      this.maxPrice = maxPrice ?? this.maxPrice;
+    }
     notifyListeners();
     try {
       final res = await ApiClient.instance.dio.get('/destinations', queryParameters: {
         if (query.isNotEmpty) 'q': query,
         'tag': ?tag,
         'category': ?category,
+        'min_price': ?this.minPrice,
+        'max_price': ?this.maxPrice,
       });
       destinations = (res.data['results'] as List).map((j) => Destination.fromJson(j)).toList();
     } catch (e) {

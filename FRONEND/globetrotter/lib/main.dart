@@ -14,6 +14,7 @@ import 'providers/friends_provider.dart';
 import 'providers/messages_provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
+import 'widgets/galloping_horse_loader.dart';
 
 void main() {
   runApp(const GlobeTrotterApp());
@@ -91,8 +92,14 @@ class _BootstrapState extends State<_Bootstrap> {
       future: _future,
       builder: (context, snap) {
         if (snap.connectionState != ConnectionState.done) {
-          return const Scaffold(
-              body: Center(child: CircularProgressIndicator()));
+          // Scaffold + Center nécessaires ici : sans eux, le widget est
+          // rendu collé en haut à gauche de l'écran plutôt que centré, et
+          // le fond ne suit pas le thème (clair/sombre).
+          return Scaffold(
+            body: Center(
+              child: GallopingHorseLoader(message: context.watch<SettingsProvider>().s.loadingMessage),
+            ),
+          );
         }
         return snap.data == true ? const HomeScreen() : const LoginScreen();
       },

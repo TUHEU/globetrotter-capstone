@@ -21,7 +21,8 @@ class BudgetSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final s = context.watch<SettingsProvider>().s;
+    final settings = context.watch<SettingsProvider>();
+    final s = settings.s;
     final destProvider = context.watch<DestinationProvider>();
     final theme = Theme.of(context);
 
@@ -87,7 +88,10 @@ class BudgetSummaryCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             if (estimated != null)
-              Text(s.budgetEstimated(formatFcfa(estimated)), style: theme.textTheme.bodyMedium),
+              Text(
+                s.budgetEstimated(formatPrice(estimated, currency: settings.currency, isFr: s.isFr)),
+                style: theme.textTheme.bodyMedium,
+              ),
             if (anyMissing)
               Padding(
                 padding: const EdgeInsets.only(top: 2),
@@ -100,7 +104,7 @@ class BudgetSummaryCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 2),
                 child: Text(
-                  s.budgetPlanned(formatFcfa(itinerary.budgetFcfa!)),
+                  s.budgetPlanned(formatPrice(itinerary.budgetFcfa!, currency: settings.currency, isFr: s.isFr)),
                   style: theme.textTheme.bodyMedium,
                 ),
               ),

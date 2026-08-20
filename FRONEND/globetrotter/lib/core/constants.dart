@@ -124,3 +124,25 @@ String formatFcfa(int amount) {
   }
   return '$buf FCFA';
 }
+
+/// Taux approximatifs et FIXES (pas un taux de change en direct - aucune
+/// API de conversion n'est intégrée). Volontairement affiché avec un "≈"
+/// pour ne jamais laisser croire à une précision qu'on n'a pas. FCFA
+/// (XAF) reste la devise native de toutes les données stockées - cette
+/// fonction ne fait qu'un affichage converti à la volée, jamais persisté.
+const Map<String, double> _fcfaConversionRates = {'USD': 1 / 610, 'EUR': 1 / 655};
+const Map<String, String> _currencySymbols = {'USD': r'$', 'EUR': '€'};
+
+String formatPrice(int fcfaAmount, {required String currency, required bool isFr}) {
+  if (fcfaAmount == 0) return isFr ? 'Gratuit' : 'Free';
+  if (currency == 'FCFA' || !_fcfaConversionRates.containsKey(currency)) {
+    return formatFcfa(fcfaAmount);
+  }
+  final rate = _fcfaConversionRates[currency]!;
+  final symbol = _currencySymbols[currency]!;
+  final convertedValue = fcfaAmount * rate;
+  // 2 décimales sous 10 unités (ex: "$3.42"), arrondi à l'entier au-dessus
+  // (ex: "$142") - évite un faux sentiment de précision sur de gros montants.
+  final decimals = convertedValue < 10 ? 2 : 0;
+  return '≈ $symbol${convertedValue.toStringAsFixed(decimals)}';
+}

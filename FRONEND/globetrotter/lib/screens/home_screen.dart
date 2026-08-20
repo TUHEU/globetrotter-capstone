@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollDirection;
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../core/api_client.dart';
+import '../core/app_strings.dart';
 import '../core/constants.dart';
 import '../providers/auth_provider.dart';
 import '../providers/destination_provider.dart';
@@ -12,6 +14,8 @@ import '../providers/messages_provider.dart';
 import '../providers/settings_provider.dart';
 import '../services/deep_link_service.dart';
 import '../services/share_service.dart';
+import '../widgets/achievement_badges.dart';
+import '../widgets/travel_stats_card.dart';
 import '../widgets/destination_card.dart';
 import '../widgets/like_comment_bar.dart';
 import 'create_itinerary_screen.dart';
@@ -376,6 +380,14 @@ class _ExploreTabState extends State<_ExploreTab> {
             leading: const Icon(Icons.search),
             onSubmitted: (q) => p.search(q: q),
             trailing: [
+              IconButton(
+                icon: Icon(
+                  Icons.tune,
+                  color: (p.minPrice != null || p.maxPrice != null) ? Theme.of(context).colorScheme.primary : null,
+                ),
+                tooltip: s.priceFilter,
+                onPressed: () => _showPriceFilterSheet(context, p, s),
+              ),
               if (_search.text.isNotEmpty)
                 IconButton(
                     icon: const Icon(Icons.clear),
@@ -435,6 +447,79 @@ class _ExploreTabState extends State<_ExploreTab> {
       ]),
       ),
     );
+  }
+
+  void _showPriceFilterSheet(BuildContext context, DestinationProvider p, AppStrings s) {
+    final minCtrl = TextEditingController(text: p.minPrice?.toString() ?? '');
+    final maxCtrl = TextEditingController(text: p.maxPrice?.toString() ?? '');
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) => Padding(
+        // viewInsets.bottom pousse la feuille au-dessus du clavier - sans
+        // ça, les champs de saisie se retrouvent cachés derrière lui.
+        padding: EdgeInsets.only(
+          left: 20, right: 20, top: 20,
+          bottom: 20 + MediaQuery.of(sheetContext).viewInsets.bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(s.priceFilter, style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: minCtrl,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration: InputDecoration(labelText: s.priceMin, suffixText: 'FCFA'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: maxCtrl,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration: InputDecoration(labelText: s.priceMax, suffixText: 'FCFA'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(sheetContext).pop();
+                    p.search(q: _search.text, resetPriceFilter: true);
+                  },
+                  child: Text(s.clearFilter),
+                ),
+                const Spacer(),
+                FilledButton(
+                  onPressed: () {
+                    Navigator.of(sheetContext).pop();
+                    p.search(
+                      q: _search.text,
+                      minPrice: minCtrl.text.isEmpty ? null : int.tryParse(minCtrl.text),
+                      maxPrice: maxCtrl.text.isEmpty ? null : int.tryParse(maxCtrl.text),
+                    );
+                  },
+                  child: Text(s.applyFilter),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ).whenComplete(() {
+      minCtrl.dispose();
+      maxCtrl.dispose();
+    });
   }
 }
 
@@ -735,6 +820,10 @@ class _ProfileTab extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 20),
+          const TravelStatsCard(),
+          const SizedBox(height: 20),
+          const AchievementBadges(),
           const SizedBox(height: 20),
           Text(s.interests, style: theme.textTheme.titleSmall),
           const SizedBox(height: 8),

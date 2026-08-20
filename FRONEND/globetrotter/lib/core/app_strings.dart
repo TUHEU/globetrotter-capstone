@@ -183,6 +183,23 @@ class AppStrings {
   String get routeOptimized => isFr
       ? 'Ordre des arrêts optimisé pour réduire les trajets'
       : 'Stop order optimized to reduce travel';
+  String get loadingMessage => isFr ? 'En route vers Yaoundé…' : 'On the way to Yaoundé…';
+  String get travelStatsTitle => isFr ? 'Vos statistiques de voyage' : 'Your travel stats';
+  String get placesDiscovered => isFr ? 'Lieux découverts' : 'Places discovered';
+  String get quartiersExplored => isFr ? 'Quartiers explorés' : 'Neighborhoods explored';
+  String get tripsCreatedLabel => isFr ? 'Sorties créées' : 'Trips created';
+  String rainWarning(String places) => isFr
+      ? 'Pluie prévue pour : $places. Pensez à prévoir une activité intérieure de secours.'
+      : 'Rain expected for: $places. Consider planning an indoor backup activity.';
+  String get currency => isFr ? 'Devise' : 'Currency';
+  String get currencyHelper => isFr
+      ? 'Les prix restent en FCFA côté serveur ; ceci n\'est qu\'un affichage converti, taux approximatif'
+      : 'Prices stay in FCFA on the server; this is just a converted display, approximate rate';
+  String get priceFilter => isFr ? 'Filtrer par prix' : 'Filter by price';
+  String get priceMin => isFr ? 'Prix min' : 'Min price';
+  String get priceMax => isFr ? 'Prix max' : 'Max price';
+  String get clearFilter => isFr ? 'Effacer' : 'Clear';
+  String get applyFilter => isFr ? 'Appliquer' : 'Apply';
   String get share => isFr ? 'Partager' : 'Share';
   String shareItineraryText(String title, int stops, String url) => isFr
       ? 'Découvre mon itinéraire "$title" sur GlobeTrotter Yaoundé ($stops étape(s)) ! $url'
