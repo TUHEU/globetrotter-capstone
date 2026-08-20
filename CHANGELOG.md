@@ -1,10 +1,144 @@
 # Changelog — GlobeTrotter Yaoundé
 
 Projet capstone CS 4122 (Distributed Systems) — The ICT University
-Superviseur : Eng. Daniel Moune · Équipe : Fahdil
+Superviseur : Eng. Mughe Godlove · Équipe : Fahdil, Nsangou Hamed Mochtar Ben Bilal
 
 Ce changelog couvre tout le travail réalisé depuis le lancement du projet,
 de la Phase 1 (Monolithe) jusqu'à la Phase 2 (Microservices) en production.
+
+---
+
+## [2.17.0] — Statistiques publiques du site vitrine & corrections critiques
+### Ajouté
+- **Chiffres en direct sur la page d'accueil du site vitrine** (`TUHEU/GLOBE`) :
+  nombre de lieux, catégories, explorateurs inscrits et sorties créées,
+  remplaçant les chiffres codés en dur et déjà obsolètes ("26+ lieux" alors
+  que le catalogue en compte 51 depuis plusieurs versions). Chaque compteur
+  est indépendant et dégrade proprement : si un endpoint échoue ou n'est
+  pas encore déployé, seul ce compteur reste masqué - le reste du site
+  continue de fonctionner normalement
+- Trois nouvelles routes API publiques, sans authentification, renvoyant
+  UNIQUEMENT des compteurs agrégés (jamais de données personnelles) :
+  `GET /destinations/stats/public`, `GET /users/stats/public`,
+  `GET /itineraries/stats/public`
+
+### Corrigé
+- **`MESSAGES_FILE` utilisé mais jamais importé dans `user-service/app/
+  storage.py`** : `get_conversation`, `send_message`, `mark_conversation_
+  read` et `get_inbox` levaient toutes une `NameError` dès qu'elles étaient
+  réellement appelées - la messagerie directe n'a probablement jamais
+  fonctionné en production, indépendamment du problème nginx ci-dessous.
+  Trouvé en exécutant réellement la suite de tests de user-service (33
+  tests en erreur avant correction, 33 passants après un simple ajout
+  d'import)
+- **Liste blanche nginx incomplète** (`sites-enabled/fahglobe`) : le même
+  problème que celui résolu pour `/static` en v2.10.0/v2.11.0, mais pour
+  `/users`, `/follow` et `/messages` - absents de la regex, ces requêtes
+  n'atteignaient jamais la passerelle et tombaient sur le 404 générique du
+  site vitrine. Explique très probablement le signalement précédent
+  "je ne vois personne à suivre" (faussement attribué à un manque
+  d'utilisateurs inscrits) - Découvrir, Suivre et la Messagerie n'ont
+  vraisemblablement jamais fonctionné sur le site en production jusqu'à ce
+  correctif. Correction à appliquer manuellement sur le VPS (hors du
+  contrôle du code source, comme les fois précédentes)
+
+---
+
+## [2.16.0] — Optimisation d'itinéraire
+### Ajouté
+- **Bouton "Optimiser le trajet"** sur l'écran de création de sortie
+  (visible à partir de 3 arrêts) : réordonne les arrêts JOUR PAR JOUR
+  (jamais entre jours différents - les regroupements par jour restent un
+  choix délibéré de l'utilisateur) selon un algorithme glouton du plus
+  proche voisin, en conservant le premier arrêt saisi comme point de
+  départ (respecte un choix intentionnel, ex: partir de son hôtel). Pas la
+  tournée mathématiquement optimale (le problème du voyageur de commerce
+  est NP-difficile), mais un résultat glouton largement suffisant pour 2 à
+  6 arrêts par jour. Entièrement côté client, aucune nouvelle dépendance -
+  réutilise `LocationService.haversineKm()` déjà présent depuis la
+  fonctionnalité de navigation à la boussole (v2.7.0)
+
+### Corrigé
+- `create_itinerary_screen.dart` n'avait aucun `dispose()` : chaque
+  contrôleur de texte (titre, description, partage, notes par arrêt)
+  fuyait à la fermeture de l'écran. Corrigé au passage
+
+---
+
+## [2.15.0] — Planificateur de budget
+### Ajouté
+- **Budget prévu sur une sortie** (`budget_fcfa`, optionnel) : champ de
+  saisie à la création d'une sortie, comparé automatiquement au coût
+  estimé (somme des `avg_price_fcfa` des destinations dans les arrêts) sur
+  une nouvelle carte "Budget" affichée sur la fiche de la sortie, avec un
+  statut visuel 🟢 dans le budget / 🟠 proche du budget (90-105%) /
+  🔴 dépasse le budget. Validé côté serveur (`ge=0`, budget négatif
+  rejeté) - 4 nouveaux tests, suite complète de itinerary-service
+  vérifiée à 27/27 passants après ajout (exécutée réellement, pas
+  seulement une vérification de syntaxe)
+
+---
+
+## [2.14.0] — Photos réelles pour les 51 destinations
+### Ajouté
+- **51e destination** : Stade d'Olembé (Stade Omnisports Paul Biya), le plus
+  grand stade du Cameroun (60 000 places), site principal de la CAN 2021
+- **Photos réelles fournies directement par l'utilisateur** pour 50 des 51
+  destinations (`recommendation-service/static/images/*.jpg`, servies via
+  un nouveau montage `StaticFiles`, route `/static` ajoutée à
+  `api-gateway/app/config.py`) — remplace la quasi-totalité des
+  placeholders génériques Unsplash qui subsistaient depuis le début du
+  projet. **Les 51 destinations vérifiées une par une par inspection
+  visuelle directe** plutôt que par simple confiance (voir les incidents
+  répétés de jeux de données fabriqués documentés en v2.8.0 et v2.12.0) :
+  49 confirmées correctes - dont une bonne douzaine sans ambiguïté
+  possible, le nom du lieu étant directement lisible sur l'enseigne visible
+  dans la photo elle-même (Calafatas, ICT University, DÔVV, Santa Lucia,
+  Canal Olympia, Institut Français, Direction Générale des Impôts,
+  Rectorat de l'Université de Yaoundé I, etc.) - 1 erreur trouvée et
+  corrigée (voir Corrigé), 1 restée en placeholder honnête faute de
+  meilleure source (voir Corrigé)
+
+### Corrigé
+- **Hôpital Central (y041) et Hôpital Général (y042) utilisaient la MÊME
+  photo** : l'enseigne visible sur l'image de y041 indiquait sans
+  ambiguïté "Hôpital Général de Yaoundé" - la mauvaise photo pour un
+  établissement distinct. Aucune photo Wikimedia Commons vérifiable
+  trouvée spécifiquement pour l'Hôpital Central (seul l'Hôpital Général a
+  une catégorie Commons avec un fichier réel) ; y041 remis en placeholder
+  générique honnête plutôt que de laisser la photo d'un AUTRE hôpital,
+  plus trompeur qu'un placeholder générique
+- **Chemin d'image relatif non résolu** (`/static/images/y001.jpg` stocké
+  tel quel dans `destinations.json`) : contrairement aux URLs Wikimedia
+  (absolues), ce format ne peut pas être chargé directement - côté mobile
+  en particulier, le client Dio dédié aux images n'a pas de `baseUrl`
+  configuré, donc un chemin relatif seul ne pointe vers aucun serveur
+  et échoue immédiatement. Résolu via `ApiConstants.resolveImageUrl()`,
+  complétant le chemin avec `baseUrl` uniquement quand l'image n'est pas
+  déjà une URL absolue - déjà implémenté correctement par l'utilisateur
+  lui-même dans cette mise à jour
+- **Photo erronée pour le Monument de la Réunification** (`y001.jpg`
+  affichait un bâtiment institutionnel quelconque, pas la tour spiralée) :
+  remplacée par la photo Wikimedia Commons déjà vérifiée précédemment
+  dans ce projet
+- **`.gitignore` excluait par erreur `recommendation-service/data/*.json`**
+  (destinations.json) au même titre que les données réellement générées à
+  l'exécution (comptes utilisateurs, sorties...) — contrairement à
+  celles-ci, destinations.json est un catalogue de référence édité par
+  l'équipe, pas par les utilisateurs de l'app, et doit être suivi par git
+  comme n'importe quel fichier source. Cette exclusion aurait
+  silencieusement empêché tout changement de ce fichier (photos, liens
+  Google Maps, historique des lieux...) d'être committé puis déployé via
+  `update.sh` sur le VPS
+
+### Refusé (sur demande explicite, pour des raisons légales)
+- Utilisation d'images TripAdvisor demandée à plusieurs reprises pour
+  remplacer les placeholders restants — refusée : contrairement à
+  Wikimedia Commons (Creative Commons) ou à l'API Google Places (utilisée
+  dans les conditions d'utilisation prévues par Google), les photos
+  TripAdvisor restent la propriété de leurs auteurs sans licence
+  d'utilisation accordée ; les copier aurait constitué une violation de
+  droit d'auteur dans un projet soumis académiquement
 
 ---
 
