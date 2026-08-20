@@ -52,6 +52,8 @@ def search_destinations(
     # pas parce qu'elle manquait côté données, mais parce que l'API la
     # tronquait avant même que le résultat n'atteigne le client).
     limit: int = Query(100, ge=1, le=100),
+    min_price: Optional[int] = Query(None, ge=0, description="Minimum avg_price_fcfa (inclusive)"),
+    max_price: Optional[int] = Query(None, ge=0, description="Maximum avg_price_fcfa (inclusive)"),
 ):
     dests = storage.get_destinations()
     if q:
@@ -69,6 +71,10 @@ def search_destinations(
         dests = [d for d in dests if d.get("category") == category.lower()]
     if quartier:
         dests = [d for d in dests if quartier.lower() in d.get("quartier", "").lower()]
+    if min_price is not None:
+        dests = [d for d in dests if d.get("avg_price_fcfa", 0) >= min_price]
+    if max_price is not None:
+        dests = [d for d in dests if d.get("avg_price_fcfa", 0) <= max_price]
     dests.sort(key=lambda d: d.get("popularity", 0), reverse=True)
     return {"count": len(dests[:limit]), "results": dests[:limit]}
 

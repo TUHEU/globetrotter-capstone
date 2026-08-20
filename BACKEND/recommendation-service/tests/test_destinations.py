@@ -22,6 +22,31 @@ def test_filter_by_category(client):
     assert res.json()["results"][0]["id"] == "t003"
 
 
+def test_filter_by_min_price(client):
+    # t001=1000, t002=2000, t003=500 -> min_price=1000 exclut t003 (inclusif sur t001)
+    res = client.get("/destinations", params={"min_price": 1000})
+    ids = {d["id"] for d in res.json()["results"]}
+    assert ids == {"t001", "t002"}
+
+
+def test_filter_by_max_price(client):
+    res = client.get("/destinations", params={"max_price": 1000})
+    ids = {d["id"] for d in res.json()["results"]}
+    assert ids == {"t001", "t003"}
+
+
+def test_filter_by_price_range(client):
+    res = client.get("/destinations", params={"min_price": 600, "max_price": 1500})
+    ids = {d["id"] for d in res.json()["results"]}
+    assert ids == {"t001"}
+
+
+def test_price_range_excluding_everything_returns_empty(client):
+    res = client.get("/destinations", params={"min_price": 5000})
+    assert res.json()["count"] == 0
+    assert res.json()["results"] == []
+
+
 def test_get_single_destination(client):
     res = client.get("/destinations/t001")
     assert res.status_code == 200
