@@ -5,6 +5,7 @@ rather than folding these in - same "one file per concern" convention as
 the rest of this codebase.
 """
 from fastapi import APIRouter, Depends, HTTPException
+from datetime import datetime
 
 from .. import storage
 from ..models import CommentCreate
@@ -66,11 +67,25 @@ def remove_comment(it_id: str, comment_id: str, current=Depends(get_current_user
 @router.get("/itineraries/stats/public")
 def public_itinerary_stats():
     """Voir la note dans user-service/app/routers/social.py:public_user_stats
-    - même principe : compteur public anonyme pour le site vitrine, aucune
-    donnée de sortie individuelle exposée (ni titre, ni destinations, ni
-    propriétaire)."""
+    - même principe : compteurs publics anonymes pour le site vitrine,
+    aucune donnée de sortie individuelle exposée (ni titre, ni
+    destinations, ni propriétaire). weekly_growth utilise le vrai
+    created_at de chaque sortie."""
     all_its = storage.get_itineraries()
+    weekly: dict = {}
+    for it in all_its:
+        created = it.get("created_at", "")
+        if not created:
+            continue
+        try:
+            dt = datetime.fromisoformat(created)
+        except ValueError:
+            continue
+        week_key = dt.strftime("%Y-W%V")
+        weekly[week_key] = weekly.get(week_key, 0) + 1
+    weekly_growth = [{"week": k, "count": v} for k, v in sorted(weekly.items())]
     return {
         "total_itineraries": len(all_its),
         "public_itineraries": sum(1 for it in all_its if it.get("is_public")),
+        "weekly_growth": weekly_growth,
     }

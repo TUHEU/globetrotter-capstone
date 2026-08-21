@@ -31,10 +31,25 @@ def public_destination_stats():
     Compte le total RÉEL, pas la page renvoyée par GET /destinations (qui
     est limitée par `limit`, 100 par défaut - actuellement sans incidence
     puisque le catalogue a moins de 100 entrées, mais ce compteur reste
-    exact même si le catalogue dépasse un jour cette limite)."""
+    exact même si le catalogue dépasse un jour cette limite).
+
+    by_category et top_popular sont dérivés des vraies données du
+    catalogue (pas de chiffres inventés pour "remplir" un graphique) -
+    top_popular expose uniquement nom + score de popularité, jamais de
+    donnée sensible (aucune n'existe de toute façon sur une destination)."""
+    dests = storage.get_destinations()
+    by_category: dict = {}
+    for d in dests:
+        cat = d.get("category", "autre")
+        by_category[cat] = by_category.get(cat, 0) + 1
+    top_popular = sorted(dests, key=lambda d: d.get("popularity", 0), reverse=True)[:6]
     return {
-        "total_destinations": len(storage.get_destinations()),
+        "total_destinations": len(dests),
         "total_categories": len(CATEGORIES),
+        "by_category": by_category,
+        "top_popular": [
+            {"name": d["name"], "popularity": d.get("popularity", 0)} for d in top_popular
+        ],
     }
 
 
