@@ -8,6 +8,83 @@ de la Phase 1 (Monolithe) jusqu'à la Phase 2 (Microservices) en production.
 
 ---
 
+## [2.19.0] — Graphiques d'activité sur le site vitrine
+### Ajouté
+- **3 graphiques en direct** sur le site vitrine (Chart.js, CDN, aucune
+  étape de build) : courbe de croissance hebdomadaire (comptes + sorties
+  créées, à partir du vrai `created_at` de chaque enregistrement),
+  répartition des lieux par catégorie (donut), lieux les plus populaires
+  (barres horizontales) - toutes les données affichées sont réelles,
+  aucun chiffre inventé pour "remplir" un graphique. Chaque graphique
+  affiche un état vide honnête plutôt qu'un graphique cassé si les
+  données ne sont pas encore disponibles
+- Extension des 3 endpoints publics existants (`/users/stats/public`,
+  `/itineraries/stats/public`, `/destinations/stats/public`) avec
+  `weekly_growth`, `by_category` et `top_popular` - toujours uniquement
+  des compteurs agrégés et anonymes, jamais de donnée individuelle
+
+---
+
+## [2.19.0] — Graphiques d'activité sur le site vitrine
+### Ajouté
+- **Trois graphiques réels** sur la page d'accueil du site vitrine
+  (Chart.js, via CDN, aucune étape de build) :
+  - **Courbe de croissance hebdomadaire** (comptes créés + sorties créées,
+    par semaine ISO) - dérivée du vrai `created_at` de chaque compte/sortie,
+    jamais de données inventées pour "faire joli"
+  - **Répartition des lieux par catégorie** (donut)
+  - **Top 6 des lieux les plus populaires** (barres horizontales) -
+    réutilise le compteur `popularity` déjà existant côté backend
+    (`recommendation-service`, incrémenté à chaque ajout d'un lieu dans
+    une sortie), pas une nouvelle mesure inventée pour l'occasion
+- Les trois endpoints `/stats/public` (v2.17.0) enrichis en conséquence :
+  `by_category`, `top_popular` (recommendation-service),
+  `weekly_growth` (user-service ET itinerary-service)
+- État vide géré proprement par graphique : si un endpoint échoue ou
+  qu'il n'y a pas encore assez de données, un message de repli s'affiche
+  à la place d'un graphique cassé ou vide - jamais d'erreur visible
+
+---
+
+## [2.18.0] — Cinq nouvelles fonctionnalités & écran de chargement
+### Ajouté
+- **Écran de chargement "cheval au galop"** (`GallopingHorseLoader`) :
+  silhouette dessinée entièrement en `CustomPainter`, aucune image externe
+  - les 4 jambes sont animées à des phases différentes du cycle pour un
+  vrai mouvement de galop (pas un simple aller-retour répété), avec un
+  rebond vertical du corps synchronisé sur 2 temps par cycle. Remplace le
+  `CircularProgressIndicator` générique au démarrage de l'app
+- **Statistiques de voyage sur le Profil** (`TravelStatsCard`) : lieux
+  uniques et quartiers uniques découverts à travers toutes les sorties de
+  l'utilisateur - calculé côté client à partir des données déjà chargées,
+  aucun changement backend. Nouveau badge "Explorateur" (15+ lieux)
+  ajouté au système de badges déjà existant plutôt que d'en créer un
+  second en doublon
+- **Avertissement météo sur une sortie** : réutilise la météo déjà
+  récupérée pour chaque arrêt (`_load()` dans `ItineraryMapScreen`,
+  aucun nouvel appel réseau), affiche une bannière nommant les lieux
+  concernés par de la pluie dès qu'au moins un arrêt est concerné
+- **Devise d'affichage (FCFA/USD/EUR)** : préférence persistée
+  (`SettingsProvider.currency`), sélecteur dans Paramètres. Taux FIXES et
+  approximatifs (pas de conversion en direct), affichage préfixé par "≈"
+  pour ne jamais laisser croire à une précision non garantie - FCFA reste
+  la devise native de toutes les données stockées, la conversion est
+  strictement un affichage côté client
+- **Filtre de prix sur l'Explorateur** : `min_price`/`max_price` sur
+  `GET /destinations` (backend), icône de filtre + feuille modale
+  (frontend). 4 nouveaux tests backend (plage, bornes inclusives,
+  résultat vide) - suite complète de recommendation-service vérifiée à
+  19/19 passants après ajout (exécutée réellement)
+
+### Corrigé
+- Fuite de contrôleurs dans la nouvelle feuille de filtre de prix (deux
+  `TextEditingController` jamais disposés) - corrigée avant livraison
+- `AchievementBadges` : passage à 5 badges risquait un débordement visuel
+  sur téléphones étroits avec l'ancien `Row` à largeur fixe - rendu
+  défilable horizontalement
+
+---
+
 ## [2.17.0] — Statistiques publiques du site vitrine & corrections critiques
 ### Ajouté
 - **Chiffres en direct sur la page d'accueil du site vitrine** (`TUHEU/GLOBE`) :
