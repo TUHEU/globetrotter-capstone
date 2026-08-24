@@ -1,6 +1,7 @@
 """Recommendation Service - Data Access Layer. Only ever touches destinations.json."""
 import json
 import threading
+import uuid
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -76,6 +77,11 @@ def get_reviews_for_destination(destination_id: str) -> List[Dict[str, Any]]:
     all_reviews = _read(DESTINATION_REVIEWS_FILE)
     reviews = [r for r in all_reviews if r["destination_id"] == destination_id]
     reviews.sort(key=lambda r: r["created_at"], reverse=True)
+    # Rétrocompatibilité : les avis créés AVANT l'ajout des réponses n'ont
+    # pas encore de clé "replies" dans le fichier JSON - on la complète à
+    # la lecture plutôt que de migrer tout le fichier une bonne fois.
+    for r in reviews:
+        r.setdefault("replies", [])
     return reviews
 
 
@@ -83,9 +89,32 @@ def add_destination_review(review: Dict[str, Any]) -> Dict[str, Any]:
     with _lock:
         all_reviews = _read(DESTINATION_REVIEWS_FILE)
         review["id"] = f"{len(all_reviews) + 1:06d}_{review['destination_id']}"
+        review["replies"] = []
         all_reviews.append(review)
         _write(DESTINATION_REVIEWS_FILE, all_reviews)
         return review
+
+
+def new_reply_id() -> str:
+    return uuid.uuid4().hex[:10]
+
+
+def add_reply_to_review(
+    destination_id: str, review_id: str, reply: Dict[str, Any]
+) -> Optional[Dict[str, Any]]:
+    """Ajoute une réponse à l'avis d'un autre utilisateur. Retourne l'avis
+    mis à jour (avec sa nouvelle réponse), ou None si l'avis n'existe pas
+    (ou n'appartient pas à ce lieu - évite de répondre à un avis d'un
+    AUTRE lieu en devinant juste son id)."""
+    with _lock:
+        all_reviews = _read(DESTINATION_REVIEWS_FILE)
+        for r in all_reviews:
+            if r["id"] == review_id and r["destination_id"] == destination_id:
+                r.setdefault("replies", [])
+                r["replies"].append(reply)
+                _write(DESTINATION_REVIEWS_FILE, all_reviews)
+                return r
+        return None
 
 
 def get_review_summary(destination_id: str) -> Dict[str, Any]:
