@@ -1,3 +1,27 @@
+class ReviewReply {
+  final String id;
+  final String userId;
+  final String authorName;
+  final String text;
+  final String createdAt;
+
+  ReviewReply({
+    required this.id,
+    required this.userId,
+    required this.authorName,
+    required this.text,
+    required this.createdAt,
+  });
+
+  factory ReviewReply.fromJson(Map<String, dynamic> j) => ReviewReply(
+        id: j['id'],
+        userId: j['user_id'],
+        authorName: j['author_name'] ?? 'Utilisateur',
+        text: j['text'] ?? '',
+        createdAt: j['created_at'] ?? '',
+      );
+}
+
 class DestinationReview {
   final String id;
   final String destinationId;
@@ -6,6 +30,7 @@ class DestinationReview {
   final int rating;
   final String comment;
   final String createdAt;
+  final List<ReviewReply> replies;
 
   DestinationReview({
     required this.id,
@@ -15,6 +40,7 @@ class DestinationReview {
     required this.rating,
     required this.comment,
     required this.createdAt,
+    this.replies = const [],
   });
 
   factory DestinationReview.fromJson(Map<String, dynamic> j) => DestinationReview(
@@ -25,5 +51,8 @@ class DestinationReview {
         rating: (j['rating'] as num).toInt(),
         comment: j['comment'] ?? '',
         createdAt: j['created_at'] ?? '',
+        replies: (j['replies'] as List? ?? [])
+            .map((r) => ReviewReply.fromJson(r as Map<String, dynamic>))
+            .toList(),
       );
 }

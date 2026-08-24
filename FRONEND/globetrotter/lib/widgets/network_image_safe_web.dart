@@ -73,6 +73,29 @@ class WebImgState extends State<WebImg> {
   }
 
   @override
+  void didUpdateWidget(covariant WebImg oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // SANS ce override, quand Flutter réutilise cette même State pour un
+    // widget avec une NOUVELLE url (recyclage dans une ListView, très
+    // fréquent - c'est exactement ce qui causait "la première image ne
+    // s'affiche pas" : le premier lieu récupère souvent le State d'un
+    // widget précédent) : `onElementCreated` ne se redéclenche PAS (le
+    // `<img>` du DOM existe déjà), donc `_applySrc()` n'était plus jamais
+    // rappelé et l'image restait bloquée sur l'ancienne URL (ou vide, si
+    // elle n'avait pas fini de charger) indéfiniment. Même correctif que
+    // `didUpdateWidget` côté mobile (`_NetworkImageSafeState`).
+    if (oldWidget.url != widget.url) {
+      _stuckTimer?.cancel();
+      setState(() {
+        _failed = false;
+        _loaded = false;
+        _retryCount = 0;
+      });
+      _applySrc();
+    }
+  }
+
+  @override
   void dispose() {
     _stuckTimer?.cancel();
     super.dispose();

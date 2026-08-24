@@ -25,6 +25,12 @@ class _DestinationReviewsSectionState extends State<DestinationReviewsSection> {
   final _commentController = TextEditingController();
   bool _submitting = false;
 
+  // État du fil de réponses : quel avis est en train de recevoir une
+  // réponse (null = aucun), et le texte en cours de saisie pour celui-là.
+  String? _replyingToId;
+  final _replyController = TextEditingController();
+  bool _submittingReply = false;
+
   @override
   void initState() {
     super.initState();
@@ -34,6 +40,7 @@ class _DestinationReviewsSectionState extends State<DestinationReviewsSection> {
   @override
   void dispose() {
     _commentController.dispose();
+    _replyController.dispose();
     super.dispose();
   }
 
@@ -86,6 +93,29 @@ class _DestinationReviewsSectionState extends State<DestinationReviewsSection> {
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
+    }
+  }
+
+  Future<void> _submitReply(String reviewId) async {
+    final text = _replyController.text.trim();
+    if (text.isEmpty) return;
+    setState(() => _submittingReply = true);
+    try {
+      await ApiClient.instance.dio.post(
+        '/destinations/${widget.destinationId}/reviews/$reviewId/replies',
+        data: {'text': text},
+      );
+      _replyController.clear();
+      setState(() => _replyingToId = null);
+      await _load();
+    } catch (e) {
+      if (mounted) {
+        final s = context.read<SettingsProvider>().s;
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(ApiClient.errorMessage(e, s))));
+      }
+    } finally {
+      if (mounted) setState(() => _submittingReply = false);
     }
   }
 
@@ -175,6 +205,77 @@ class _DestinationReviewsSectionState extends State<DestinationReviewsSection> {
                       const SizedBox(height: 2),
                       Text(r.comment, style: theme.textTheme.bodyMedium),
                     ],
+                    // Réponses déjà postées par d'autres utilisateurs - en
+                    // retrait, pour bien montrer que ce sont des réactions
+                    // à CET avis précis, pas de nouveaux avis séparés.
+                    if (r.replies.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16, top: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: r.replies
+                              .map((rep) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 6),
+                                    child: RichText(
+                                      text: TextSpan(
+                                        style: theme.textTheme.bodySmall,
+                                        children: [
+                                          TextSpan(
+                                            text: '${rep.authorName} : ',
+                                            style: const TextStyle(fontWeight: FontWeight.w600),
+                                          ),
+                                          TextSpan(text: rep.text),
+                                        ],
+                                      ),
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16, top: 2),
+                      child: _replyingToId == r.id
+                          ? Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: _replyController,
+                                    autofocus: true,
+                                    maxLength: 300,
+                                    style: theme.textTheme.bodySmall,
+                                    decoration: const InputDecoration(
+                                      isDense: true,
+                                      hintText: 'Votre réponse…',
+                                      counterText: '',
+                                    ),
+                                    onSubmitted: (_) => _submitReply(r.id),
+                                  ),
+                                ),
+                                _submittingReply
+                                    ? const SizedBox(
+                                        width: 16, height: 16,
+                                        child: CircularProgressIndicator(strokeWidth: 2))
+                                    : IconButton(
+                                        icon: const Icon(Icons.send_rounded, size: 18),
+                                        onPressed: () => _submitReply(r.id),
+                                      ),
+                                IconButton(
+                                  icon: const Icon(Icons.close_rounded, size: 18),
+                                  onPressed: () => setState(() => _replyingToId = null),
+                                ),
+                              ],
+                            )
+                          : TextButton.icon(
+                              onPressed: () => setState(() => _replyingToId = r.id),
+                              icon: const Icon(Icons.reply_rounded, size: 15),
+                              label: const Text('Répondre', style: TextStyle(fontSize: 12.5)),
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: const Size(0, 28),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                            ),
+                    ),
                   ],
                 ),
               )),
