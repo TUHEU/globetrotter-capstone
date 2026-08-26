@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:maplibre_gl/maplibre_gl.dart' show LatLng;
 
 // NOTE: this used to import latlong2's LatLng instead of maplibre_gl's.
@@ -11,6 +12,22 @@ import 'package:maplibre_gl/maplibre_gl.dart' show LatLng;
 // assignable" errors in itinerary_map_screen.dart and directions_screen.dart.
 // Standardizing on maplibre_gl's LatLng here (the type every screen and
 // Map3DView already use) removes the conversion entirely at both ends.
+
+/// Mode de déplacement pour le calcul d'itinéraire. Chaque mode correspond
+/// à un "profil" OSRM différent - OSRM calcule un temps de trajet RÉALISTE
+/// pour CHAQUE mode (vitesse moyenne, routes autorisées, sens interdits
+/// pour une voiture mais pas pour un piéton, etc.), ce n'est jamais la
+/// même distance divisée par une vitesse fixe côté app.
+enum TransportMode {
+  walk('foot', 'À pied', Icons.directions_walk),
+  bike('bike', 'À vélo', Icons.directions_bike),
+  car('driving', 'En voiture', Icons.directions_car);
+
+  const TransportMode(this.osrmProfile, this.label, this.icon);
+  final String osrmProfile;
+  final String label;
+  final IconData icon;
+}
 
 /// Une instruction de navigation ("Tournez à droite sur Avenue Kennedy").
 class RouteStep {

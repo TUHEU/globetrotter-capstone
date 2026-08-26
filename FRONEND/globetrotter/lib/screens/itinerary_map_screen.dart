@@ -80,9 +80,11 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
   List<_StopPoint> _points = [];
   RouteResult? _route;
   bool _loading = true;
+  bool _routeLoading = false;
   String? _error;
   geo.Position? _myPosition;
   bool _showDirections = false;
+  TransportMode _mode = TransportMode.walk;
 
   @override
   void initState() {
@@ -125,6 +127,7 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
     if (resolved.length >= 2) {
       route = await DirectionsService.fetchRoute(
         resolved.map((p) => LatLng(p.destination.lat, p.destination.lng)).toList(),
+        profile: _mode.osrmProfile,
       );
     }
 
@@ -133,6 +136,29 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
       _points = resolved;
       _route = route;
       _loading = false;
+    });
+  }
+
+  /// Change de mode de transport et recalcule uniquement le trajet entre
+  /// les arrêts déjà connus - pas besoin de refaire tous les appels météo
+  /// ni de recharger les destinations.
+  Future<void> _onModeChanged(TransportMode mode) async {
+    if (_points.length < 2) {
+      setState(() => _mode = mode);
+      return;
+    }
+    setState(() {
+      _mode = mode;
+      _routeLoading = true;
+    });
+    final route = await DirectionsService.fetchRoute(
+      _points.map((p) => LatLng(p.destination.lat, p.destination.lng)).toList(),
+      profile: mode.osrmProfile,
+    );
+    if (!mounted) return;
+    setState(() {
+      _route = route;
+      _routeLoading = false;
     });
   }
 
@@ -249,13 +275,41 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
                       padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
                       child: BudgetSummaryCard(itinerary: widget.itinerary),
                     ),
+                    if (_points.length >= 2)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+                        child: SegmentedButton<TransportMode>(
+                          segments: TransportMode.values
+                              .map((m) => ButtonSegment(
+                                    value: m,
+                                    icon: Icon(m.icon, size: 18),
+                                    label: Text(m.label),
+                                  ))
+                              .toList(),
+                          selected: {_mode},
+                          showSelectedIcon: false,
+                          onSelectionChanged: (s) => _onModeChanged(s.first),
+                        ),
+                      ),
                     Expanded(
-                      child: Map3DView(
-                        stops: stops,
-                        // Plus besoin de convertir point par point : RouteResult.polyline
-                        // est maintenant déjà en LatLng maplibre_gl (voir directions_service.dart).
-                        routePolyline: _route?.polyline,
-                        myPosition: myLatLng,
+                      child: Stack(
+                        children: [
+                          Map3DView(
+                            stops: stops,
+                            // Plus besoin de convertir point par point : RouteResult.polyline
+                            // est maintenant déjà en LatLng maplibre_gl (voir directions_service.dart).
+                            routePolyline: _route?.polyline,
+                            myPosition: myLatLng,
+                          ),
+                          if (_routeLoading)
+                            const Positioned(
+                              top: 12, right: 12,
+                              child: SizedBox(
+                                width: 22, height: 22,
+                                child: CircularProgressIndicator(strokeWidth: 2.5),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                     if (_route != null)
@@ -269,11 +323,11 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                             child: Row(
                               children: [
-                                Icon(Icons.directions_walk, color: scheme.onPrimaryContainer, size: 20),
+                                Icon(_mode.icon, color: scheme.onPrimaryContainer, size: 20),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    'Trajet à pied : ${_route!.distanceLabel} · ${_route!.durationLabel}',
+                                    'Trajet ${_mode.label.toLowerCase()} : ${_route!.distanceLabel} · ${_route!.durationLabel}',
                                     style: TextStyle(
                                         color: scheme.onPrimaryContainer, fontWeight: FontWeight.w600),
                                   ),

@@ -93,6 +93,10 @@ class PlaceCategories {
     'administrative': Icons.account_balance_outlined,
     'health': Icons.local_hospital_outlined,
     'transport': Icons.flight_outlined,
+    'travel_agency': Icons.card_travel_outlined,
+    'bar': Icons.local_bar_outlined,
+    'snack': Icons.lunch_dining_outlined,
+    'gaming': Icons.sports_esports_outlined,
   };
 
   static const Map<String, String> labels = {
@@ -110,6 +114,36 @@ class PlaceCategories {
     'administrative': 'Administration',
     'health': 'Santé',
     'transport': 'Transport',
+    'travel_agency': 'Agences de voyage',
+    'bar': 'Bars',
+    'snack': 'Snacks',
+    'gaming': 'Jeux vidéo',
+  };
+
+  /// Couleur associée à chaque catégorie, utilisée pour colorer les
+  /// marqueurs sur la carte générale (explore_map_screen) - regroupées
+  /// par grande famille (nature=vert, food=orange, culture=violet,
+  /// pratique=bleu, sorties=rose) pour rester lisible même avec 18
+  /// catégories différentes sur la même carte.
+  static const Map<String, Color> colors = {
+    'nature': Color(0xFF2E7D32),
+    'sports': Color(0xFF2E7D32),
+    'restaurant': Color(0xFFF57C00),
+    'cafe': Color(0xFFF57C00),
+    'snack': Color(0xFFF57C00),
+    'market': Color(0xFFF57C00),
+    'supermarket': Color(0xFFF57C00),
+    'attraction': Color(0xFF7B1FA2),
+    'museum': Color(0xFF7B1FA2),
+    'education': Color(0xFF1565C0),
+    'administrative': Color(0xFF1565C0),
+    'health': Color(0xFF1565C0),
+    'transport': Color(0xFF1565C0),
+    'travel_agency': Color(0xFF1565C0),
+    'hotel': Color(0xFFC2185B),
+    'entertainment': Color(0xFFC2185B),
+    'bar': Color(0xFFC2185B),
+    'gaming': Color(0xFFC2185B),
   };
 }
 

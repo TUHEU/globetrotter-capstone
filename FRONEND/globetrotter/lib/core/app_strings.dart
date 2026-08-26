@@ -18,6 +18,7 @@ class AppStrings {
   String get noResults =>
       isFr ? 'Aucun lieu trouvé.' : 'No places found.';
   String get all => isFr ? 'Tout' : 'All';
+  String get exploreMapTitle => isFr ? 'Carte de Yaoundé' : 'Yaoundé map';
 
   // ---------- Dashboard header ----------
   String greeting(String name) =>

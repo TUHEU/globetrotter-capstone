@@ -28,8 +28,10 @@ class _DirectionsScreenState extends State<DirectionsScreen> {
   geo.Position? _myPosition;
   RouteResult? _route;
   bool _loading = true;
+  bool _routeLoading = false;
   String? _error;
   StreamSubscription<geo.Position>? _positionSub;
+  TransportMode _mode = TransportMode.walk;
 
   @override
   void initState() {
@@ -61,10 +63,13 @@ class _DirectionsScreenState extends State<DirectionsScreen> {
       return;
     }
 
-    final route = await DirectionsService.fetchRoute([
-      LatLng(pos.latitude, pos.longitude),
-      LatLng(widget.destination.lat, widget.destination.lng),
-    ]);
+    final route = await DirectionsService.fetchRoute(
+      [
+        LatLng(pos.latitude, pos.longitude),
+        LatLng(widget.destination.lat, widget.destination.lng),
+      ],
+      profile: _mode.osrmProfile,
+    );
 
     if (!mounted) return;
     setState(() {
@@ -79,6 +84,32 @@ class _DirectionsScreenState extends State<DirectionsScreen> {
     // avoir à quitter puis rouvrir cet écran.
     _positionSub = LocationService.watchPosition().listen((p) {
       if (mounted) setState(() => _myPosition = p);
+    });
+  }
+
+  /// Change de mode de transport (à pied / vélo / voiture) et recalcule
+  /// UNIQUEMENT le trajet - pas besoin de redemander la position GPS,
+  /// qu'on a déjà. Évite un aller-retour permission/GPS à chaque bascule.
+  Future<void> _onModeChanged(TransportMode mode) async {
+    if (mode == _mode || _myPosition == null) {
+      setState(() => _mode = mode);
+      return;
+    }
+    setState(() {
+      _mode = mode;
+      _routeLoading = true;
+    });
+    final route = await DirectionsService.fetchRoute(
+      [
+        LatLng(_myPosition!.latitude, _myPosition!.longitude),
+        LatLng(widget.destination.lat, widget.destination.lng),
+      ],
+      profile: mode.osrmProfile,
+    );
+    if (!mounted) return;
+    setState(() {
+      _route = route;
+      _routeLoading = false;
     });
   }
 
@@ -107,19 +138,46 @@ class _DirectionsScreenState extends State<DirectionsScreen> {
                 )
               : Column(
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
+                      child: SegmentedButton<TransportMode>(
+                        segments: TransportMode.values
+                            .map((m) => ButtonSegment(
+                                  value: m,
+                                  icon: Icon(m.icon, size: 18),
+                                  label: Text(m.label),
+                                ))
+                            .toList(),
+                        selected: {_mode},
+                        showSelectedIcon: false,
+                        onSelectionChanged: (s) => _onModeChanged(s.first),
+                      ),
+                    ),
                     Expanded(
-                      child: Map3DView(
-                        stops: [
-                          Map3DStop(
-                            point: LatLng(d.lat, d.lng),
-                            label: '📍',
-                            color: scheme.primary,
+                      child: Stack(
+                        children: [
+                          Map3DView(
+                            stops: [
+                              Map3DStop(
+                                point: LatLng(d.lat, d.lng),
+                                label: '📍',
+                                color: scheme.primary,
+                              ),
+                            ],
+                            routePolyline: _route?.polyline,
+                            myPosition: _myPosition != null
+                                ? LatLng(_myPosition!.latitude, _myPosition!.longitude)
+                                : null,
                           ),
+                          if (_routeLoading)
+                            const Positioned(
+                              top: 12, right: 12,
+                              child: SizedBox(
+                                width: 22, height: 22,
+                                child: CircularProgressIndicator(strokeWidth: 2.5),
+                              ),
+                            ),
                         ],
-                        routePolyline: _route?.polyline,
-                        myPosition: _myPosition != null
-                            ? LatLng(_myPosition!.latitude, _myPosition!.longitude)
-                            : null,
                       ),
                     ),
                     if (_route != null)
@@ -132,12 +190,12 @@ class _DirectionsScreenState extends State<DirectionsScreen> {
                             Expanded(
                               child: Row(
                                 children: [
-                                  Icon(Icons.directions_walk,
+                                  Icon(_mode.icon,
                                       color: scheme.onPrimaryContainer, size: 20),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      'Trajet à pied : ${_route!.distanceLabel} · ${_route!.durationLabel}',
+                                      'Trajet ${_mode.label.toLowerCase()} : ${_route!.distanceLabel} · ${_route!.durationLabel}',
                                       style: TextStyle(
                                           color: scheme.onPrimaryContainer,
                                           fontWeight: FontWeight.w600),

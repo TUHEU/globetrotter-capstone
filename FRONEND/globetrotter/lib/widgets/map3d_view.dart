@@ -12,7 +12,13 @@ class Map3DStop {
   final LatLng point;
   final String label;
   final Color color;
-  Map3DStop({required this.point, required this.label, required this.color});
+  /// Optionnel : appelé quand l'utilisateur tape sur ce point précis (sur
+  /// son cercle OU son étiquette). Laissé à null par les écrans qui
+  /// n'affichent qu'un itinéraire fixe (directions_screen, itinerary_map_
+  /// screen) - seule la carte générale (explore_map_screen) s'en sert pour
+  /// naviguer vers la fiche du lieu tapé.
+  final VoidCallback? onTap;
+  Map3DStop({required this.point, required this.label, required this.color, this.onTap});
 }
 
 String _toHex(Color c) =>
@@ -60,6 +66,22 @@ class Map3DViewState extends State<Map3DView> {
     }
   }
 
+  void _onMapCreated(MapLibreMapController c) {
+    _controller = c;
+    // Enregistrés UNE SEULE FOIS ici (pas dans _drawAnnotations, qui elle
+    // est rappelée à chaque changement de données) - sinon chaque redessin
+    // ajouterait un nouveau listener en plus des précédents, et un seul
+    // tap finirait par déclencher le callback plusieurs fois.
+    c.onSymbolTapped.add(_handleAnnotationTap);
+    c.onCircleTapped.add(_handleAnnotationTap);
+  }
+
+  void _handleAnnotationTap(dynamic annotation) {
+    final index = annotation.data?['stopIndex'] as int?;
+    if (index == null || index < 0 || index >= widget.stops.length) return;
+    widget.stops[index].onTap?.call();
+  }
+
   Future<void> _onStyleLoaded() async {
     await _drawAnnotations();
     _fitToContent();
@@ -86,20 +108,21 @@ class Map3DViewState extends State<Map3DView> {
       ));
     }
 
-    for (final stop in widget.stops) {
+    for (var i = 0; i < widget.stops.length; i++) {
+      final stop = widget.stops[i];
       await controller.addCircle(CircleOptions(
         geometry: stop.point,
         circleRadius: 14,
         circleColor: _toHex(stop.color),
         circleStrokeColor: '#ffffff',
         circleStrokeWidth: 2,
-      ));
+      ), {'stopIndex': i});
       await controller.addSymbol(SymbolOptions(
         geometry: stop.point,
         textField: stop.label,
         textColor: '#ffffff',
         textSize: 13,
-      ));
+      ), {'stopIndex': i});
     }
 
     final me = widget.myPosition;
@@ -177,7 +200,7 @@ class Map3DViewState extends State<Map3DView> {
           myLocationEnabled: false,
           initialCameraPosition:
               CameraPosition(target: initial, zoom: 15, tilt: _tilted ? 55 : 0),
-          onMapCreated: (c) => _controller = c,
+          onMapCreated: _onMapCreated,
           onStyleLoadedCallback: _onStyleLoaded,
           compassEnabled: true,
           trackCameraPosition: true,

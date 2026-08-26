@@ -21,6 +21,7 @@ import '../widgets/like_comment_bar.dart';
 import 'create_itinerary_screen.dart';
 import 'assistant_screen.dart';
 import 'destination_detail_screen.dart';
+import 'explore_map_screen.dart';
 import 'favorites_screen.dart';
 import 'friends_feed_screen.dart';
 import 'friends_screen.dart';
@@ -380,6 +381,12 @@ class _ExploreTabState extends State<_ExploreTab> {
             leading: const Icon(Icons.search),
             onSubmitted: (q) => p.search(q: q),
             trailing: [
+              IconButton(
+                icon: const Icon(Icons.map_outlined),
+                tooltip: s.exploreMapTitle,
+                onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ExploreMapScreen())),
+              ),
               IconButton(
                 icon: Icon(
                   Icons.tune,
