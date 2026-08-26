@@ -999,5 +999,570 @@
     "lat": 3.95083,
     "lng": 11.54056,
     "maps_url": "https://maps.google.com/?q=3.95083,11.54056"
+  },
+  {
+    "id": "y052",
+    "name": "Moabi Voyages",
+    "quartier": "Bastos",
+    "category": "travel_agency",
+    "description": "Agence de voyages de référence à Yaoundé : billetterie aérienne, circuits touristiques et voyages d'affaires.",
+    "tags": [
+      "voyage",
+      "billetterie"
+    ],
+    "image": "https://source.unsplash.com/800x600/?travel_agency,cameroon",
+    "avg_price_fcfa": 0,
+    "best_time": "Heures de bureau",
+    "popularity": 42,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.887,
+    "lng": 11.516,
+    "maps_url": "https://maps.google.com/?q=3.887,11.516"
+  },
+  {
+    "id": "y053",
+    "name": "Sao Tours",
+    "quartier": "Centre-ville",
+    "category": "travel_agency",
+    "description": "Tour-opérateur connu pour organiser excursions et bons plans voyage à travers le Cameroun.",
+    "tags": [
+      "voyage",
+      "excursions"
+    ],
+    "image": "https://source.unsplash.com/800x600/?travel_agency,cameroon",
+    "avg_price_fcfa": 0,
+    "best_time": "Heures de bureau",
+    "popularity": 38,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.868,
+    "lng": 11.519,
+    "maps_url": "https://maps.google.com/?q=3.868,11.519"
+  },
+  {
+    "id": "y054",
+    "name": "Safar Tours",
+    "quartier": "Centre-ville",
+    "category": "travel_agency",
+    "description": "Grand tour-opérateur camerounais affilié IATA, spécialisé billetterie internationale et circuits.",
+    "tags": [
+      "voyage",
+      "billetterie",
+      "international"
+    ],
+    "image": "https://source.unsplash.com/800x600/?travel_agency,cameroon",
+    "avg_price_fcfa": 0,
+    "best_time": "Heures de bureau",
+    "popularity": 40,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.8665,
+    "lng": 11.5175,
+    "maps_url": "https://maps.google.com/?q=3.8665,11.5175"
+  },
+  {
+    "id": "y055",
+    "name": "Hôtel Azur",
+    "quartier": "Bastos",
+    "category": "hotel",
+    "description": "Hôtel 3 étoiles au style Beaux-Arts, proche du Palais des Congrès : restaurant, snack-bar et terrasse.",
+    "tags": [
+      "luxury",
+      "relax"
+    ],
+    "image": "https://source.unsplash.com/800x600/?hotel,cameroon",
+    "avg_price_fcfa": 55000,
+    "best_time": "Toute l'année",
+    "popularity": 48,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.889,
+    "lng": 11.515,
+    "maps_url": "https://maps.google.com/?q=3.889,11.515"
+  },
+  {
+    "id": "y056",
+    "name": "Université de Yaoundé I",
+    "quartier": "Ngoa-Ekelle",
+    "category": "education",
+    "description": "La plus ancienne université du Cameroun, fondée en 1962 : sciences, lettres, médecine et plus.",
+    "tags": [
+      "education",
+      "universite"
+    ],
+    "image": "https://source.unsplash.com/800x600/?education,cameroon",
+    "avg_price_fcfa": 0,
+    "best_time": "Jours ouvrés",
+    "popularity": 55,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.86722,
+    "lng": 11.50139,
+    "maps_url": "https://maps.google.com/?q=3.86722,11.50139"
+  },
+  {
+    "id": "y057",
+    "name": "Université de Yaoundé II (Soa)",
+    "quartier": "Soa",
+    "category": "education",
+    "description": "Université spécialisée en droit, sciences économiques et sciences politiques, à la périphérie de Yaoundé.",
+    "tags": [
+      "education",
+      "universite",
+      "droit"
+    ],
+    "image": "https://source.unsplash.com/800x600/?education,cameroon",
+    "avg_price_fcfa": 0,
+    "best_time": "Jours ouvrés",
+    "popularity": 40,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.945,
+    "lng": 11.551,
+    "maps_url": "https://maps.google.com/?q=3.945,11.551"
+  },
+  {
+    "id": "y058",
+    "name": "École Normale Supérieure de Yaoundé",
+    "quartier": "Bambili/Nkoabang",
+    "category": "education",
+    "description": "Grande école de formation des enseignants du secondaire, l'une des plus prestigieuses du pays.",
+    "tags": [
+      "education"
+    ],
+    "image": "https://source.unsplash.com/800x600/?education,cameroon",
+    "avg_price_fcfa": 0,
+    "best_time": "Jours ouvrés",
+    "popularity": 32,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.879,
+    "lng": 11.504,
+    "maps_url": "https://maps.google.com/?q=3.879,11.504"
+  },
+  {
+    "id": "y059",
+    "name": "Lycée Général Leclerc",
+    "quartier": "Tsinga",
+    "category": "education",
+    "description": "L'un des plus anciens et réputés lycées publics du Cameroun, formant des générations d'élites.",
+    "tags": [
+      "education",
+      "lycee"
+    ],
+    "image": "https://source.unsplash.com/800x600/?education,cameroon",
+    "avg_price_fcfa": 0,
+    "best_time": "Jours ouvrés",
+    "popularity": 45,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.874,
+    "lng": 11.507,
+    "maps_url": "https://maps.google.com/?q=3.874,11.507"
+  },
+  {
+    "id": "y060",
+    "name": "Institut des Relations Internationales du Cameroun (IRIC)",
+    "quartier": "Nkolbisson",
+    "category": "education",
+    "description": "Grande école de formation diplomatique et de relations internationales, rattachée à l'Université de Yaoundé II.",
+    "tags": [
+      "education",
+      "diplomatie"
+    ],
+    "image": "https://source.unsplash.com/800x600/?education,cameroon",
+    "avg_price_fcfa": 0,
+    "best_time": "Jours ouvrés",
+    "popularity": 30,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.853,
+    "lng": 11.468,
+    "maps_url": "https://maps.google.com/?q=3.853,11.468"
+  },
+  {
+    "id": "y061",
+    "name": "Bars & buvettes de Mvan",
+    "quartier": "Mvan",
+    "category": "bar",
+    "description": "Un des quartiers les plus animés le soir : buvettes populaires, musique et ambiance conviviale jusque tard.",
+    "tags": [
+      "nightlife",
+      "musique"
+    ],
+    "image": "https://source.unsplash.com/800x600/?bar,cameroon",
+    "avg_price_fcfa": 2000,
+    "best_time": "Soirée",
+    "popularity": 50,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.843,
+    "lng": 11.519,
+    "maps_url": "https://maps.google.com/?q=3.843,11.519"
+  },
+  {
+    "id": "y062",
+    "name": "Bars de Nlongkak",
+    "quartier": "Nlongkak",
+    "category": "bar",
+    "description": "Quartier prisé pour ses bars et rooftops avec vue sur la ville, populaire auprès des jeunes actifs.",
+    "tags": [
+      "nightlife",
+      "vue"
+    ],
+    "image": "https://source.unsplash.com/800x600/?bar,cameroon",
+    "avg_price_fcfa": 3000,
+    "best_time": "Soirée",
+    "popularity": 44,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.883,
+    "lng": 11.519,
+    "maps_url": "https://maps.google.com/?q=3.883,11.519"
+  },
+  {
+    "id": "y063",
+    "name": "Lounge & bars d'Odza",
+    "quartier": "Odza",
+    "category": "bar",
+    "description": "Zone en pleine expansion avec lounges modernes, terrasses et ambiance plus calme que le centre-ville.",
+    "tags": [
+      "nightlife",
+      "relax"
+    ],
+    "image": "https://source.unsplash.com/800x600/?bar,cameroon",
+    "avg_price_fcfa": 3500,
+    "best_time": "Soirée",
+    "popularity": 33,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.827,
+    "lng": 11.532,
+    "maps_url": "https://maps.google.com/?q=3.827,11.532"
+  },
+  {
+    "id": "y064",
+    "name": "Snacks de Mvog-Ada",
+    "quartier": "Mvog-Ada",
+    "category": "snack",
+    "description": "Rangée de petits snacks populaires : sandwichs, jus locaux, beignets-haricots-bouillie le matin.",
+    "tags": [
+      "food",
+      "petit-budget"
+    ],
+    "image": "https://source.unsplash.com/800x600/?snack,cameroon",
+    "avg_price_fcfa": 1000,
+    "best_time": "Matin et soirée",
+    "popularity": 41,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.86,
+    "lng": 11.522,
+    "maps_url": "https://maps.google.com/?q=3.86,11.522"
+  },
+  {
+    "id": "y065",
+    "name": "Grillades de Nsam",
+    "quartier": "Nsam",
+    "category": "snack",
+    "description": "Quartier réputé pour ses grillades de rue (soya, poisson braisé) en soirée, ambiance de quartier.",
+    "tags": [
+      "food",
+      "nightlife"
+    ],
+    "image": "https://source.unsplash.com/800x600/?snack,cameroon",
+    "avg_price_fcfa": 1500,
+    "best_time": "Soirée",
+    "popularity": 39,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.853,
+    "lng": 11.5,
+    "maps_url": "https://maps.google.com/?q=3.853,11.5"
+  },
+  {
+    "id": "y066",
+    "name": "Snack-bars d'Essos",
+    "quartier": "Essos",
+    "category": "snack",
+    "description": "Petite restauration rapide et jus frais dans un quartier résidentiel très fréquenté.",
+    "tags": [
+      "food"
+    ],
+    "image": "https://source.unsplash.com/800x600/?snack,cameroon",
+    "avg_price_fcfa": 1200,
+    "best_time": "Journée",
+    "popularity": 30,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.875,
+    "lng": 11.532,
+    "maps_url": "https://maps.google.com/?q=3.875,11.532"
+  },
+  {
+    "id": "y067",
+    "name": "Cybercafés & salles de jeux du Centre-ville",
+    "quartier": "Centre-ville",
+    "category": "gaming",
+    "description": "Concentration de cybercafés et salles de jeux vidéo (FIFA, jeux de combat) très fréquentées par les jeunes.",
+    "tags": [
+      "gaming",
+      "jeux-video"
+    ],
+    "image": "https://source.unsplash.com/800x600/?gaming,cameroon",
+    "avg_price_fcfa": 500,
+    "best_time": "Après-midi et soirée",
+    "popularity": 46,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.866,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.866,11.518"
+  },
+  {
+    "id": "y068",
+    "name": "Salles de jeux de Mokolo",
+    "quartier": "Mokolo",
+    "category": "gaming",
+    "description": "Petites salles de jeux vidéo et baby-foot populaires auprès des élèves et étudiants du quartier.",
+    "tags": [
+      "gaming"
+    ],
+    "image": "https://source.unsplash.com/800x600/?gaming,cameroon",
+    "avg_price_fcfa": 300,
+    "best_time": "Après-midi",
+    "popularity": 28,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.872,
+    "lng": 11.506,
+    "maps_url": "https://maps.google.com/?q=3.872,11.506"
+  },
+  {
+    "id": "y069",
+    "name": "Restaurants d'Etoa-Meki",
+    "quartier": "Etoa-Meki",
+    "category": "restaurant",
+    "description": "Quartier prisé pour ses restaurants de cuisine camerounaise traditionnelle à prix raisonnable.",
+    "tags": [
+      "food",
+      "culture"
+    ],
+    "image": "https://source.unsplash.com/800x600/?restaurant,cameroon",
+    "avg_price_fcfa": 3000,
+    "best_time": "Déjeuner et dîner",
+    "popularity": 35,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.859,
+    "lng": 11.515,
+    "maps_url": "https://maps.google.com/?q=3.859,11.515"
+  },
+  {
+    "id": "y070",
+    "name": "Restaurants de Ngousso",
+    "quartier": "Ngousso",
+    "category": "restaurant",
+    "description": "Zone résidentielle en développement avec plusieurs restaurants familiaux et fast-foods.",
+    "tags": [
+      "food",
+      "family"
+    ],
+    "image": "https://source.unsplash.com/800x600/?restaurant,cameroon",
+    "avg_price_fcfa": 2500,
+    "best_time": "Journée",
+    "popularity": 27,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.892,
+    "lng": 11.535,
+    "maps_url": "https://maps.google.com/?q=3.892,11.535"
+  },
+  {
+    "id": "y071",
+    "name": "Cafés d'Emana",
+    "quartier": "Emana",
+    "category": "cafe",
+    "description": "Petits cafés de quartier au nord de Yaoundé, calmes, prisés pour travailler ou étudier.",
+    "tags": [
+      "relax",
+      "wifi"
+    ],
+    "image": "https://source.unsplash.com/800x600/?cafe,cameroon",
+    "avg_price_fcfa": 1500,
+    "best_time": "Matin",
+    "popularity": 24,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.911,
+    "lng": 11.523,
+    "maps_url": "https://maps.google.com/?q=3.911,11.523"
+  },
+  {
+    "id": "y072",
+    "name": "Marché d'Etoudi",
+    "quartier": "Etoudi",
+    "category": "market",
+    "description": "Marché de quartier proche du Palais présidentiel, produits frais et articles du quotidien.",
+    "tags": [
+      "shopping",
+      "food"
+    ],
+    "image": "https://source.unsplash.com/800x600/?market,cameroon",
+    "avg_price_fcfa": 2000,
+    "best_time": "Matin",
+    "popularity": 26,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.917,
+    "lng": 11.522,
+    "maps_url": "https://maps.google.com/?q=3.917,11.522"
+  },
+  {
+    "id": "y073",
+    "name": "Marché d'Elig-Edzoa",
+    "quartier": "Elig-Edzoa",
+    "category": "market",
+    "description": "Marché populaire du centre, connu pour ses tissus et son ambiance commerçante animée.",
+    "tags": [
+      "shopping",
+      "culture"
+    ],
+    "image": "https://source.unsplash.com/800x600/?market,cameroon",
+    "avg_price_fcfa": 2500,
+    "best_time": "Matin",
+    "popularity": 29,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.863,
+    "lng": 11.524,
+    "maps_url": "https://maps.google.com/?q=3.863,11.524"
+  },
+  {
+    "id": "y074",
+    "name": "Hôpital Central de Yaoundé",
+    "quartier": "Centre-ville",
+    "category": "health",
+    "description": "Le principal hôpital public de la capitale, référence pour les soins de santé à Yaoundé.",
+    "tags": [
+      "sante"
+    ],
+    "image": "https://source.unsplash.com/800x600/?health,cameroon",
+    "avg_price_fcfa": 0,
+    "best_time": "24h/24",
+    "popularity": 38,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.864,
+    "lng": 11.516,
+    "maps_url": "https://maps.google.com/?q=3.864,11.516"
+  },
+  {
+    "id": "y075",
+    "name": "Complexe Sportif de Mfandena",
+    "quartier": "Mfandena",
+    "category": "sports",
+    "description": "Terrains de sport de quartier : football, basketball, prisés par les jeunes le week-end.",
+    "tags": [
+      "sport",
+      "family"
+    ],
+    "image": "https://source.unsplash.com/800x600/?sports,cameroon",
+    "avg_price_fcfa": 500,
+    "best_time": "Week-end",
+    "popularity": 25,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.878,
+    "lng": 11.52,
+    "maps_url": "https://maps.google.com/?q=3.878,11.52"
+  },
+  {
+    "id": "y076",
+    "name": "Cinéma Numérique Ambassades",
+    "quartier": "Bastos",
+    "category": "entertainment",
+    "description": "Salle de cinéma proposant films récents et festivals de cinéma africain.",
+    "tags": [
+      "events",
+      "family"
+    ],
+    "image": "https://source.unsplash.com/800x600/?entertainment,cameroon",
+    "avg_price_fcfa": 3000,
+    "best_time": "Soirée",
+    "popularity": 32,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.886,
+    "lng": 11.517,
+    "maps_url": "https://maps.google.com/?q=3.886,11.517"
+  },
+  {
+    "id": "y077",
+    "name": "Ambassade de France à Yaoundé",
+    "quartier": "Bastos",
+    "category": "administrative",
+    "description": "Représentation diplomatique française, quartier des ambassades de Bastos.",
+    "tags": [
+      "administratif"
+    ],
+    "image": "https://source.unsplash.com/800x600/?administrative,cameroon",
+    "avg_price_fcfa": 0,
+    "best_time": "Heures de bureau",
+    "popularity": 20,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.891,
+    "lng": 11.519,
+    "maps_url": "https://maps.google.com/?q=3.891,11.519"
+  },
+  {
+    "id": "y078",
+    "name": "Supermarché Casino Santa Lucia",
+    "quartier": "Bastos",
+    "category": "supermarket",
+    "description": "Grande surface bien fournie, prisée par les résidents et expatriés du quartier Bastos.",
+    "tags": [
+      "shopping"
+    ],
+    "image": "https://source.unsplash.com/800x600/?supermarket,cameroon",
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 36,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.89,
+    "lng": 11.514,
+    "maps_url": "https://maps.google.com/?q=3.89,11.514"
+  },
+  {
+    "id": "y079",
+    "name": "Colline de Nkolondom",
+    "quartier": "Nkolondom",
+    "category": "nature",
+    "description": "Point de vue naturel au nord de la ville, apprécié pour la randonnée et le calme.",
+    "tags": [
+      "nature",
+      "hiking"
+    ],
+    "image": "https://source.unsplash.com/800x600/?nature,cameroon",
+    "avg_price_fcfa": 0,
+    "best_time": "Matin",
+    "popularity": 22,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.93,
+    "lng": 11.51,
+    "maps_url": "https://maps.google.com/?q=3.93,11.51"
+  },
+  {
+    "id": "y080",
+    "name": "Marché des Fleurs de Yaoundé",
+    "quartier": "Mvog-Mbi",
+    "category": "market",
+    "description": "Petit marché coloré spécialisé dans les fleurs et plantes, agréable pour une balade photo.",
+    "tags": [
+      "photo",
+      "nature"
+    ],
+    "image": "https://source.unsplash.com/800x600/?market,cameroon",
+    "avg_price_fcfa": 1000,
+    "best_time": "Matin",
+    "popularity": 18,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.857,
+    "lng": 11.527,
+    "maps_url": "https://maps.google.com/?q=3.857,11.527"
+  },
+  {
+    "id": "y081",
+    "name": "Gare Routière Voyageurs de Yaoundé",
+    "quartier": "Mvan",
+    "category": "transport",
+    "description": "Principale gare routière pour les liaisons interurbaines vers les autres villes du Cameroun.",
+    "tags": [
+      "transport"
+    ],
+    "image": "https://source.unsplash.com/800x600/?transport,cameroon",
+    "avg_price_fcfa": 0,
+    "best_time": "Matin",
+    "popularity": 30,
+    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "lat": 3.841,
+    "lng": 11.516,
+    "maps_url": "https://maps.google.com/?q=3.841,11.516"
   }
 ]

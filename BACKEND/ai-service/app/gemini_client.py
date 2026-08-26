@@ -43,7 +43,13 @@ def ask_gemini(system_instruction: str, history: List[Dict[str, str]], message: 
             GEMINI_API_URL,
             params={"key": GEMINI_API_KEY},
             json=payload,
-            timeout=20.0,
+            # 10s (pas 20s) : un appel qui réussit prend normalement 2-6s.
+            # Avec un repli OpenRouter EN PLUS derrière (lui aussi limité
+            # dans le temps), 20+20 rendait l'assistant insupportablement
+            # lent dès que Gemini traînait un peu - jusqu'à ~45s d'attente
+            # avant la moindre réponse. 10s laisse une bonne marge tout en
+            # coupant ce pire cas de moitié.
+            timeout=10.0,
         )
     except httpx.RequestError as e:
         raise GeminiError(f"Impossible de contacter l'API Gemini : {e}")

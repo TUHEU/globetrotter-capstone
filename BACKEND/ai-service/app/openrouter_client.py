@@ -36,7 +36,8 @@ def ask_openrouter(system_instruction: str, history: List[Dict[str, str]], messa
                 "X-Title": "GlobeTrotter Yaounde",
             },
             json={"model": OPENROUTER_MODEL, "messages": messages, "max_tokens": 500},
-            timeout=20.0,
+            # Même raisonnement que côté Gemini : 10s au lieu de 20s.
+            timeout=10.0,
         )
     except httpx.RequestError as e:
         raise OpenRouterError(f"Impossible de contacter OpenRouter : {e}")
