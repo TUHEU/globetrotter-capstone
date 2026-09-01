@@ -5,6 +5,7 @@ USER_SERVICE_URL = os.getenv("USER_SERVICE_URL", "http://localhost:8001")
 ITINERARY_SERVICE_URL = os.getenv("ITINERARY_SERVICE_URL", "http://localhost:8002")
 RECOMMENDATION_SERVICE_URL = os.getenv("RECOMMENDATION_SERVICE_URL", "http://localhost:8003")
 AI_SERVICE_URL = os.getenv("AI_SERVICE_URL", "http://localhost:8004")
+CHAT_SERVICE_URL = os.getenv("CHAT_SERVICE_URL", "http://localhost:8005")
 
 # Ordered path-prefix -> service mapping. First match wins, so put more
 # specific prefixes before shorter/overlapping ones.
@@ -18,7 +19,10 @@ ROUTES = [
     ("/users", USER_SERVICE_URL),          # recherche d'utilisateurs (amis)
     ("/follow", USER_SERVICE_URL),         # suivre / ne plus suivre
     ("/messages", USER_SERVICE_URL),       # messagerie directe
-    ("/static/message_images", USER_SERVICE_URL),  # photos envoyées en message - PLUS SPÉCIFIQUE, doit passer avant "/static" ci-dessous
+    ("/static/message_images", USER_SERVICE_URL),  # photos envoyées en message
+    ("/chat", CHAT_SERVICE_URL),           # global group chat (REST)
+    ("/ws/chat", CHAT_SERVICE_URL),        # global group chat (WebSocket)
+    ("/static/chat_uploads", CHAT_SERVICE_URL),    # chat media files
     ("/itineraries", ITINERARY_SERVICE_URL),
     ("/recommendations", RECOMMENDATION_SERVICE_URL),
     ("/destinations", RECOMMENDATION_SERVICE_URL),
