@@ -11,6 +11,7 @@ import '../providers/favorites_provider.dart';
 import '../providers/friends_provider.dart';
 import '../providers/itinerary_provider.dart';
 import '../providers/messages_provider.dart';
+import '../providers/notifications_provider.dart';
 import '../providers/settings_provider.dart';
 import '../services/deep_link_service.dart';
 import '../services/share_service.dart';
@@ -27,6 +28,7 @@ import 'favorites_screen.dart';
 import 'friends_feed_screen.dart';
 import 'friends_screen.dart';
 import 'inbox_screen.dart';
+import 'notifications_screen.dart';
 import 'itinerary_map_screen.dart';
 import 'login_screen.dart';
 import 'reviews_screen.dart';
@@ -60,9 +62,21 @@ class _HomeScreenState extends State<HomeScreen> {
       context.read<DestinationProvider>().loadRecommendations();
       context.read<ItineraryProvider>().load();
       context.read<FavoritesProvider>().load();
+      context.read<FriendsProvider>().loadFollowLists();
       context.read<MessagesProvider>().loadInbox();
+      context.read<NotificationsProvider>().load();
       _handleDeepLink();
     });
+  }
+
+
+  Future<void> _refreshSocial() async {
+    if (!mounted) return;
+    await Future.wait([
+      context.read<FriendsProvider>().loadFollowLists(),
+      context.read<NotificationsProvider>().load(),
+      context.read<MessagesProvider>().loadInbox(),
+    ]);
   }
 
   Future<void> _handleDeepLink() async {
@@ -95,6 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
       const _ExploreTab(),
       const _RecommendationsTab(),
       const _TripsTab(),
+      const GlobalChatScreen(),
       const _ProfileTab(),
     ];
 
@@ -103,10 +118,23 @@ class _HomeScreenState extends State<HomeScreen> {
       _NavItem(icon: Icons.explore_outlined, activeIcon: Icons.explore, label: s.navExplore),
       _NavItem(icon: Icons.auto_awesome_outlined, activeIcon: Icons.auto_awesome, label: s.navForYou),
       _NavItem(icon: Icons.map_outlined, activeIcon: Icons.map, label: s.navTrips),
+      _NavItem(icon: Icons.forum_outlined, activeIcon: Icons.forum_rounded,
+          label: s.isFr ? 'Chat' : 'Chat'),
       _NavItem(icon: Icons.person_outline, activeIcon: Icons.person, label: s.navProfile),
     ];
 
     return Scaffold(
+      drawer: isWide ? null : Drawer(
+        width: 330,
+        child: _TripIoDrawer(
+          items: navItems,
+          selectedIndex: _index,
+          onSelect: (i) {
+            Navigator.of(context).pop();
+            setState(() => _index = i);
+          },
+        ),
+      ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: NotificationListener<UserScrollNotification>(
         onNotification: (n) {
@@ -418,6 +446,7 @@ class _ExploreTabState extends State<_ExploreTab> {
 
     return SafeArea(
       child: Column(children: [
+        _TripIoHeader(title: s.navExplore),
         // ── Hero banner (desktop only) ─────────────────────────────────
         if (isWide) _HeroBanner(user: user, s: s, isDark: isDark),
 
@@ -1098,6 +1127,7 @@ class _RecommendationsTab extends StatelessWidget {
               onRefresh: () => p.loadRecommendations(),
               child: CustomScrollView(
                 slivers: [
+                  SliverToBoxAdapter(child: _TripIoHeader(title: s.navForYou)),
                   SliverPadding(
                     padding: EdgeInsets.fromLTRB(isWide ? 24 : 20, 20, isWide ? 24 : 20, 8),
                     sliver: SliverToBoxAdapter(
@@ -1177,16 +1207,11 @@ class _TripsTab extends StatelessWidget {
 
     return SafeArea(
       child: Column(children: [
+        _TripIoHeader(title: s.navTrips),
         Padding(
-          padding: EdgeInsets.fromLTRB(isWide ? 24 : 16, 16, 8, 4),
+          padding: EdgeInsets.fromLTRB(isWide ? 24 : 16, 10, 8, 4),
           child: Row(children: [
-            Expanded(
-              child: Text(s.navTrips,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(fontWeight: FontWeight.w700)),
-            ),
+            const Expanded(child: SizedBox()),
             if (isWide)
               FilledButton.icon(
                 icon: const Icon(Icons.add, size: 18),
@@ -1200,6 +1225,33 @@ class _TripsTab extends StatelessWidget {
               icon: const Icon(Icons.dynamic_feed_outlined),
               onPressed: () => Navigator.of(context)
                   .push(MaterialPageRoute(builder: (_) => const FriendsFeedScreen())),
+            ),
+            Consumer<NotificationsProvider>(
+              builder: (context, np, _) => Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  IconButton(
+                    tooltip: s.isFr ? 'Notifications' : 'Notifications',
+                    icon: const Icon(Icons.notifications_none_rounded),
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const NotificationsScreen())),
+                  ),
+                  if (np.unreadCount > 0)
+                    Positioned(
+                      right: 6, top: 6,
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.error,
+                          shape: BoxShape.circle),
+                        child: Text(np.unreadCount > 9 ? '9+' : '${np.unreadCount}',
+                          style: const TextStyle(color: Colors.white, fontSize: 9),
+                          textAlign: TextAlign.center),
+                      ),
+                    ),
+                ],
+              ),
             ),
             Stack(
               clipBehavior: Clip.none,
@@ -1385,16 +1437,19 @@ class _ProfileTab extends StatelessWidget {
 
     return SafeArea(
       child: ListView(
-        padding: EdgeInsets.fromLTRB(isWide ? 48 : 20, 20, isWide ? 48 : 20, 96),
+        padding: EdgeInsets.fromLTRB(0, 0, 0, 96),
         children: [
-          if (isWide) const SizedBox(height: 12),
-          CircleAvatar(
+          _TripIoHeader(title: s.navProfile),
+          Padding(
+            padding: EdgeInsets.fromLTRB(isWide ? 48 : 20, 20, isWide ? 48 : 20, 0),
+            child: CircleAvatar(
             radius: 44,
             backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.15),
             child: Text(
               user?.fullName.isNotEmpty == true ? user!.fullName[0].toUpperCase() : '?',
               style: TextStyle(fontSize: 32, color: theme.colorScheme.primary),
             ),
+          ),
           ),
           const SizedBox(height: 12),
           Text(
@@ -1409,7 +1464,11 @@ class _ProfileTab extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           // Stats row
-          Row(children: [
+          Card(
+            margin: EdgeInsets.symmetric(horizontal: isWide ? 48 : 20),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 18),
+              child: Row(children: [
             _ProfileStat(
               icon: Icons.map_outlined,
               value: '${context.watch<ItineraryProvider>().itineraries.length}',
@@ -1420,7 +1479,19 @@ class _ProfileTab extends StatelessWidget {
               value: '${context.watch<FavoritesProvider>().count}',
               label: s.isFr ? 'Favoris' : 'Favorites',
             ),
-          ]),
+            _ProfileStat(
+              icon: Icons.people_outline,
+              value: '${context.watch<FriendsProvider>().followers.length}',
+              label: s.isFr ? 'Abonnés' : 'Followers',
+            ),
+            _ProfileStat(
+              icon: Icons.person_add_alt_1_outlined,
+              value: '${context.watch<FriendsProvider>().following.length}',
+              label: s.isFr ? 'Suivis' : 'Following',
+            ),
+              ],),
+            ),
+          ),
           const SizedBox(height: 24),
           // Preferences
           if (user?.preferences.isNotEmpty == true) ...[
@@ -1507,6 +1578,159 @@ class _ProfileTab extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// trip_io-inspired mobile shell: teal header + notification badge + drawer
+// ─────────────────────────────────────────────────────────────────────────────
+class _TripIoHeader extends StatelessWidget {
+  final String title;
+  const _TripIoHeader({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    final np = context.watch<NotificationsProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      height: 76,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFF118A98),
+            isDark ? const Color(0xFF244C72) : const Color(0xFF58789A),
+          ],
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Row(children: [
+          Builder(builder: (ctx) => IconButton(
+            icon: const Icon(Icons.menu_rounded, color: Colors.white, size: 30),
+            tooltip: 'Menu',
+            onPressed: () => Scaffold.of(ctx).openDrawer(),
+          )),
+          Expanded(
+            child: Text(title,
+              style: const TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.w700)),
+          ),
+          Stack(children: [
+            IconButton(
+              icon: const Icon(Icons.notifications_none_rounded, color: Colors.white, size: 30),
+              tooltip: 'Notifications',
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const NotificationsScreen())),
+            ),
+            if (np.unreadCount > 0)
+              Positioned(
+                right: 7, top: 6,
+                child: Container(
+                  constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: const BoxDecoration(color: Color(0xFFE53935), shape: BoxShape.circle),
+                  child: Text(np.unreadCount > 9 ? '9+' : '${np.unreadCount}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w800)),
+                ),
+              ),
+          ]),
+          const SizedBox(width: 6),
+        ]),
+      ),
+    );
+  }
+}
+
+class _TripIoDrawer extends StatelessWidget {
+  final List<_NavItem> items;
+  final int selectedIndex;
+  final ValueChanged<int> onSelect;
+  const _TripIoDrawer({required this.items, required this.selectedIndex, required this.onSelect});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft, end: Alignment.bottomRight,
+          colors: theme.brightness == Brightness.dark
+              ? [const Color(0xFF202B34), const Color(0xFF111820)]
+              : [const Color(0xFFF5F7F8), const Color(0xFFD8DEE2)],
+        ),
+      ),
+      child: SafeArea(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(28, 28, 20, 20),
+            child: Row(children: [
+              Container(
+                width: 42, height: 42,
+                decoration: const BoxDecoration(color: Color(0xFF118A98), shape: BoxShape.circle),
+                child: const Icon(Icons.public_rounded, color: Colors.white),
+              ),
+              const SizedBox(width: 12),
+              const Text('GlobeTrotter', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
+            ]),
+          ),
+          Divider(color: Colors.black.withValues(alpha: .12), height: 1),
+          Expanded(child: ListView(padding: const EdgeInsets.symmetric(vertical: 10), children: [
+            for (int i = 0; i < items.length; i++)
+              _DrawerEntry(item: items[i], selected: i == selectedIndex, onTap: () => onSelect(i)),
+            _DrawerEntry(
+              item: const _NavItem(icon: Icons.add_location_alt_outlined, activeIcon: Icons.add_location_alt, label: 'Suggest a destination'),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SubmitPlaceScreen()));
+              },
+            ),
+            _DrawerEntry(
+              item: const _NavItem(icon: Icons.favorite_border_rounded, activeIcon: Icons.favorite_rounded, label: 'Favorites'),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FavoritesScreen()));
+              },
+            ),
+            _DrawerEntry(
+              item: const _NavItem(icon: Icons.notifications_none_rounded, activeIcon: Icons.notifications_rounded, label: 'Notifications'),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const NotificationsScreen()));
+              },
+            ),
+            _DrawerEntry(
+              item: const _NavItem(icon: Icons.map_outlined, activeIcon: Icons.map_rounded, label: 'Map'),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ExploreMapScreen()));
+              },
+            ),
+          ])),
+        ]),
+      ),
+    );
+  }
+}
+
+class _DrawerEntry extends StatelessWidget {
+  final _NavItem item;
+  final bool selected;
+  final VoidCallback onTap;
+  const _DrawerEntry({required this.item, required this.onTap, this.selected = false});
+  @override
+  Widget build(BuildContext context) {
+    final color = selected ? const Color(0xFF118A98) : Theme.of(context).textTheme.bodyLarge?.color;
+    return ListTile(
+      dense: false,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 28, vertical: 2),
+      leading: Icon(selected ? item.activeIcon : item.icon, size: 29, color: color),
+      title: Text(item.label, style: TextStyle(fontSize: 17, fontWeight: selected ? FontWeight.w800 : FontWeight.w500, color: color)),
+      selected: selected,
+      selectedTileColor: const Color(0xFF118A98).withValues(alpha: .10),
+      onTap: onTap,
     );
   }
 }

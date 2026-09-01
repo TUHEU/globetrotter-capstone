@@ -338,6 +338,9 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
         elevation: 0,
         backgroundColor: isDark ? const Color(0xFF0F2418) : Colors.white,
         title: Row(children: [
+          const Icon(Icons.public_rounded, size: 22),
+          const SizedBox(width: 8),
+          const Expanded(child: Text('Global Chat', overflow: TextOverflow.ellipsis)),
           Container(
             width: 38, height: 38,
             decoration: BoxDecoration(
