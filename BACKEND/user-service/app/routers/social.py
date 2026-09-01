@@ -46,6 +46,16 @@ def follow(user_id: str, current=Depends(get_current_user)):
     if not target:
         raise HTTPException(status_code=404, detail="User not found")
     ids = storage.follow_user(current["id"], user_id)
+    target = storage.find_user_by_id(user_id)
+    if target:
+        storage.add_notification(
+            user_id=user_id,
+            type_="follow",
+            title="New follower",
+            body=f"{current.get('full_name', 'Someone')} started following you.",
+            actor_id=current["id"],
+            actor_name=current.get("full_name", "Someone"),
+        )
     return {"following_ids": ids}
 
 

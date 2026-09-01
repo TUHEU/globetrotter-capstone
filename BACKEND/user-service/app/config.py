@@ -28,3 +28,5 @@ REVIEWS_FILE = DATA_DIR / "reviews.json"
 FAVORITES_FILE = DATA_DIR / "favorites.json"
 FOLLOWS_FILE = DATA_DIR / "follows.json"
 MESSAGES_FILE = DATA_DIR / "messages.json"
+
+NOTIFICATIONS_FILE = DATA_DIR / 'notifications.json'

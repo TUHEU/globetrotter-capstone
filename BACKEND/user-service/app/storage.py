@@ -356,3 +356,53 @@ def get_inbox(user_id: str) -> List[Dict[str, Any]]:
     ]
     results.sort(key=lambda r: r["last_message"]["created_at"], reverse=True)
     return results
+
+
+# ---------------- Notifications ----------------
+def _read_notifications():
+    return _read(NOTIFICATIONS_FILE)
+
+def get_notifications(user_id: str):
+    items = _read_notifications()
+    return [n for n in items if n.get("user_id") == user_id]
+
+def add_notification(user_id: str, type_: str, title: str, body: str,
+                     actor_id: str | None = None, actor_name: str | None = None):
+    items = _read_notifications()
+    from datetime import datetime, timezone
+    item = {
+        "id": uuid.uuid4().hex,
+        "user_id": user_id,
+        "type": type_,
+        "title": title,
+        "body": body,
+        "actor_id": actor_id,
+        "actor_name": actor_name,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "read": False,
+    }
+    items.append(item)
+    _write(NOTIFICATIONS_FILE, items[-2000:])
+    return item
+
+def mark_notification_read(notification_id: str, user_id: str):
+    items = _read_notifications()
+    changed = False
+    for n in items:
+        if n.get("id") == notification_id and n.get("user_id") == user_id:
+            n["read"] = True
+            changed = True
+    if changed:
+        _write(NOTIFICATIONS_FILE, items)
+    return changed
+
+def mark_all_notifications_read(user_id: str):
+    items = _read_notifications()
+    changed = False
+    for n in items:
+        if n.get("user_id") == user_id and not n.get("read"):
+            n["read"] = True
+            changed = True
+    if changed:
+        _write(NOTIFICATIONS_FILE, items)
+    return changed

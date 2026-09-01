@@ -104,6 +104,14 @@ def send(other_user_id: str, body: MessageCreate, current=Depends(get_current_us
     if not body.text.strip() and not body.image_url:
         raise HTTPException(status_code=400, detail="Message vide : ajoutez du texte ou une photo.")
     msg = storage.send_message(current["id"], other_user_id, body.text.strip(), body.image_url)
+    storage.add_notification(
+        user_id=other_user_id,
+        type_="message",
+        title="New message",
+        body=f"{current.get('full_name', 'Someone')}: {body.text.strip()[:80]}",
+        actor_id=current["id"],
+        actor_name=current.get("full_name", "Someone"),
+    )
     return msg
 
 
