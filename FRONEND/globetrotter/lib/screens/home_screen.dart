@@ -22,6 +22,7 @@ import 'create_itinerary_screen.dart';
 import 'assistant_screen.dart';
 import 'destination_detail_screen.dart';
 import 'explore_map_screen.dart';
+import 'submit_place_screen.dart';
 import 'favorites_screen.dart';
 import 'friends_feed_screen.dart';
 import 'friends_screen.dart';
@@ -176,17 +177,24 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: const Icon(Icons.person_outline), label: s.navProfile),
               ],
             ),
-      floatingActionButton: _index == 2
-          ? Padding(
-              padding: const EdgeInsets.only(bottom: 64),
-              child: FloatingActionButton.extended(
-                icon: const Icon(Icons.add),
-                label: Text(s.newTrip),
-                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => const CreateItineraryScreen())),
-              ),
+      floatingActionButton: _index == 0
+          ? FloatingActionButton.extended(
+              icon: const Icon(Icons.add_location_alt_outlined),
+              label: Text(s.submitPlaceTitle),
+              onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const SubmitPlaceScreen())),
             )
-          : null,
+          : _index == 2
+              ? Padding(
+                  padding: const EdgeInsets.only(bottom: 64),
+                  child: FloatingActionButton.extended(
+                    icon: const Icon(Icons.add),
+                    label: Text(s.newTrip),
+                    onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => const CreateItineraryScreen())),
+                  ),
+                )
+              : null,
     );
   }
 }

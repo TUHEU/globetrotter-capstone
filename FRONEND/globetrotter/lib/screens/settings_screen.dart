@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
+import 'about_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -77,6 +78,16 @@ class SettingsScreen extends StatelessWidget {
             ],
             selected: {settings.currency},
             onSelectionChanged: (sel) => settings.setCurrency(sel.first),
+          ),
+          const SizedBox(height: 32),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.info_outline),
+              title: Text(s.aboutTitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const AboutScreen())),
+            ),
           ),
         ],
       ),

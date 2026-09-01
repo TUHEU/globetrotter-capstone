@@ -20,6 +20,64 @@ class AppStrings {
   String get all => isFr ? 'Tout' : 'All';
   String get exploreMapTitle => isFr ? 'Carte de Yaoundé' : 'Yaoundé map';
 
+  // ---------- Ajouter un lieu ----------
+  String get submitPlaceTitle => isFr ? 'Ajouter un lieu' : 'Add a place';
+  String get submitPlaceIntro => isFr
+      ? 'Vous connaissez un lieu qui n\'est pas encore dans l\'app ? Ajoutez-le pour que tout le monde puisse le découvrir.'
+      : 'Know a place that\'s not in the app yet? Add it so everyone can discover it.';
+  String get placeName => isFr ? 'Nom du lieu' : 'Place name';
+  String get placeDescription => isFr ? 'Description' : 'Description';
+  String get descriptionTooShort =>
+      isFr ? 'Décrivez le lieu en quelques mots de plus' : 'Describe the place in a few more words';
+  String get placeQuartier => isFr ? 'Quartier' : 'District';
+  String get placeCategory => isFr ? 'Catégorie' : 'Category';
+  String get placeLocation => isFr ? 'Position sur la carte' : 'Location on the map';
+  String get placeLocationHint => isFr
+      ? 'Tapez sur la carte pour placer le point, ou utilisez votre position actuelle.'
+      : 'Tap the map to place the pin, or use your current location.';
+  String get useMyLocation => isFr ? 'Utiliser ma position actuelle' : 'Use my current location';
+  String get locationUnavailable =>
+      isFr ? 'Position indisponible - autorisez la localisation.' : 'Location unavailable - please allow location access.';
+  String get pickLocationFirst =>
+      isFr ? 'Choisissez d\'abord une position sur la carte' : 'Pick a location on the map first';
+  String get placePhoto => isFr ? 'Photo' : 'Photo';
+  String get addPhoto => isFr ? 'Ajouter une photo' : 'Add a photo';
+  String get pickPhotoFirst => isFr ? 'Ajoutez une photo du lieu' : 'Add a photo of the place';
+  String get submitPlaceButton => isFr ? 'Publier ce lieu' : 'Publish this place';
+  String get placeSubmitted =>
+      isFr ? 'Merci ! Votre lieu est maintenant visible par tout le monde.' : 'Thank you! Your place is now visible to everyone.';
+  String get requiredField => isFr ? 'Ce champ est requis' : 'This field is required';
+
+  // ---------- À propos ----------
+  String get aboutTitle => isFr ? 'À propos' : 'About';
+  String get aboutWhat => isFr ? 'Qu\'est-ce que GlobeTrotter Yaoundé ?' : 'What is GlobeTrotter Yaoundé?';
+  String get aboutWhatText => isFr
+      ? 'GlobeTrotter Yaoundé est un assistant de voyage 100% dédié à la découverte de Yaoundé : recommandations personnalisées, itinéraires, avis, et une communauté de voyageurs pour partager les meilleures adresses de la ville.'
+      : 'GlobeTrotter Yaoundé is a travel assistant fully dedicated to discovering Yaoundé: personalized recommendations, itineraries, reviews, and a community of travelers sharing the best spots in the city.';
+  String get aboutFeatures => isFr ? 'Fonctionnalités' : 'Features';
+  String get aboutFeature1 =>
+      isFr ? 'Plus de 80 lieux référencés à Yaoundé' : 'More than 80 places listed in Yaoundé';
+  String get aboutFeature2 => isFr
+      ? 'Recommandations personnalisées selon vos goûts'
+      : 'Personalized recommendations based on your interests';
+  String get aboutFeature3 =>
+      isFr ? 'Itinéraires avec carte, météo et directions' : 'Itineraries with map, weather and directions';
+  String get aboutFeature4 => isFr
+      ? 'Suivez d\'autres voyageurs et discutez avec eux'
+      : 'Follow other travelers and chat with them';
+  String get aboutFeature5 =>
+      isFr ? 'Assistant IA pour des suggestions sur mesure' : 'AI assistant for tailored suggestions';
+  String get aboutFeature6 => isFr
+      ? 'Ajoutez vos propres découvertes pour la communauté'
+      : 'Add your own discoveries for the community';
+  String get aboutProject => isFr ? 'Le projet' : 'The project';
+  String get aboutProjectText => isFr
+      ? 'GlobeTrotter Yaoundé est un projet capstone étudiant (CS 4122, Systèmes Distribués) construit avec une architecture microservices : services indépendants pour les comptes, les sorties, les recommandations et l\'assistant IA.'
+      : 'GlobeTrotter Yaoundé is a student capstone project (CS 4122, Distributed Systems) built with a microservices architecture: independent services for accounts, trips, recommendations, and the AI assistant.';
+  String get aboutCommunity => isFr ? 'Rejoindre la communauté WhatsApp' : 'Join the WhatsApp community';
+  String get aboutWebsite => isFr ? 'Site web' : 'Website';
+  String get aboutMadeWith => isFr ? 'Fait avec ❤️ à Yaoundé 🇨🇲' : 'Made with ❤️ in Yaoundé 🇨🇲';
+
   // ---------- Dashboard header ----------
   String greeting(String name) =>
       isFr ? 'Bonjour, $name 👋' : 'Hello, $name 👋';

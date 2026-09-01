@@ -32,6 +32,13 @@ class Map3DView extends StatefulWidget {
   final List<LatLng>? routePolyline;
   final LatLng? myPosition;
   final bool initialTilt;
+  /// Optionnel : si fourni, taper N'IMPORTE OÙ sur la carte (pas juste
+  /// sur un marqueur) déclenche ce callback avec le point tapé. Utilisé
+  /// par submit_place_screen pour laisser l'utilisateur placer le pin
+  /// d'un nouveau lieu directement du doigt plutôt que de taper des
+  /// coordonnées à la main. Laissé à null partout ailleurs (aucun autre
+  /// écran n'a besoin qu'un tap sur du vide fasse quoi que ce soit).
+  final void Function(LatLng)? onMapTap;
 
   const Map3DView({
     super.key,
@@ -39,6 +46,7 @@ class Map3DView extends StatefulWidget {
     this.routePolyline,
     this.myPosition,
     this.initialTilt = true,
+    this.onMapTap,
   });
 
   @override
@@ -202,6 +210,9 @@ class Map3DViewState extends State<Map3DView> {
               CameraPosition(target: initial, zoom: 15, tilt: _tilted ? 55 : 0),
           onMapCreated: _onMapCreated,
           onStyleLoadedCallback: _onStyleLoaded,
+          onMapClick: widget.onMapTap == null
+              ? null
+              : (point, coords) => widget.onMapTap!(coords),
           compassEnabled: true,
           trackCameraPosition: true,
         ),
