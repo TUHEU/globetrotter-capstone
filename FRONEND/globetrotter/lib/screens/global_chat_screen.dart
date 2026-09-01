@@ -621,7 +621,7 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
                   const SizedBox(height: 2),
                   Text('Toucher pour ouvrir',
                       style: TextStyle(fontSize: 10,
-                          color: isMe ? Colors.white50 : theme.colorScheme.primary)),
+                          color: isMe ? Colors.white54 : theme.colorScheme.primary)),
                 ]),
               ),
             ),
