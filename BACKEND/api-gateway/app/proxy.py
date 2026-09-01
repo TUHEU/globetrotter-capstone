@@ -50,7 +50,13 @@ async def forward(request: Request, path: str) -> Response:
         if k.lower() not in HOP_BY_HOP_HEADERS
     }
 
-    async with httpx.AsyncClient(timeout=15.0) as client:
+    # 30s (pas 15s) : l'assistant IA (Gemini -> repli OpenRouter) peut
+    # légitimement prendre jusqu'à ~20-25s dans son pire cas - avec 15s
+    # ici, la Gateway coupait la requête AVANT même que ai-service n'ait
+    # fini d'essayer son propre repli, renvoyant un 502 alors que l'appel
+    # aurait fini par réussir. 30s laisse aussi de la marge pour l'upload
+    # d'une photo (jusqu'à 5 Mo) sur une connexion mobile lente.
+    async with httpx.AsyncClient(timeout=30.0) as client:
         try:
             upstream = await client.request(
                 method,

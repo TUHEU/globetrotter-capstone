@@ -38,6 +38,21 @@ def get_destinations() -> List[Dict[str, Any]]:
     return dests
 
 
+def add_user_submitted_destination(entry: Dict[str, Any]) -> Dict[str, Any]:
+    """Ajoute un lieu proposé par un utilisateur au catalogue - visible
+    immédiatement par tout le monde (pas de file de modération, comme
+    demandé). L'id commence par "u_" (au lieu de "y0XX") pour qu'on puisse
+    toujours distinguer d'un coup d'œil le catalogue vérifié au départ des
+    lieux ajoutés par la communauté, sans que ça change quoi que ce soit
+    pour l'utilisateur (mêmes filtres, même recherche, même carte)."""
+    with _lock:
+        dests = _read(DESTINATIONS_FILE)
+        entry["id"] = f"u_{uuid.uuid4().hex[:10]}"
+        dests.append(entry)
+        _write(DESTINATIONS_FILE, dests)
+        return entry
+
+
 def _read_popularity_overrides() -> Dict[str, int]:
     if not POPULARITY_FILE.exists():
         return {}

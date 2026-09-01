@@ -2,17 +2,22 @@
 GET /categories, and POST /destinations/{id}/visit (internal - called by
 Itinerary Service to bump popularity when a stop is added to a trip).
 """
+import uuid
 from datetime import datetime, timezone
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from pydantic import BaseModel, Field
 
 from .. import storage
+from ..config import BASE_DIR
 from ..security import get_current_user
 
 router = APIRouter(tags=["Destinations"])
 
 CATEGORIES = ["attraction", "museum", "nature", "market", "restaurant", "cafe", "hotel", "entertainment", "education", "sports", "supermarket", "administrative", "travel_agency", "bar", "snack", "gaming", "health", "transport"]
+
+MAX_UPLOAD_BYTES = 5 * 1024 * 1024  # 5 Mo - large-écran mais empêche un upload accidentel de vidéo/fichier énorme
+ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp"}
 
 
 class DestinationReviewRequest(BaseModel):
@@ -229,3 +234,71 @@ def distance_from_user(dest_id: str, lat: float = Query(...), lng: float = Query
     if not d:
         raise HTTPException(status_code=404, detail="Destination not found")
     return {"distance_km": round(_haversine_km(lat, lng, d["lat"], d["lng"]), 2)}
+
+
+# ---------------------------------------------------------------------
+# Ajout d'un lieu par un utilisateur, photo comprise - visible par tout
+# le monde immédiatement, exactement comme demandé ("everyone can see
+# the new place uploaded"). Utilise multipart/form-data (pas du JSON)
+# puisqu'il faut envoyer un vrai fichier image en même temps que le
+# texte, dans la même requête.
+# ---------------------------------------------------------------------
+@router.post("/destinations/submit", status_code=201)
+async def submit_destination(
+    name: str = Form(..., min_length=2, max_length=100),
+    description: str = Form(..., min_length=10, max_length=800),
+    category: str = Form(...),
+    quartier: str = Form(..., min_length=2, max_length=80),
+    lat: float = Form(...),
+    lng: float = Form(...),
+    photo: UploadFile = File(...),
+    current=Depends(get_current_user),
+):
+    if category not in CATEGORIES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Catégorie inconnue. Choisissez parmi : {', '.join(CATEGORIES)}",
+        )
+    # Yaoundé se situe environ entre 3.7°/4.0° de latitude et 11.4°/11.7°
+    # de longitude - un garde-fou simple pour éviter qu'un point saisi par
+    # erreur (ou une position GPS non initialisée à 0,0) n'atterrisse à
+    # l'autre bout du monde sur la carte de tout le monde.
+    if not (3.5 <= lat <= 4.2) or not (11.2 <= lng <= 11.9):
+        raise HTTPException(
+            status_code=400,
+            detail="Cette position ne semble pas se trouver à Yaoundé. Vérifiez le point choisi sur la carte.",
+        )
+    if photo.content_type not in ALLOWED_CONTENT_TYPES:
+        raise HTTPException(
+            status_code=400,
+            detail="Format d'image non supporté (JPEG, PNG ou WebP uniquement).",
+        )
+    contents = await photo.read()
+    if len(contents) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=400, detail="Image trop volumineuse (5 Mo maximum).")
+
+    extension = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp"}[photo.content_type]
+    filename = f"u_{uuid.uuid4().hex[:12]}.{extension}"
+    images_dir = BASE_DIR / "static" / "images"
+    images_dir.mkdir(parents=True, exist_ok=True)
+    (images_dir / filename).write_bytes(contents)
+
+    entry = storage.add_user_submitted_destination({
+        "name": name.strip(),
+        "quartier": quartier.strip(),
+        "category": category,
+        "description": description.strip(),
+        "tags": [],
+        "image": f"/static/images/{filename}",
+        "avg_price_fcfa": 0,
+        "best_time": "",
+        "popularity": 1,
+        "image_source": "Photo réelle (ajoutée par la communauté)",
+        "lat": lat,
+        "lng": lng,
+        "maps_url": f"https://maps.google.com/?q={lat},{lng}",
+        "submitted_by_user_id": current["id"],
+        "submitted_by_name": current.get("full_name") or "Un utilisateur",
+        "submitted_at": datetime.now(timezone.utc).isoformat(),
+    })
+    return entry

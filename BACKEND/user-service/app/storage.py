@@ -266,7 +266,7 @@ def get_conversation(user_a: str, user_b: str) -> List[Dict[str, Any]]:
     return msgs
 
 
-def send_message(from_id: str, to_id: str, text: str) -> Dict[str, Any]:
+def send_message(from_id: str, to_id: str, text: str, image_url: Optional[str] = None) -> Dict[str, Any]:
     with _lock:
         msgs = _read(MESSAGES_FILE)
         msg = {
@@ -274,12 +274,48 @@ def send_message(from_id: str, to_id: str, text: str) -> Dict[str, Any]:
             "from_id": from_id,
             "to_id": to_id,
             "text": text,
+            "image_url": image_url,
             "created_at": datetime.now(timezone.utc).isoformat(),
             "read": False,
+            "edited": False,
         }
         msgs.append(msg)
         _write(MESSAGES_FILE, msgs)
         return msg
+
+
+def delete_message(message_id: str, requester_id: str) -> bool:
+    """Seul l'AUTEUR d'un message peut le supprimer (pas le destinataire -
+    sinon n'importe qui pourrait effacer ce que quelqu'un d'autre lui a
+    écrit). Supprime pour les deux côtés de la conversation, comme la
+    plupart des applis de messagerie ("supprimer pour tout le monde")."""
+    with _lock:
+        msgs = _read(MESSAGES_FILE)
+        for m in msgs:
+            if m["id"] == message_id:
+                if m["from_id"] != requester_id:
+                    return False
+                msgs.remove(m)
+                _write(MESSAGES_FILE, msgs)
+                return True
+        return False
+
+
+def edit_message(message_id: str, requester_id: str, new_text: str) -> Optional[Dict[str, Any]]:
+    """Seul l'auteur peut modifier son propre message. Marque `edited` à
+    True pour que l'app puisse afficher un petit "(modifié)" - pratique
+    courante de transparence dans les applis de messagerie."""
+    with _lock:
+        msgs = _read(MESSAGES_FILE)
+        for m in msgs:
+            if m["id"] == message_id:
+                if m["from_id"] != requester_id:
+                    return None
+                m["text"] = new_text
+                m["edited"] = True
+                _write(MESSAGES_FILE, msgs)
+                return m
+        return None
 
 
 def mark_conversation_read(reader_id: str, other_id: str) -> None:

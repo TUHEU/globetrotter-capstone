@@ -18,6 +18,7 @@ ROUTES = [
     ("/users", USER_SERVICE_URL),          # recherche d'utilisateurs (amis)
     ("/follow", USER_SERVICE_URL),         # suivre / ne plus suivre
     ("/messages", USER_SERVICE_URL),       # messagerie directe
+    ("/static/message_images", USER_SERVICE_URL),  # photos envoyées en message - PLUS SPÉCIFIQUE, doit passer avant "/static" ci-dessous
     ("/itineraries", ITINERARY_SERVICE_URL),
     ("/recommendations", RECOMMENDATION_SERVICE_URL),
     ("/destinations", RECOMMENDATION_SERVICE_URL),
