@@ -31,6 +31,7 @@ import 'itinerary_map_screen.dart';
 import 'login_screen.dart';
 import 'reviews_screen.dart';
 import 'settings_screen.dart';
+import 'global_chat_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
@@ -306,7 +307,30 @@ class _DesktopSidebar extends StatelessWidget {
 
           const Spacer(),
 
-          // Bottom: submit place button
+          // Bottom: Global Chat button
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+            child: Material(
+              color: const Color(0xFF1B7A3D).withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const GlobalChatScreen())),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+                  child: Row(children: [
+                    Icon(Icons.forum_rounded, size: 20, color: selectedColor),
+                    const SizedBox(width: 12),
+                    Expanded(child: Text('Chat Global 🌍',
+                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600,
+                            color: selectedColor))),
+                  ]),
+                ),
+              ),
+            ),
+          ),
+          // Submit place button
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
             child: Builder(builder: (ctx) {
@@ -1420,6 +1444,14 @@ class _ProfileTab extends StatelessWidget {
           // Menu items
           Card(
             child: Column(children: [
+              ListTile(
+                leading: const Icon(Icons.forum_rounded),
+                title: Text(s.isFr ? 'Chat Global 🌍' : 'Global Chat 🌍'),
+                subtitle: Text(s.isFr ? 'Discuter avec toute la communauté' : 'Chat with the whole community'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (_) => const GlobalChatScreen())),
+              ),
               ListTile(
                 leading: const Icon(Icons.settings_outlined),
                 title: Text(s.isFr ? 'Paramètres' : 'Settings'),
