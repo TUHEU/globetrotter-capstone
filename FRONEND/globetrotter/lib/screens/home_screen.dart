@@ -32,6 +32,13 @@ import 'login_screen.dart';
 import 'reviews_screen.dart';
 import 'settings_screen.dart';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Constants
+// ─────────────────────────────────────────────────────────────────────────────
+const _kSidebarWidth = 220.0;
+const _kSidebarCollapsedWidth = 72.0;
+const _kWideBreak = 760.0;
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -41,12 +48,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _index = 0;
-  // Cache la bulle IA pendant un défilement vers le bas (elle flotte
-  // au-dessus du contenu et le cachait en fin de liste) - remonte via
-  // NotificationListener<UserScrollNotification>, qui capte le scroll de
-  // N'IMPORTE QUEL ListView descendant (Explore, Trips, Profil...) sans
-  // que chaque onglet ait besoin de son propre ScrollController branché
-  // manuellement au parent.
   bool _hideBubble = false;
 
   @override
@@ -63,17 +64,11 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  /// Si l'app a été ouverte via un lien partagé (voir DeepLinkService),
-  /// va chercher la destination/sortie visée et l'ouvre directement -
-  /// après un court délai pour laisser le premier écran finir de
-  /// s'afficher (sinon Navigator.push trop tôt peut être ignoré pendant
-  /// la toute première frame).
   Future<void> _handleDeepLink() async {
     final link = DeepLinkService.consumePending();
     if (link == null || !mounted) return;
     await Future.delayed(const Duration(milliseconds: 300));
     if (!mounted) return;
-
     if (link.type == 'destination') {
       final dest = await context.read<DestinationProvider>().fetchById(link.id);
       if (dest != null && mounted) {
@@ -92,115 +87,265 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final s = context.watch<SettingsProvider>().s;
-    final pages = const [
-      _ExploreTab(),
-      _RecommendationsTab(),
-      _TripsTab(),
-      _ProfileTab(),
+    final width = MediaQuery.of(context).size.width;
+    final isWide = width >= _kWideBreak;
+
+    final pages = [
+      const _ExploreTab(),
+      const _RecommendationsTab(),
+      const _TripsTab(),
+      const _ProfileTab(),
     ];
-    final wide = MediaQuery.of(context).size.width >= 760;
+
+    // Nav items
+    final navItems = [
+      _NavItem(icon: Icons.explore_outlined, activeIcon: Icons.explore, label: s.navExplore),
+      _NavItem(icon: Icons.auto_awesome_outlined, activeIcon: Icons.auto_awesome, label: s.navForYou),
+      _NavItem(icon: Icons.map_outlined, activeIcon: Icons.map, label: s.navTrips),
+      _NavItem(icon: Icons.person_outline, activeIcon: Icons.person, label: s.navProfile),
+    ];
 
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: NotificationListener<UserScrollNotification>(
-        onNotification: (notification) {
-          if (notification.direction == ScrollDirection.reverse && !_hideBubble) {
+        onNotification: (n) {
+          if (n.direction == ScrollDirection.reverse && !_hideBubble) {
             setState(() => _hideBubble = true);
-          } else if (notification.direction == ScrollDirection.forward && _hideBubble) {
+          } else if (n.direction == ScrollDirection.forward && _hideBubble) {
             setState(() => _hideBubble = false);
           }
-          // false = laisse la notification continuer à remonter (au cas où
-          // un ancêtre plus haut voudrait aussi la lire un jour).
           return false;
         },
-        child: Stack(
-          children: [
-            Row(children: [
-              if (wide)
-                NavigationRail(
-                  selectedIndex: _index,
-                  onDestinationSelected: (i) => setState(() => _index = i),
-                  labelType: NavigationRailLabelType.all,
-                  destinations: [
-                    NavigationRailDestination(
-                        icon: const Icon(Icons.explore_outlined), label: Text(s.navExplore)),
-                    NavigationRailDestination(
-                        icon: const Icon(Icons.auto_awesome_outlined), label: Text(s.navForYou)),
-                    NavigationRailDestination(
-                        icon: const Icon(Icons.map_outlined), label: Text(s.navTrips)),
-                    NavigationRailDestination(
-                        icon: const Icon(Icons.person_outline), label: Text(s.navProfile)),
-                  ],
-                ),
-              Expanded(child: pages[_index]),
-            ]),
-            // Bulle IA flottante, visible sur TOUS les onglets (pas seulement
-            // dans le profil) — accès direct à l'assistant en un tap, où que
-            // l'utilisateur se trouve dans l'app. Disparaît pendant un
-            // défilement actif vers le bas (voir _hideBubble ci-dessus) pour
-            // ne jamais rester plaquée sur du contenu qu'on essaie de lire.
-            Positioned(
-              right: 16,
-              bottom: 16,
-              child: IgnorePointer(
-                ignoring: _hideBubble,
-                child: AnimatedSlide(
+        child: Stack(children: [
+          Row(children: [
+            // ── Wide sidebar ──────────────────────────────────────────────
+            if (isWide)
+              _DesktopSidebar(
+                items: navItems,
+                selectedIndex: _index,
+                onTap: (i) => setState(() => _index = i),
+              ),
+            // ── Main content ──────────────────────────────────────────────
+            Expanded(child: pages[_index]),
+          ]),
+
+          // ── Floating AI bubble ────────────────────────────────────────
+          Positioned(
+            right: 20,
+            bottom: isWide ? 20 : 80,
+            child: IgnorePointer(
+              ignoring: _hideBubble,
+              child: AnimatedSlide(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOut,
+                offset: _hideBubble ? const Offset(0, 0.4) : Offset.zero,
+                child: AnimatedOpacity(
                   duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeOut,
-                  offset: _hideBubble ? const Offset(0, 0.4) : Offset.zero,
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 200),
-                    opacity: _hideBubble ? 0 : 1,
-                    child: _AssistantBubble(
-                      onTap: () => Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (_) => const AssistantScreen())),
-                    ),
+                  opacity: _hideBubble ? 0 : 1,
+                  child: _AssistantBubble(
+                    onTap: () => Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (_) => const AssistantScreen())),
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ]),
       ),
-      bottomNavigationBar: wide
+      // Mobile bottom nav
+      bottomNavigationBar: isWide
           ? null
           : NavigationBar(
               selectedIndex: _index,
               onDestinationSelected: (i) => setState(() => _index = i),
-              destinations: [
-                NavigationDestination(
-                    icon: const Icon(Icons.explore_outlined), label: s.navExplore),
-                NavigationDestination(
-                    icon: const Icon(Icons.auto_awesome_outlined), label: s.navForYou),
-                NavigationDestination(
-                    icon: const Icon(Icons.map_outlined), label: s.navTrips),
-                NavigationDestination(
-                    icon: const Icon(Icons.person_outline), label: s.navProfile),
-              ],
+              destinations: navItems
+                  .map((e) => NavigationDestination(
+                      icon: Icon(e.icon), selectedIcon: Icon(e.activeIcon), label: e.label))
+                  .toList(),
             ),
-      floatingActionButton: _index == 0
-          ? FloatingActionButton.extended(
-              icon: const Icon(Icons.add_location_alt_outlined),
-              label: Text(s.submitPlaceTitle),
-              onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const SubmitPlaceScreen())),
-            )
-          : _index == 2
-              ? Padding(
-                  padding: const EdgeInsets.only(bottom: 64),
-                  child: FloatingActionButton.extended(
-                    icon: const Icon(Icons.add),
-                    label: Text(s.newTrip),
-                    onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) => const CreateItineraryScreen())),
-                  ),
+      // FABs
+      floatingActionButton: isWide
+          ? null
+          : _index == 0
+              ? FloatingActionButton.extended(
+                  icon: const Icon(Icons.add_location_alt_outlined),
+                  label: Text(s.submitPlaceTitle),
+                  onPressed: () => Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (_) => const SubmitPlaceScreen())),
                 )
-              : null,
+              : _index == 2
+                  ? Padding(
+                      padding: const EdgeInsets.only(bottom: 64),
+                      child: FloatingActionButton.extended(
+                        icon: const Icon(Icons.add),
+                        label: Text(s.newTrip),
+                        onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => const CreateItineraryScreen())),
+                      ),
+                    )
+                  : null,
     );
   }
 }
 
-/// Bulle IA flottante (façon "chat widget") — icône ronde toujours visible,
-/// ouvre l'écran de l'assistant en un tap.
+// ─────────────────────────────────────────────────────────────────────────────
+// Desktop sidebar  (trip_io-style: icon + label, full width)
+// ─────────────────────────────────────────────────────────────────────────────
+class _NavItem {
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  const _NavItem({required this.icon, required this.activeIcon, required this.label});
+}
+
+class _DesktopSidebar extends StatelessWidget {
+  final List<_NavItem> items;
+  final int selectedIndex;
+  final ValueChanged<int> onTap;
+
+  const _DesktopSidebar({
+    required this.items,
+    required this.selectedIndex,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final bg = isDark ? const Color(0xFF0C1E13) : Colors.white;
+    final selectedBg = isDark
+        ? const Color(0xFF1B7A3D).withValues(alpha: 0.18)
+        : const Color(0xFF1B7A3D).withValues(alpha: 0.08);
+    final selectedColor = const Color(0xFF1B7A3D);
+    final unselectedColor = isDark ? Colors.white54 : Colors.black45;
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.06)
+        : Colors.black.withValues(alpha: 0.07);
+
+    return Container(
+      width: _kSidebarWidth,
+      decoration: BoxDecoration(
+        color: bg,
+        border: Border(right: BorderSide(color: borderColor, width: 1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Logo / app name
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 28, 20, 24),
+            child: Row(children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: selectedColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.explore, color: Colors.white, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('GlobeTrotter',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 13,
+                            color: isDark ? Colors.white : const Color(0xFF0C1E13))),
+                    Text('Yaoundé',
+                        style: TextStyle(
+                            fontSize: 11,
+                            color: selectedColor,
+                            fontWeight: FontWeight.w600)),
+                  ],
+                ),
+              ),
+            ]),
+          ),
+
+          const SizedBox(height: 4),
+
+          // Nav items
+          ...List.generate(items.length, (i) {
+            final item = items[i];
+            final selected = selectedIndex == i;
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+              child: Material(
+                color: selected ? selectedBg : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () => onTap(i),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+                    child: Row(children: [
+                      Icon(
+                        selected ? item.activeIcon : item.icon,
+                        size: 20,
+                        color: selected ? selectedColor : unselectedColor,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        item.label,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                          color: selected ? selectedColor : unselectedColor,
+                        ),
+                      ),
+                    ]),
+                  ),
+                ),
+              ),
+            );
+          }),
+
+          const Spacer(),
+
+          // Bottom: submit place button
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
+            child: Builder(builder: (ctx) {
+              final s = context.watch<SettingsProvider>().s;
+              return Material(
+                color: const Color(0xFF1B7A3D).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () => Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (_) => const SubmitPlaceScreen())),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+                    child: Row(children: [
+                      Icon(Icons.add_location_alt_outlined,
+                          size: 20, color: selectedColor),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(s.submitPlaceTitle,
+                            style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: selectedColor)),
+                      ),
+                    ]),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AI Assistant bubble
+// ─────────────────────────────────────────────────────────────────────────────
 class _AssistantBubble extends StatelessWidget {
   final VoidCallback onTap;
   const _AssistantBubble({required this.onTap});
@@ -211,7 +356,8 @@ class _AssistantBubble extends StatelessWidget {
     return Material(
       color: scheme.secondary,
       shape: const CircleBorder(),
-      elevation: 4,
+      elevation: 6,
+      shadowColor: scheme.secondary.withValues(alpha: 0.4),
       child: InkWell(
         customBorder: const CircleBorder(),
         onTap: onTap,
@@ -224,119 +370,9 @@ class _AssistantBubble extends StatelessWidget {
   }
 }
 
-// ---------------- Dashboard header (Explore tab) ----------------
-class _DashboardHeader extends StatelessWidget {
-  const _DashboardHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final s = context.watch<SettingsProvider>().s;
-    final user = context.watch<AuthProvider>().user;
-    final destCount = context.watch<DestinationProvider>().destinations.length;
-    final tripCount = context.watch<ItineraryProvider>().itineraries.length;
-    final firstName = (user?.fullName ?? '').split(' ').first;
-
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [const Color(0xFF15351F), const Color(0xFF0F2418)]
-              : [theme.colorScheme.primary, theme.colorScheme.primary.withValues(alpha: 0.85)],
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      s.greeting(firstName.isEmpty ? '' : firstName),
-                      style: theme.textTheme.titleLarge?.copyWith(
-                          color: Colors.white, fontWeight: FontWeight.w800),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      s.dashSubtitle,
-                      style: theme.textTheme.bodySmall
-                          ?.copyWith(color: Colors.white.withValues(alpha: 0.85)),
-                    ),
-                  ],
-                ),
-              ),
-              CircleAvatar(
-                radius: 22,
-                backgroundColor: Colors.white.withValues(alpha: 0.18),
-                child: Text(
-                  user?.fullName.isNotEmpty == true
-                      ? user!.fullName[0].toUpperCase()
-                      : '?',
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          Row(
-            children: [
-              _StatPill(icon: Icons.place_outlined, value: '$destCount', label: s.statPlaces),
-              const SizedBox(width: 10),
-              _StatPill(
-                  icon: Icons.category_outlined,
-                  value: '${PlaceCategories.all.length}',
-                  label: s.statCategories),
-              const SizedBox(width: 10),
-              _StatPill(icon: Icons.map_outlined, value: '$tripCount', label: s.statTrips),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StatPill extends StatelessWidget {
-  final IconData icon;
-  final String value;
-  final String label;
-  const _StatPill({required this.icon, required this.value, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.14),
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: Colors.white, size: 18),
-            const SizedBox(height: 4),
-            Text(value,
-                style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
-            Text(label,
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.85), fontSize: 10.5)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ---------------- Explore ----------------
+// ─────────────────────────────────────────────────────────────────────────────
+// Explore Tab
+// ─────────────────────────────────────────────────────────────────────────────
 class _ExploreTab extends StatefulWidget {
   const _ExploreTab();
 
@@ -346,92 +382,112 @@ class _ExploreTab extends StatefulWidget {
 
 class _ExploreTabState extends State<_ExploreTab> {
   final _search = TextEditingController();
-  // Rétrécit/masque le bandeau d'accueil ("Bonjour, ..." + statistiques)
-  // pendant un défilement actif vers le bas dans la liste des lieux, pour
-  // libérer de la place à l'écran - séparé de _hideBubble dans HomeScreen
-  // (qui masque la bulle IA flottante) : deux préoccupations différentes,
-  // donc deux `NotificationListener` distincts plutôt qu'un état partagé
-  // entre widgets qui n'ont pas de raison de se connaître.
-  bool _hideHeader = false;
 
   @override
   Widget build(BuildContext context) {
     final p = context.watch<DestinationProvider>();
     final s = context.watch<SettingsProvider>().s;
+    final user = context.watch<AuthProvider>().user;
+    final width = MediaQuery.of(context).size.width;
+    final isWide = width >= _kWideBreak;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return SafeArea(
-      child: NotificationListener<UserScrollNotification>(
-        onNotification: (notification) {
-          if (notification.direction == ScrollDirection.reverse && !_hideHeader) {
-            setState(() => _hideHeader = true);
-          } else if (notification.direction == ScrollDirection.forward && _hideHeader) {
-            setState(() => _hideHeader = false);
-          }
-          return false;
-        },
-        child: Column(children: [
-          // AnimatedSize (pas juste AnimatedOpacity) : l'espace qu'occupait
-          // le bandeau doit vraiment se libérer pour la liste en dessous,
-          // pas juste devenir invisible en gardant sa hauteur réservée.
-          AnimatedSize(
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeOut,
-            child: AnimatedOpacity(
-              duration: const Duration(milliseconds: 180),
-              opacity: _hideHeader ? 0 : 1,
-              child: _hideHeader ? const SizedBox(width: double.infinity) : const _DashboardHeader(),
+      child: Column(children: [
+        // ── Hero banner (desktop only) ─────────────────────────────────
+        if (isWide) _HeroBanner(user: user, s: s, isDark: isDark),
+
+        // ── Search bar ────────────────────────────────────────────────
+        Padding(
+          padding: EdgeInsets.fromLTRB(isWide ? 24 : 16, isWide ? 16 : 14, isWide ? 24 : 16, 4),
+          child: Row(children: [
+            Expanded(
+              child: SearchBar(
+                controller: _search,
+                hintText: s.searchHint,
+                leading: const Icon(Icons.search),
+                elevation: const WidgetStatePropertyAll(0),
+                onSubmitted: (q) => p.search(q: q),
+                trailing: [
+                  if (_search.text.isNotEmpty)
+                    IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _search.clear();
+                          p.search(q: '');
+                        }),
+                ],
+              ),
             ),
-          ),
-          Padding(
-          padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
-          child: SearchBar(
-            controller: _search,
-            hintText: s.searchHint,
-            leading: const Icon(Icons.search),
-            onSubmitted: (q) => p.search(q: q),
-            trailing: [
-              IconButton(
-                icon: const Icon(Icons.map_outlined),
-                tooltip: s.exploreMapTitle,
-                onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const ExploreMapScreen())),
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.tune,
-                  color: (p.minPrice != null || p.maxPrice != null) ? Theme.of(context).colorScheme.primary : null,
-                ),
-                tooltip: s.priceFilter,
-                onPressed: () => _showPriceFilterSheet(context, p, s),
-              ),
-              if (_search.text.isNotEmpty)
-                IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: () {
-                      _search.clear();
-                      p.search(q: '');
-                    }),
-            ],
-          ),
+            const SizedBox(width: 8),
+            // Map button
+            _ToolButton(
+              icon: Icons.map_outlined,
+              tooltip: s.exploreMapTitle,
+              onTap: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const ExploreMapScreen())),
+            ),
+            const SizedBox(width: 6),
+            // Filter button
+            _ToolButton(
+              icon: Icons.tune,
+              tooltip: s.priceFilter,
+              active: p.minPrice != null || p.maxPrice != null,
+              onTap: () => _showPriceFilterSheet(context, p, s),
+            ),
+          ]),
         ),
+
+        // ── Category chips ────────────────────────────────────────────
         SizedBox(
           height: 52,
           child: ListView(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            children: PlaceCategories.all.entries
-                .map((e) => Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: FilterChip(
-                        avatar: Icon(e.value, size: 16),
-                        label: Text(PlaceCategories.labels[e.key] ?? e.key),
-                        selected: p.activeCategory == e.key,
-                        onSelected: (sel) => p.search(
-                            q: _search.text, category: sel ? e.key : null),
-                      ),
-                    ))
-                .toList(),
+            padding: EdgeInsets.symmetric(
+                horizontal: isWide ? 24 : 16, vertical: 6),
+            children: [
+              // "All" chip
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: FilterChip(
+                  label: Text(s.isFr ? 'Tout' : 'All'),
+                  selected: p.activeCategory == null,
+                  onSelected: (_) => p.search(q: _search.text, category: null),
+                ),
+              ),
+              ...PlaceCategories.all.entries.map((e) => Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: FilterChip(
+                      avatar: Icon(e.value, size: 15),
+                      label: Text(PlaceCategories.labels[e.key] ?? e.key),
+                      selected: p.activeCategory == e.key,
+                      onSelected: (sel) =>
+                          p.search(q: _search.text, category: sel ? e.key : null),
+                    ),
+                  )),
+            ],
           ),
         ),
+
+        // ── Result count bar (desktop) ────────────────────────────────
+        if (isWide && !p.loading && !p.hasError && p.destinations.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+            child: Row(children: [
+              Text(
+                s.isFr
+                    ? '${p.destinations.length} lieux trouvés'
+                    : '${p.destinations.length} places found',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
+              ),
+              const Spacer(),
+            ]),
+          ),
+
+        // ── Destination grid / list ───────────────────────────────────
         Expanded(
           child: p.loading
               ? const Center(child: CircularProgressIndicator())
@@ -441,26 +497,50 @@ class _ExploreTabState extends State<_ExploreTab> {
                       ? Center(child: Text(s.noResults))
                       : RefreshIndicator(
                           onRefresh: () => p.search(),
-                          child: ListView.builder(
-                            // 96 = assez pour dégager la bulle IA flottante
-                            // (bottom:16 + ~56 de diamètre + marge) qui vit
-                            // au-dessus de ce contenu dans le Stack parent -
-                            // sans ça, la dernière carte reste coincée
-                            // derrière elle en fin de liste.
-                            padding: const EdgeInsets.only(bottom: 96),
-                            itemCount: p.destinations.length,
-                            itemBuilder: (_, i) => DestinationCard(
-                              destination: p.destinations[i],
-                              onTap: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (_) => DestinationDetailScreen(
-                                          destination: p.destinations[i]))),
-                            ),
-                          ),
+                          child: LayoutBuilder(builder: (ctx, constraints) {
+                            // Responsive columns matching trip_io
+                            final cols = constraints.maxWidth >= 1100
+                                ? 4
+                                : constraints.maxWidth >= 800
+                                    ? 3
+                                    : constraints.maxWidth >= 560
+                                        ? 2
+                                        : 1;
+
+                            if (cols == 1) {
+                              return ListView.builder(
+                                padding: const EdgeInsets.only(bottom: 96),
+                                itemCount: p.destinations.length,
+                                itemBuilder: (_, i) => DestinationCard(
+                                  destination: p.destinations[i],
+                                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (_) =>
+                                          DestinationDetailScreen(destination: p.destinations[i]))),
+                                ),
+                              );
+                            }
+
+                            return GridView.builder(
+                              padding: EdgeInsets.fromLTRB(
+                                  isWide ? 24 : 12, 8, isWide ? 24 : 12, 96),
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: cols,
+                                crossAxisSpacing: 14,
+                                mainAxisSpacing: 14,
+                                childAspectRatio: 0.68,
+                              ),
+                              itemCount: p.destinations.length,
+                              itemBuilder: (_, i) => _DesktopDestCard(
+                                destination: p.destinations[i],
+                                onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (_) =>
+                                        DestinationDetailScreen(destination: p.destinations[i]))),
+                              ),
+                            );
+                          }),
                         ),
         ),
       ]),
-      ),
     );
   }
 
@@ -471,8 +551,6 @@ class _ExploreTabState extends State<_ExploreTab> {
       context: context,
       isScrollControlled: true,
       builder: (sheetContext) => Padding(
-        // viewInsets.bottom pousse la feuille au-dessus du clavier - sans
-        // ça, les champs de saisie se retrouvent cachés derrière lui.
         padding: EdgeInsets.only(
           left: 20, right: 20, top: 20,
           bottom: 20 + MediaQuery.of(sheetContext).viewInsets.bottom,
@@ -481,53 +559,53 @@ class _ExploreTabState extends State<_ExploreTab> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(s.priceFilter, style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+            Text(s.priceFilter,
+                style: Theme.of(sheetContext)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w700)),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: minCtrl,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: InputDecoration(labelText: s.priceMin, suffixText: 'FCFA'),
-                  ),
+            Row(children: [
+              Expanded(
+                child: TextField(
+                  controller: minCtrl,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: InputDecoration(labelText: s.priceMin, suffixText: 'FCFA'),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextField(
-                    controller: maxCtrl,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: InputDecoration(labelText: s.priceMax, suffixText: 'FCFA'),
-                  ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextField(
+                  controller: maxCtrl,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: InputDecoration(labelText: s.priceMax, suffixText: 'FCFA'),
                 ),
-              ],
-            ),
+              ),
+            ]),
             const SizedBox(height: 20),
-            Row(
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(sheetContext).pop();
-                    p.search(q: _search.text, resetPriceFilter: true);
-                  },
-                  child: Text(s.clearFilter),
-                ),
-                const Spacer(),
-                FilledButton(
-                  onPressed: () {
-                    Navigator.of(sheetContext).pop();
-                    p.search(
-                      q: _search.text,
-                      minPrice: minCtrl.text.isEmpty ? null : int.tryParse(minCtrl.text),
-                      maxPrice: maxCtrl.text.isEmpty ? null : int.tryParse(maxCtrl.text),
-                    );
-                  },
-                  child: Text(s.applyFilter),
-                ),
-              ],
-            ),
+            Row(children: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(sheetContext).pop();
+                  p.search(q: _search.text, resetPriceFilter: true);
+                },
+                child: Text(s.clearFilter),
+              ),
+              const Spacer(),
+              FilledButton(
+                onPressed: () {
+                  Navigator.of(sheetContext).pop();
+                  p.search(
+                    q: _search.text,
+                    minPrice: minCtrl.text.isEmpty ? null : int.tryParse(minCtrl.text),
+                    maxPrice: maxCtrl.text.isEmpty ? null : int.tryParse(maxCtrl.text),
+                  );
+                },
+                child: Text(s.applyFilter),
+              ),
+            ]),
           ],
         ),
       ),
@@ -538,7 +616,448 @@ class _ExploreTabState extends State<_ExploreTab> {
   }
 }
 
-// ------------- Recommendations -------------
+// ─────────────────────────────────────────────────────────────────────────────
+// Hero banner (desktop explore header)
+// ─────────────────────────────────────────────────────────────────────────────
+class _HeroBanner extends StatelessWidget {
+  final dynamic user;
+  final AppStrings s;
+  final bool isDark;
+
+  const _HeroBanner({required this.user, required this.s, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final firstName = (user?.fullName ?? '').split(' ').first;
+    final destCount = context.watch<DestinationProvider>().destinations.length;
+    final tripCount = context.watch<ItineraryProvider>().itineraries.length;
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+      height: 160,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDark
+              ? [const Color(0xFF143D21), const Color(0xFF0B2316)]
+              : [const Color(0xFF1B7A3D), const Color(0xFF0F5229)],
+        ),
+      ),
+      child: Stack(children: [
+        // Decorative dots pattern
+        Positioned(
+          right: -30,
+          top: -30,
+          child: Opacity(
+            opacity: 0.08,
+            child: Container(
+              width: 260,
+              height: 260,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          right: 80,
+          bottom: -60,
+          child: Opacity(
+            opacity: 0.06,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+        // World map dots icon top-right
+        Positioned(
+          right: 28,
+          top: 0,
+          bottom: 0,
+          child: Opacity(
+            opacity: 0.15,
+            child: Icon(Icons.language, size: 120, color: Colors.white),
+          ),
+        ),
+
+        // Content
+        Padding(
+          padding: const EdgeInsets.fromLTRB(28, 24, 180, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Eyebrow
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  s.isFr ? 'ASSISTANT DE VOYAGE · CAMEROUN 🇨🇲' : 'TRAVEL ASSISTANT · CAMEROON 🇨🇲',
+                  style: const TextStyle(
+                      color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700,
+                      letterSpacing: 0.8),
+                ),
+              ),
+              const SizedBox(height: 10),
+              // Greeting
+              Text(
+                firstName.isNotEmpty
+                    ? (s.isFr ? 'Bonjour, $firstName 👋' : 'Hello, $firstName 👋')
+                    : (s.isFr ? 'Bonjour, Explorateur 👋' : 'Hello, Explorer 👋'),
+                style: const TextStyle(
+                    color: Colors.white, fontSize: 22, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                s.dashSubtitle,
+                style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.75), fontSize: 13),
+              ),
+              const SizedBox(height: 14),
+              // Mini stats row
+              Row(children: [
+                _MiniStat(value: '$destCount', label: s.statPlaces),
+                const SizedBox(width: 20),
+                _MiniStat(value: '${PlaceCategories.all.length}', label: s.statCategories),
+                const SizedBox(width: 20),
+                _MiniStat(value: '$tripCount', label: s.statTrips),
+              ]),
+            ],
+          ),
+        ),
+      ]),
+    );
+  }
+}
+
+class _MiniStat extends StatelessWidget {
+  final String value;
+  final String label;
+  const _MiniStat({required this.value, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(children: [
+      Text(value,
+          style: const TextStyle(
+              color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800)),
+      const SizedBox(width: 5),
+      Text(label,
+          style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.65), fontSize: 12)),
+    ]);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Small square tool button (map / filter)
+// ─────────────────────────────────────────────────────────────────────────────
+class _ToolButton extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onTap;
+  final bool active;
+
+  const _ToolButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onTap,
+    this.active = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: active
+            ? theme.colorScheme.primary.withValues(alpha: 0.15)
+            : (isDark ? const Color(0xFF122A1B) : Colors.white),
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Icon(icon,
+                size: 22,
+                color: active ? theme.colorScheme.primary : theme.colorScheme.onSurface),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Desktop destination card  (trip_io style — image top, info bottom)
+// ─────────────────────────────────────────────────────────────────────────────
+class _DesktopDestCard extends StatelessWidget {
+  final dynamic destination;
+  final VoidCallback? onTap;
+
+  const _DesktopDestCard({required this.destination, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final favorites = context.watch<FavoritesProvider>();
+    final isFav = favorites.isFavorite(destination.id);
+    final catIcon =
+        PlaceCategories.all[destination.category] ?? Icons.place_outlined;
+    final s = context.watch<SettingsProvider>();
+
+    return Material(
+      color: isDark ? const Color(0xFF122A1B) : Colors.white,
+      borderRadius: BorderRadius.circular(18),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Image ─────────────────────────────────────────────────
+            Expanded(
+              flex: 3,
+              child: Stack(fit: StackFit.expand, children: [
+                // Image
+                _DestImage(destination: destination, catIcon: catIcon),
+
+                // Gradient overlay at bottom
+                Positioned(
+                  bottom: 0, left: 0, right: 0,
+                  child: Container(
+                    height: 60,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: [
+                          Colors.black.withValues(alpha: 0.55),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Price badge — bottom left on image
+                Positioned(
+                  bottom: 8, left: 10,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.secondary,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      formatPrice(destination.avgPriceFcfa,
+                          currency: s.currency, isFr: s.s.isFr),
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+
+                // Fav button — top right
+                Positioned(
+                  top: 8, right: 8,
+                  child: Material(
+                    color: Colors.black.withValues(alpha: 0.35),
+                    shape: const CircleBorder(),
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: () => favorites.toggle(destination.id),
+                      child: Padding(
+                        padding: const EdgeInsets.all(7),
+                        child: Icon(
+                          isFav ? Icons.favorite : Icons.favorite_border,
+                          size: 16,
+                          color: isFav ? Colors.redAccent : Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Share button — top right -1
+                Positioned(
+                  top: 8, right: 44,
+                  child: Material(
+                    color: Colors.black.withValues(alpha: 0.35),
+                    shape: const CircleBorder(),
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: () => ShareService.shareText(
+                        s.s.shareDestinationText(destination.name,
+                            destination.quartier,
+                            ApiConstants.destinationLink(destination.id)),
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.all(7),
+                        child:
+                            Icon(Icons.share_outlined, size: 16, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ]),
+            ),
+
+            // ── Info ──────────────────────────────────────────────────
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Name
+                    Text(
+                      destination.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700, fontSize: 13.5),
+                    ),
+                    const SizedBox(height: 3),
+                    // Location
+                    Row(children: [
+                      Icon(Icons.place_outlined,
+                          size: 12,
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.45)),
+                      const SizedBox(width: 3),
+                      Expanded(
+                        child: Text(
+                          destination.quartier,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                              fontSize: 11,
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.55)),
+                        ),
+                      ),
+                    ]),
+                    const SizedBox(height: 6),
+                    // Description
+                    Expanded(
+                      child: Text(
+                        destination.description,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                            fontSize: 11,
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.65)),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    // Category chip + best time
+                    Row(children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Row(children: [
+                          Icon(catIcon,
+                              size: 11, color: theme.colorScheme.primary),
+                          const SizedBox(width: 4),
+                          Text(
+                            PlaceCategories.labels[destination.category] ??
+                                destination.category,
+                            style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: theme.colorScheme.primary),
+                          ),
+                        ]),
+                      ),
+                      const Spacer(),
+                      Icon(Icons.schedule_outlined,
+                          size: 11,
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.4)),
+                      const SizedBox(width: 3),
+                      Text(
+                        destination.bestTime,
+                        style: TextStyle(
+                            fontSize: 10,
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.45)),
+                      ),
+                    ]),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Small helper for destination image with fallback
+class _DestImage extends StatelessWidget {
+  final dynamic destination;
+  final IconData catIcon;
+  const _DestImage({required this.destination, required this.catIcon});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final url = ApiConstants.resolveImageUrl(destination.image);
+    if (url.isEmpty) {
+      return Container(
+        color: theme.colorScheme.primaryContainer,
+        child: Center(child: Icon(catIcon, size: 40, color: theme.colorScheme.primary)),
+      );
+    }
+    return Image.network(
+      url,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => Container(
+        color: theme.colorScheme.primaryContainer,
+        child: Center(child: Icon(catIcon, size: 40, color: theme.colorScheme.primary)),
+      ),
+      loadingBuilder: (_, child, progress) {
+        if (progress == null) return child;
+        return Container(
+          color: theme.colorScheme.primaryContainer,
+          child: Center(
+            child: CircularProgressIndicator(
+              value: progress.expectedTotalBytes != null
+                  ? progress.cumulativeBytesLoaded / progress.expectedTotalBytes!
+                  : null,
+              strokeWidth: 2,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Recommendations Tab
+// ─────────────────────────────────────────────────────────────────────────────
 class _RecommendationsTab extends StatelessWidget {
   const _RecommendationsTab();
 
@@ -547,39 +1066,70 @@ class _RecommendationsTab extends StatelessWidget {
     final p = context.watch<DestinationProvider>();
     final user = context.watch<AuthProvider>().user;
     final s = context.watch<SettingsProvider>().s;
+    final isWide = MediaQuery.of(context).size.width >= _kWideBreak;
     return SafeArea(
       child: p.loadingRecos
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
               onRefresh: () => p.loadRecommendations(),
-              child: ListView(
-                padding: const EdgeInsets.only(bottom: 96),
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
-                    child: Text(s.madeFor(user?.fullName.split(' ').first ?? ''),
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.w700)),
+              child: CustomScrollView(
+                slivers: [
+                  SliverPadding(
+                    padding: EdgeInsets.fromLTRB(isWide ? 24 : 20, 20, isWide ? 24 : 20, 8),
+                    sliver: SliverToBoxAdapter(
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(s.madeFor(user?.fullName.split(' ').first ?? ''),
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall
+                                ?.copyWith(fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 4),
+                        Text(s.recoSubtitle,
+                            style: Theme.of(context).textTheme.bodySmall),
+                      ]),
+                    ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(s.recoSubtitle,
-                        style: Theme.of(context).textTheme.bodySmall),
-                  ),
-                  const SizedBox(height: 8),
                   if (p.recommendations.isEmpty)
-                    Padding(
-                        padding: const EdgeInsets.all(32),
-                        child: Center(child: Text(s.noRecos))),
-                  ...p.recommendations.map((d) => DestinationCard(
-                        destination: d,
-                        showReasons: true,
-                        onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                            builder: (_) =>
-                                DestinationDetailScreen(destination: d))),
-                      )),
+                    SliverFillRemaining(
+                      child: Center(
+                          child: Padding(
+                              padding: const EdgeInsets.all(32),
+                              child: Text(s.noRecos))),
+                    )
+                  else if (isWide)
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(24, 8, 24, 96),
+                      sliver: SliverGrid(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 14,
+                          mainAxisSpacing: 14,
+                          childAspectRatio: 0.68,
+                        ),
+                        delegate: SliverChildBuilderDelegate(
+                          (_, i) => _DesktopDestCard(
+                            destination: p.recommendations[i],
+                            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                                builder: (_) => DestinationDetailScreen(
+                                    destination: p.recommendations[i]))),
+                          ),
+                          childCount: p.recommendations.length,
+                        ),
+                      ),
+                    )
+                  else
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (_, i) => DestinationCard(
+                          destination: p.recommendations[i],
+                          showReasons: true,
+                          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                              builder: (_) =>
+                                  DestinationDetailScreen(destination: p.recommendations[i]))),
+                        ),
+                        childCount: p.recommendations.length,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -587,7 +1137,9 @@ class _RecommendationsTab extends StatelessWidget {
   }
 }
 
-// ---------------- Trips ----------------
+// ─────────────────────────────────────────────────────────────────────────────
+// Trips Tab
+// ─────────────────────────────────────────────────────────────────────────────
 class _TripsTab extends StatelessWidget {
   const _TripsTab();
 
@@ -597,192 +1149,205 @@ class _TripsTab extends StatelessWidget {
     final destProvider = context.watch<DestinationProvider>();
     final s = context.watch<SettingsProvider>().s;
     final unread = context.watch<MessagesProvider>().totalUnread;
+    final isWide = MediaQuery.of(context).size.width >= _kWideBreak;
+
     return SafeArea(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 8, 4),
-            child: Row(
+      child: Column(children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(isWide ? 24 : 16, 16, 8, 4),
+          child: Row(children: [
+            Expanded(
+              child: Text(s.navTrips,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontWeight: FontWeight.w700)),
+            ),
+            if (isWide)
+              FilledButton.icon(
+                icon: const Icon(Icons.add, size: 18),
+                label: Text(s.newTrip),
+                onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const CreateItineraryScreen())),
+              ),
+            const SizedBox(width: 4),
+            IconButton(
+              tooltip: s.friendsFeed,
+              icon: const Icon(Icons.dynamic_feed_outlined),
+              onPressed: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const FriendsFeedScreen())),
+            ),
+            Stack(
+              clipBehavior: Clip.none,
               children: [
-                Expanded(
-                  child: Text(s.navTrips,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(fontWeight: FontWeight.w700)),
-                ),
                 IconButton(
-                  tooltip: s.friendsFeed,
-                  icon: const Icon(Icons.dynamic_feed_outlined),
-                  onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const FriendsFeedScreen())),
-                ),
-                Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    IconButton(
-                      tooltip: s.messages,
-                      icon: const Icon(Icons.mail_outline),
-                      onPressed: () => Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (_) => const InboxScreen())),
-                    ),
-                    if (unread > 0)
-                      Positioned(
-                        right: 6,
-                        top: 6,
-                        child: Container(
-                          padding: const EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.error,
-                            shape: BoxShape.circle,
-                          ),
-                          constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                          child: Text(
-                            unread > 9 ? '9+' : '$unread',
-                            style: const TextStyle(color: Colors.white, fontSize: 9),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                IconButton(
-                  tooltip: s.friends,
-                  icon: const Icon(Icons.people_outline),
+                  tooltip: s.messages,
+                  icon: const Icon(Icons.mail_outline),
                   onPressed: () => Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (_) => const FriendsScreen())),
+                      .push(MaterialPageRoute(builder: (_) => const InboxScreen())),
                 ),
+                if (unread > 0)
+                  Positioned(
+                    right: 6, top: 6,
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.error,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                      child: Text(
+                        unread > 9 ? '9+' : '$unread',
+                        style: const TextStyle(color: Colors.white, fontSize: 9),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
               ],
             ),
-          ),
-          Expanded(
-            child: p.loading
-                ? const Center(child: CircularProgressIndicator())
-                : p.itineraries.isEmpty
-                    ? Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(32),
-                          child: Text(s.tripsEmpty, textAlign: TextAlign.center),
-                        ),
-                      )
-                    : RefreshIndicator(
-                  onRefresh: () => p.load(),
-                  child: ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 96),
-                    itemCount: p.itineraries.length,
-                    itemBuilder: (_, i) {
-                      final it = p.itineraries[i];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        child: ExpansionTile(
-                          leading: const Icon(Icons.map_outlined),
-                          title: Row(children: [
-                            Expanded(
-                              child: Text(it.title,
-                                  style: const TextStyle(fontWeight: FontWeight.w700)),
-                            ),
-                            if (it.isPublic)
-                              Padding(
-                                padding: const EdgeInsets.only(left: 6),
-                                child: Chip(
-                                  label: Text(s.publicTripBadge),
-                                  avatar: const Icon(Icons.public, size: 14),
-                                  visualDensity: VisualDensity.compact,
-                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            IconButton(
+              tooltip: s.friends,
+              icon: const Icon(Icons.people_outline),
+              onPressed: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const FriendsScreen())),
+            ),
+          ]),
+        ),
+        Expanded(
+          child: p.loading
+              ? const Center(child: CircularProgressIndicator())
+              : p.itineraries.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(32),
+                        child: Text(s.tripsEmpty, textAlign: TextAlign.center),
+                      ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: () => p.load(),
+                      child: ListView.builder(
+                        padding: EdgeInsets.fromLTRB(
+                            isWide ? 24 : 0, 8, isWide ? 24 : 0, 96),
+                        itemCount: p.itineraries.length,
+                        itemBuilder: (_, i) {
+                          final it = p.itineraries[i];
+                          return Card(
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: ExpansionTile(
+                              leading: const Icon(Icons.map_outlined),
+                              title: Row(children: [
+                                Expanded(
+                                  child: Text(it.title,
+                                      style: const TextStyle(fontWeight: FontWeight.w700)),
                                 ),
-                              ),
-                          ]),
-                          subtitle: Text([
-                            if (it.startDate != null)
-                              '${it.startDate} → ${it.endDate ?? "?"}',
-                            s.stops(it.stops.length),
-                            if (it.sharedWith.isNotEmpty)
-                              s.sharedWith(it.sharedWith.length),
-                          ].join(' · ')),
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
-                              child: LikeCommentBar(
-                                itinerary: it,
-                                onChanged: (updated) => p.updateLocal(updated),
-                              ),
-                            ),
-                            if (it.description != null)
-                              Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                                child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(it.description!)),
-                              ),
-                            ...it.stops.map((stop) {
-                              final d = destProvider.byId(stop.destinationId);
-                              return ListTile(
-                                dense: true,
-                                leading: CircleAvatar(
-                                    radius: 13, child: Text('${stop.day}')),
-                                title: Text(d?.name ?? stop.destinationId),
-                                subtitle:
-                                    stop.notes != null ? Text(stop.notes!) : null,
-                              );
-                            }),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                IconButton(
-                                  tooltip: it.isPublic ? s.makePrivate : s.makePublic,
-                                  icon: Icon(it.isPublic ? Icons.public : Icons.public_off_outlined),
-                                  onPressed: () async {
-                                    final err = await p.setVisibility(it.id, !it.isPublic);
-                                    if (err != null && context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text(s.visibilityUpdateFailed)));
-                                    }
-                                  },
-                                ),
-                                IconButton(
-                                  tooltip: s.share,
-                                  icon: const Icon(Icons.share_outlined),
-                                  onPressed: () => ShareService.shareText(s.shareItineraryText(
-                                      it.title, it.stops.length,
-                                      ApiConstants.itineraryLink(it.id))),
-                                ),
-                                if (it.stops.isNotEmpty)
-                                  TextButton.icon(
-                                    icon: const Icon(Icons.map_outlined),
-                                    label: const Text('Voir sur la carte'),
-                                    onPressed: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (_) => ItineraryMapScreen(itinerary: it))),
+                                if (it.isPublic)
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 6),
+                                    child: Chip(
+                                      label: Text(s.publicTripBadge),
+                                      avatar: const Icon(Icons.public, size: 14),
+                                      visualDensity: VisualDensity.compact,
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                    ),
                                   ),
-                                TextButton.icon(
-                                  icon: const Icon(Icons.delete_outline),
-                                  label: Text(s.delete),
-                                  onPressed: () async {
-                                    final err = await p.delete(it.id);
-                                    if (err != null && context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text(ApiClient.errorMessage(err, s))));
-                                    }
-                                  },
+                              ]),
+                              subtitle: Text([
+                                if (it.startDate != null)
+                                  '${it.startDate} → ${it.endDate ?? "?"}',
+                                s.stops(it.stops.length),
+                                if (it.sharedWith.isNotEmpty)
+                                  s.sharedWith(it.sharedWith.length),
+                              ].join(' · ')),
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  child: LikeCommentBar(
+                                    itinerary: it,
+                                    onChanged: (updated) => p.updateLocal(updated),
+                                  ),
+                                ),
+                                if (it.description != null)
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                                    child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(it.description!)),
+                                  ),
+                                ...it.stops.map((stop) {
+                                  final d = destProvider.byId(stop.destinationId);
+                                  return ListTile(
+                                    dense: true,
+                                    leading:
+                                        CircleAvatar(radius: 13, child: Text('${stop.day}')),
+                                    title: Text(d?.name ?? stop.destinationId),
+                                    subtitle: stop.notes != null ? Text(stop.notes!) : null,
+                                  );
+                                }),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    IconButton(
+                                      tooltip: it.isPublic ? s.makePrivate : s.makePublic,
+                                      icon: Icon(it.isPublic
+                                          ? Icons.public
+                                          : Icons.public_off_outlined),
+                                      onPressed: () async {
+                                        final err =
+                                            await p.setVisibility(it.id, !it.isPublic);
+                                        if (err != null && context.mounted) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                  content:
+                                                      Text(s.visibilityUpdateFailed)));
+                                        }
+                                      },
+                                    ),
+                                    IconButton(
+                                      tooltip: s.share,
+                                      icon: const Icon(Icons.share_outlined),
+                                      onPressed: () => ShareService.shareText(
+                                          s.shareItineraryText(it.title, it.stops.length,
+                                              ApiConstants.itineraryLink(it.id))),
+                                    ),
+                                    if (it.stops.isNotEmpty)
+                                      TextButton.icon(
+                                        icon: const Icon(Icons.map_outlined),
+                                        label: const Text('Voir sur la carte'),
+                                        onPressed: () => Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (_) =>
+                                                    ItineraryMapScreen(itinerary: it))),
+                                      ),
+                                    TextButton.icon(
+                                      icon: const Icon(Icons.delete_outline),
+                                      label: Text(s.delete),
+                                      onPressed: () async {
+                                        final err = await p.delete(it.id);
+                                        if (err != null && context.mounted) {
+                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                              content: Text(
+                                                  ApiClient.errorMessage(err, s))));
+                                        }
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-          ),
-        ],
-      ),
+                          );
+                        },
+                      ),
+                    ),
+        ),
+      ]),
     );
   }
 }
 
-// ---------------- Profile ----------------
+// ─────────────────────────────────────────────────────────────────────────────
+// Profile Tab
+// ─────────────────────────────────────────────────────────────────────────────
 class _ProfileTab extends StatelessWidget {
   const _ProfileTab();
 
@@ -792,115 +1357,105 @@ class _ProfileTab extends StatelessWidget {
     final user = auth.user;
     final s = context.watch<SettingsProvider>().s;
     final theme = Theme.of(context);
+    final isWide = MediaQuery.of(context).size.width >= _kWideBreak;
 
     return SafeArea(
       child: ListView(
-        // Fusion de l'ancien padding (20 partout) avec la marge basse ajoutée
-        // pour dégager la bulle IA flottante (voir les autres onglets).
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 96),
+        padding: EdgeInsets.fromLTRB(isWide ? 48 : 20, 20, isWide ? 48 : 20, 96),
         children: [
+          if (isWide) const SizedBox(height: 12),
           CircleAvatar(
             radius: 44,
             backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.15),
             child: Text(
-              user?.fullName.isNotEmpty == true
-                  ? user!.fullName[0].toUpperCase()
-                  : '?',
+              user?.fullName.isNotEmpty == true ? user!.fullName[0].toUpperCase() : '?',
               style: TextStyle(fontSize: 32, color: theme.colorScheme.primary),
             ),
           ),
           const SizedBox(height: 12),
-          Text(user?.fullName ?? '',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
-          Text(user?.email ?? '',
-              textAlign: TextAlign.center, style: theme.textTheme.bodyMedium),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              _ProfileStat(
-                icon: Icons.map_outlined,
-                value: '${context.watch<ItineraryProvider>().itineraries.length}',
-                label: 'Itinéraires',
-              ),
-              _ProfileStat(
-                icon: Icons.place_outlined,
-                value: 'Yaoundé',
-                label: 'Région',
-              ),
-              _ProfileStat(
-                icon: Icons.favorite_outline,
-                value: '${context.watch<FavoritesProvider>().count}',
-                label: 'Favoris',
-              ),
-            ],
+          Text(
+            user?.fullName ?? '—',
+            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 20),
-          const TravelStatsCard(),
-          const SizedBox(height: 20),
+          Text(
+            user?.email ?? '',
+            style: theme.textTheme.bodySmall,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          // Stats row
+          Row(children: [
+            _ProfileStat(
+              icon: Icons.map_outlined,
+              value: '${context.watch<ItineraryProvider>().itineraries.length}',
+              label: s.statTrips,
+            ),
+            _ProfileStat(
+              icon: Icons.favorite_outline,
+              value: '${context.watch<FavoritesProvider>().count}',
+              label: s.isFr ? 'Favoris' : 'Favorites',
+            ),
+          ]),
+          const SizedBox(height: 24),
+          // Preferences
+          if (user?.preferences.isNotEmpty == true) ...[
+            Text(s.isFr ? 'Vos intérêts' : 'Your interests',
+                style: theme.textTheme.labelLarge),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: user!.preferences
+                  .map((p) => Chip(label: Text(p), visualDensity: VisualDensity.compact))
+                  .toList(),
+            ),
+            const SizedBox(height: 20),
+          ],
+          // Achievement badges
           const AchievementBadges(),
-          const SizedBox(height: 20),
-          Text(s.interests, style: theme.textTheme.titleSmall),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: (user?.preferences ?? [])
-                .map((t) => Chip(label: Text(t)))
-                .toList(),
-          ),
-          const SizedBox(height: 20),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.settings_outlined),
-              title: Text(s.settings),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
-            ),
-          ),
           const SizedBox(height: 12),
+          const TravelStatsCard(),
+          const SizedBox(height: 16),
+          // Menu items
           Card(
-            child: ListTile(
-              leading: const Icon(Icons.people_outline),
-              title: Text(s.friends),
-              subtitle: Text(s.friendsSubtitle),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (_) => const FriendsScreen())),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.favorite_outline),
-              title: const Text('Favoris'),
-              subtitle: const Text('Destinations sauvegardées'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (_) => const FavoritesScreen())),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.auto_awesome_outlined),
-              title: const Text('Assistant IA'),
-              subtitle: const Text('Discutez et obtenez des suggestions'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (_) => const AssistantScreen())),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.star_outline),
-              title: const Text('Noter l\'application'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (_) => const ReviewsScreen())),
-            ),
+            child: Column(children: [
+              ListTile(
+                leading: const Icon(Icons.settings_outlined),
+                title: Text(s.isFr ? 'Paramètres' : 'Settings'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
+              ),
+              ListTile(
+                leading: const Icon(Icons.people_outline),
+                title: Text(s.isFr ? 'Amis' : 'Friends'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (_) => const FriendsScreen())),
+              ),
+              ListTile(
+                leading: const Icon(Icons.favorite_outline),
+                title: Text(s.isFr ? 'Favoris' : 'Favorites'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (_) => const FavoritesScreen())),
+              ),
+              ListTile(
+                leading: const Icon(Icons.auto_awesome_outlined),
+                title: Text(s.isFr ? 'Assistant IA' : 'AI Assistant'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (_) => const AssistantScreen())),
+              ),
+              ListTile(
+                leading: const Icon(Icons.star_outline),
+                title: Text(s.isFr ? 'Noter l\'application' : 'Rate the app'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (_) => const ReviewsScreen())),
+              ),
+            ]),
           ),
           const SizedBox(height: 20),
           OutlinedButton.icon(
@@ -924,6 +1479,9 @@ class _ProfileTab extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared utility widgets
+// ─────────────────────────────────────────────────────────────────────────────
 class _ErrorView extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
@@ -957,14 +1515,13 @@ class _ProfileStat extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Expanded(
-      child: Column(
-        children: [
-          Icon(icon, color: theme.colorScheme.secondary),
-          const SizedBox(height: 4),
-          Text(value, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-          Text(label, style: theme.textTheme.labelSmall),
-        ],
-      ),
+      child: Column(children: [
+        Icon(icon, color: theme.colorScheme.secondary),
+        const SizedBox(height: 4),
+        Text(value,
+            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+        Text(label, style: theme.textTheme.labelSmall),
+      ]),
     );
   }
 }
