@@ -220,11 +220,11 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
   }
 
   Future<void> _pickFile() async {
-    final r = await FilePicker.platform.pickFiles(
+    final files = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['mp3', 'ogg', 'wav', 'm4a', 'aac', 'mp4', 'mov', 'webm']);
-    if (r == null || r.files.isEmpty || r.files.first.path == null) return;
-    final f = r.files.first;
+    if (files.isEmpty || files.first.path == null) return;
+    final f = files.first;
     final ct = _mime(f.extension ?? '');
     await _upload(f.path!, ct, ct.startsWith('audio') ? 'audio' : 'video');
   }
