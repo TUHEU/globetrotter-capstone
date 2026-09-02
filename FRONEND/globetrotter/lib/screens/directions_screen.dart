@@ -68,7 +68,7 @@ class _DirectionsScreenState extends State<DirectionsScreen> {
         LatLng(pos.latitude, pos.longitude),
         LatLng(widget.destination.lat, widget.destination.lng),
       ],
-      profile: _mode.osrmProfile,
+      mode: _mode,
     );
 
     if (!mounted) return;
@@ -104,7 +104,7 @@ class _DirectionsScreenState extends State<DirectionsScreen> {
         LatLng(_myPosition!.latitude, _myPosition!.longitude),
         LatLng(widget.destination.lat, widget.destination.lng),
       ],
-      profile: mode.osrmProfile,
+      mode: mode,
     );
     if (!mounted) return;
     setState(() {

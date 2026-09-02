@@ -127,7 +127,7 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
     if (resolved.length >= 2) {
       route = await DirectionsService.fetchRoute(
         resolved.map((p) => LatLng(p.destination.lat, p.destination.lng)).toList(),
-        profile: _mode.osrmProfile,
+        mode: _mode,
       );
     }
 
@@ -153,7 +153,7 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
     });
     final route = await DirectionsService.fetchRoute(
       _points.map((p) => LatLng(p.destination.lat, p.destination.lng)).toList(),
-      profile: mode.osrmProfile,
+      mode: mode,
     );
     if (!mounted) return;
     setState(() {

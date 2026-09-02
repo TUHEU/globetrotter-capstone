@@ -15,7 +15,7 @@ import 'providers/messages_provider.dart';
 import 'providers/notifications_provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
-import 'widgets/galloping_horse_loader.dart';
+import 'widgets/globe_car_loader.dart';
 
 void main() {
   runApp(const GlobeTrotterApp());
@@ -99,7 +99,7 @@ class _BootstrapState extends State<_Bootstrap> {
           // le fond ne suit pas le thème (clair/sombre).
           return Scaffold(
             body: Center(
-              child: GallopingHorseLoader(message: context.watch<SettingsProvider>().s.loadingMessage),
+              child: GlobeCarLoader(message: context.watch<SettingsProvider>().s.loadingMessage),
             ),
           );
         }

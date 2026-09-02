@@ -707,9 +707,13 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
         color: isDark ? const Color(0xFF0F2418) : Colors.white,
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 8, offset: const Offset(0, -2))]),
-      padding: EdgeInsets.only(
-          left: 6, right: 6, top: 6,
-          bottom: 6 + MediaQuery.of(context).viewInsets.bottom),
+      // Le Scaffold rétrécit déjà automatiquement le body de la hauteur du
+      // clavier (resizeToAvoidBottomInset, activé par défaut) - ajouter EN
+      // PLUS `MediaQuery.viewInsets.bottom` ici comptait cette hauteur deux
+      // fois, ce qui poussait toute la barre de saisie trop haut au-dessus
+      // du clavier au lieu de rester juste au-dessus, laissant un grand
+      // espace vide entre les deux.
+      padding: const EdgeInsets.only(left: 6, right: 6, top: 6, bottom: 6),
       child: Row(children: [
         // Emoji toggle
         IconButton(

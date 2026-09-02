@@ -1583,7 +1583,7 @@ class _ProfileTab extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// trip_io-inspired mobile shell: teal header + notification badge + drawer
+// trip_io-inspired mobile shell (layout only): green header + notification badge + drawer
 // ─────────────────────────────────────────────────────────────────────────────
 class _TripIoHeader extends StatelessWidget {
   final String title;
@@ -1592,7 +1592,11 @@ class _TripIoHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final np = context.watch<NotificationsProvider>();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    // Vert de la marque (voir AppTheme._green), pas le turquoise/bleu de la
+    // maquette "trip_io" - ce dégradé reprenait par erreur les couleurs
+    // d'une référence de design distincte au lieu du thème réel de l'app.
     return Container(
       height: 76,
       decoration: BoxDecoration(
@@ -1600,8 +1604,8 @@ class _TripIoHeader extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF118A98),
-            isDark ? const Color(0xFF244C72) : const Color(0xFF58789A),
+            theme.colorScheme.primary,
+            isDark ? const Color(0xFF0F5229) : const Color(0xFF2FA35C),
           ],
         ),
       ),
@@ -1669,7 +1673,7 @@ class _TripIoDrawer extends StatelessWidget {
             child: Row(children: [
               Container(
                 width: 42, height: 42,
-                decoration: const BoxDecoration(color: Color(0xFF118A98), shape: BoxShape.circle),
+                decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, shape: BoxShape.circle),
                 child: const Icon(Icons.public_rounded, color: Colors.white),
               ),
               const SizedBox(width: 12),
@@ -1722,14 +1726,15 @@ class _DrawerEntry extends StatelessWidget {
   const _DrawerEntry({required this.item, required this.onTap, this.selected = false});
   @override
   Widget build(BuildContext context) {
-    final color = selected ? const Color(0xFF118A98) : Theme.of(context).textTheme.bodyLarge?.color;
+    final primary = Theme.of(context).colorScheme.primary;
+    final color = selected ? primary : Theme.of(context).textTheme.bodyLarge?.color;
     return ListTile(
       dense: false,
       contentPadding: const EdgeInsets.symmetric(horizontal: 28, vertical: 2),
       leading: Icon(selected ? item.activeIcon : item.icon, size: 29, color: color),
       title: Text(item.label, style: TextStyle(fontSize: 17, fontWeight: selected ? FontWeight.w800 : FontWeight.w500, color: color)),
       selected: selected,
-      selectedTileColor: const Color(0xFF118A98).withValues(alpha: .10),
+      selectedTileColor: primary.withValues(alpha: .10),
       onTap: onTap,
     );
   }

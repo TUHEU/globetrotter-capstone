@@ -19,12 +19,22 @@ import 'package:maplibre_gl/maplibre_gl.dart' show LatLng;
 /// pour une voiture mais pas pour un piéton, etc.), ce n'est jamais la
 /// même distance divisée par une vitesse fixe côté app.
 enum TransportMode {
-  walk('foot', 'À pied', Icons.directions_walk),
-  bike('bike', 'À vélo', Icons.directions_bike),
-  car('driving', 'En voiture', Icons.directions_car);
+  walk('foot', 'foot', 'À pied', Icons.directions_walk),
+  bike('bike', 'bike', 'À vélo', Icons.directions_bike),
+  car('driving', 'car', 'En voiture', Icons.directions_car);
 
-  const TransportMode(this.osrmProfile, this.label, this.icon);
+  const TransportMode(this.osrmProfile, this.routedInstance, this.label, this.icon);
   final String osrmProfile;
+  // Le serveur de démo public d'OSRM (router.project-osrm.org) ignore
+  // silencieusement le profil demandé dans l'URL et renvoie TOUJOURS un
+  // itinéraire voiture, quel que soit "foot"/"bike"/"driving" passé - c'est
+  // un problème connu et documenté du serveur de démo lui-même (pas un bug
+  // de ce code), d'où "à pied" et "à vélo" affichaient exactement la même
+  // durée/distance/trajet que "en voiture". La communauté OSRM contourne ça
+  // avec des instances de démo SÉPARÉES par mode sur routing.openstreetmap.de
+  // (routed-foot / routed-bike / routed-car), chacune ne servant réellement
+  // que son propre profil.
+  final String routedInstance;
   final String label;
   final IconData icon;
 }
@@ -82,16 +92,18 @@ class DirectionsService {
   ));
 
   /// [points] doit contenir au moins 2 arrêts, dans l'ordre de visite.
-  /// [profile] : "foot" (marche) ou "driving".
+  /// [mode] détermine le profil ET l'instance de serveur interrogée (voir
+  /// [TransportMode.routedInstance] : le serveur de démo standard renvoie
+  /// toujours un trajet voiture, quel que soit le profil demandé).
   static Future<RouteResult?> fetchRoute(
     List<LatLng> points, {
-    String profile = 'foot',
+    TransportMode mode = TransportMode.walk,
   }) async {
     if (points.length < 2) return null;
     final coords = points.map((p) => '${p.longitude},${p.latitude}').join(';');
     try {
       final res = await _dio.get(
-        'https://router.project-osrm.org/route/v1/$profile/$coords',
+        'https://routing.openstreetmap.de/routed-${mode.routedInstance}/route/v1/${mode.osrmProfile}/$coords',
         queryParameters: {
           'overview': 'full',
           'geometries': 'geojson',
@@ -168,7 +180,7 @@ class DirectionsService {
       case 'merge':
         return 'Rejoignez $road';
       case 'fork':
-        return modifier != null ? 'Au embranchement, restez ${modifierFr(modifier)} vers $road' : 'Restez sur $road';
+        return modifier != null ? "À l'embranchement, restez ${modifierFr(modifier)} vers $road" : 'Restez sur $road';
       case 'end of road':
         return modifier != null ? 'En fin de route, tournez ${modifierFr(modifier)} sur $road' : 'Continuez sur $road';
       default:
