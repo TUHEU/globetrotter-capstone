@@ -64,7 +64,7 @@ USER_SERVICE_URL=http://127.0.0.1:8001 ITINERARY_SERVICE_URL=http://127.0.0.1:80
 ```
 
 Teste tout via la Gateway (jamais les ports 8001-8003 directement, sauf
-pour consulter leur `/docs` en debug) : `http://localhost:8000`.
+pour consulter leur `/docs` en debug) : `http://localhost:4200`.
 
 ## Lancer avec Docker Compose (le livrable "single VM" de la slide)
 
