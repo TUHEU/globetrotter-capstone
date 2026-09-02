@@ -19,8 +19,17 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    id("com.android.application") version "9.0.1" apply false
-    id("org.jetbrains.kotlin.android") version "2.3.20" apply false
+    // Épinglés à ce que maplibre_gl 0.27.0 supporte réellement (voir son
+    // propre CHANGELOG : "Android Gradle Plugin updated to 8.13.2",
+    // "Kotlin updated to 2.3.0") plutôt que 9.0.1 / 2.3.20 par défaut du
+    // SDK Flutter récent. AGP 9 change la gestion de Kotlin ("built-in
+    // Kotlin") et maplibre_gl n'a pas encore été mis à jour pour ça - avec
+    // AGP 9.0.1, son propre build.gradle échoue sur "Could not find method
+    // kotlin()" à la ligne 77, faute d'extension Kotlin disponible dans ce
+    // module. Revenir à AGP < 9 remet le plugin dans la configuration où
+    // il fonctionne réellement.
+    id("com.android.application") version "8.13.2" apply false
+    id("org.jetbrains.kotlin.android") version "2.3.0" apply false
 }
 
 include(":app")
