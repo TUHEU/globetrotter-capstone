@@ -1,798 +1,1117 @@
 # Changelog — GlobeTrotter Yaoundé
 
 Projet capstone CS 4122 (Distributed Systems) — The ICT University
+
 Superviseur : Eng. Mughe Godlove · Équipe : Fahdil, Nsangou Hamed Mochtar Ben Bilal
 
-Ce changelog couvre tout le travail réalisé depuis le lancement du projet,
-de la Phase 1 (Monolithe) jusqu'à la Phase 2 (Microservices) en production.
+Ce changelog couvre tout le travail réalisé depuis le lancement du projet, de la Phase 1 (Monolithe) jusqu'à la Phase 2 (Microservices) en production.
+
+---
+
+## [2.20.0] — Communauté en temps réel, notifications & contribution des utilisateurs
+
+### Ajouté
+
+* **💬 Chat communautaire mondial en temps réel** (`chat-service`) : ajout d'un nouveau microservice dédié permettant aux utilisateurs connectés de communiquer dans un espace de discussion public commun.
+
+  * Communication en temps réel via **WebSocket**
+  * Historique des messages accessible aux utilisateurs
+  * Compteur des utilisateurs actuellement connectés
+  * Messages système lorsqu'un utilisateur rejoint ou quitte la discussion
+  * Authentification des connexions utilisateur
+
+* **📷 Partage de médias dans le chat communautaire** :
+
+  * Messages texte
+  * Partage d'images
+  * Messages audio
+  * Partage de vidéos
+  * Partage de localisation
+  * Téléversement de fichiers médias
+  * Service des fichiers partagés via le backend
+
+* **😀 Réactions aux messages** : possibilité pour les utilisateurs de réagir aux messages avec des emojis, avec synchronisation des réactions entre les participants connectés.
+
+* **🗑️ Suppression de messages** : les utilisateurs peuvent supprimer leurs propres messages dans le chat communautaire.
+
+* **🔌 Gestion des connexions WebSocket** : ajout d'un gestionnaire de connexions permettant de suivre les utilisateurs actifs et de diffuser les nouveaux événements à tous les participants du chat.
+
+---
+
+### 🗺️ Carte générale d'exploration
+
+* **Nouvel écran "Explorer la carte"** (`ExploreMapScreen`) permettant de visualiser les destinations disponibles dans GlobeTrotter Yaoundé directement sur une carte interactive.
+
+* Les utilisateurs peuvent désormais :
+
+  * Voir plusieurs destinations simultanément sur la carte
+  * Filtrer les lieux selon leurs catégories
+  * Sélectionner un marqueur pour consulter un lieu
+  * Accéder à la fiche détaillée d'une destination
+  * Explorer Yaoundé visuellement sans dépendre uniquement des listes et de la recherche
+
+* Réutilisation de l'infrastructure **MapLibre** déjà présente dans l'application afin de conserver une architecture cartographique cohérente.
+
+---
+
+### 📍 Contribution communautaire — Proposer un nouveau lieu
+
+* **Nouvel écran "Proposer un lieu"** (`SubmitPlaceScreen`) permettant aux utilisateurs de contribuer directement au catalogue de destinations de GlobeTrotter Yaoundé.
+
+* Les utilisateurs peuvent fournir :
+
+  * Le nom du lieu
+  * Une description
+  * Une catégorie
+  * Le quartier
+  * Les coordonnées géographiques
+  * Une photo du lieu
+
+* Deux méthodes sont disponibles pour définir la position :
+
+  * Utiliser la position GPS actuelle
+  * Sélectionner directement une position sur la carte
+
+* Ajout du téléversement d'images lors de la proposition d'une destination.
+
+* Nouveau mécanisme backend pour recevoir et traiter les propositions de nouveaux lieux.
+
+* Les destinations peuvent être rechargées dans l'Explorateur afin d'intégrer les nouvelles contributions sans nécessiter un redémarrage complet de l'application.
+
+---
+
+### 🔔 Système de notifications
+
+* Ajout d'un nouveau système de notifications utilisateur dans l'architecture de GlobeTrotter.
+
+* Nouvelles fonctionnalités :
+
+  * Consultation des notifications personnelles
+  * Compteur des notifications non lues
+  * Marquage individuel d'une notification comme lue
+  * Marquage de toutes les notifications comme lues
+
+* Ajout d'un `NotificationsProvider` côté Flutter pour centraliser la gestion de l'état des notifications.
+
+* Nouvel écran dédié à la consultation des notifications.
+
+---
+
+### 🏗️ Architecture
+
+* Ajout du nouveau microservice :
+
+  **`chat-service`**
+
+* Ce service est spécialisé dans les communications communautaires en temps réel et permet de séparer la responsabilité du chat des autres services existants.
+
+* Extension de l'architecture Gateway pour prendre en charge les communications liées au chat et aux connexions WebSocket.
+
+---
+
+### 📱 Améliorations Frontend
+
+* Ajout de `GlobalChatScreen` pour le chat communautaire.
+* Ajout de `ExploreMapScreen` pour l'exploration des destinations sur carte.
+* Ajout de `SubmitPlaceScreen` pour les contributions communautaires.
+* Ajout de `NotificationsScreen`.
+* Intégration de WebSocket pour la réception instantanée des messages.
+* Ajout de la gestion des médias dans les conversations.
+* Ajout de réactions emoji.
+* Ajout de fonctionnalités de partage de localisation.
+
+---
+
+### Infrastructure à finaliser pour la production
+
+* Le nouveau système de chat nécessite une configuration correcte de l'infrastructure Docker et du reverse proxy afin de prendre en charge :
+
+  * Le `chat-service`
+  * Les connexions WebSocket
+  * Les routes HTTP du chat
+  * Le service des fichiers médias
+
+* La configuration de production doit permettre aux connexions persistantes WebSocket de fonctionner correctement derrière Nginx et HTTPS.
 
 ---
 
 ## [2.19.0] — Graphiques d'activité sur le site vitrine
-### Ajouté
-- **3 graphiques en direct** sur le site vitrine (Chart.js, CDN, aucune
-  étape de build) : courbe de croissance hebdomadaire (comptes + sorties
-  créées, à partir du vrai `created_at` de chaque enregistrement),
-  répartition des lieux par catégorie (donut), lieux les plus populaires
-  (barres horizontales) - toutes les données affichées sont réelles,
-  aucun chiffre inventé pour "remplir" un graphique. Chaque graphique
-  affiche un état vide honnête plutôt qu'un graphique cassé si les
-  données ne sont pas encore disponibles
-- Extension des 3 endpoints publics existants (`/users/stats/public`,
-  `/itineraries/stats/public`, `/destinations/stats/public`) avec
-  `weekly_growth`, `by_category` et `top_popular` - toujours uniquement
-  des compteurs agrégés et anonymes, jamais de donnée individuelle
 
----
-
-## [2.19.0] — Graphiques d'activité sur le site vitrine
 ### Ajouté
-- **Trois graphiques réels** sur la page d'accueil du site vitrine
-  (Chart.js, via CDN, aucune étape de build) :
-  - **Courbe de croissance hebdomadaire** (comptes créés + sorties créées,
-    par semaine ISO) - dérivée du vrai `created_at` de chaque compte/sortie,
-    jamais de données inventées pour "faire joli"
-  - **Répartition des lieux par catégorie** (donut)
-  - **Top 6 des lieux les plus populaires** (barres horizontales) -
-    réutilise le compteur `popularity` déjà existant côté backend
-    (`recommendation-service`, incrémenté à chaque ajout d'un lieu dans
-    une sortie), pas une nouvelle mesure inventée pour l'occasion
-- Les trois endpoints `/stats/public` (v2.17.0) enrichis en conséquence :
-  `by_category`, `top_popular` (recommendation-service),
-  `weekly_growth` (user-service ET itinerary-service)
-- État vide géré proprement par graphique : si un endpoint échoue ou
-  qu'il n'y a pas encore assez de données, un message de repli s'affiche
-  à la place d'un graphique cassé ou vide - jamais d'erreur visible
+
+* **3 graphiques en direct** sur le site vitrine (Chart.js, CDN, aucune étape de build) :
+
+  * Courbe de croissance hebdomadaire des comptes et sorties créées, à partir du vrai `created_at` de chaque enregistrement
+  * Répartition des lieux par catégorie
+  * Lieux les plus populaires
+
+* Toutes les données affichées sont réelles : aucun chiffre inventé pour remplir un graphique.
+
+* Chaque graphique affiche un état vide honnête plutôt qu'un graphique cassé si les données ne sont pas encore disponibles.
+
+* Extension des endpoints publics existants :
+
+  * `/users/stats/public`
+  * `/itineraries/stats/public`
+  * `/destinations/stats/public`
+
+  avec `weekly_growth`, `by_category` et `top_popular`.
+
+* Les statistiques restent composées uniquement de compteurs agrégés et anonymes, sans données individuelles.
 
 ---
 
 ## [2.18.0] — Cinq nouvelles fonctionnalités & écran de chargement
+
 ### Ajouté
-- **Écran de chargement "cheval au galop"** (`GallopingHorseLoader`) :
-  silhouette dessinée entièrement en `CustomPainter`, aucune image externe
-  - les 4 jambes sont animées à des phases différentes du cycle pour un
-  vrai mouvement de galop (pas un simple aller-retour répété), avec un
-  rebond vertical du corps synchronisé sur 2 temps par cycle. Remplace le
-  `CircularProgressIndicator` générique au démarrage de l'app
-- **Statistiques de voyage sur le Profil** (`TravelStatsCard`) : lieux
-  uniques et quartiers uniques découverts à travers toutes les sorties de
-  l'utilisateur - calculé côté client à partir des données déjà chargées,
-  aucun changement backend. Nouveau badge "Explorateur" (15+ lieux)
-  ajouté au système de badges déjà existant plutôt que d'en créer un
-  second en doublon
-- **Avertissement météo sur une sortie** : réutilise la météo déjà
-  récupérée pour chaque arrêt (`_load()` dans `ItineraryMapScreen`,
-  aucun nouvel appel réseau), affiche une bannière nommant les lieux
-  concernés par de la pluie dès qu'au moins un arrêt est concerné
-- **Devise d'affichage (FCFA/USD/EUR)** : préférence persistée
-  (`SettingsProvider.currency`), sélecteur dans Paramètres. Taux FIXES et
-  approximatifs (pas de conversion en direct), affichage préfixé par "≈"
-  pour ne jamais laisser croire à une précision non garantie - FCFA reste
-  la devise native de toutes les données stockées, la conversion est
-  strictement un affichage côté client
-- **Filtre de prix sur l'Explorateur** : `min_price`/`max_price` sur
-  `GET /destinations` (backend), icône de filtre + feuille modale
-  (frontend). 4 nouveaux tests backend (plage, bornes inclusives,
-  résultat vide) - suite complète de recommendation-service vérifiée à
-  19/19 passants après ajout (exécutée réellement)
+
+* **Écran de chargement "cheval au galop"** (`GallopingHorseLoader`) :
+
+  * Silhouette entièrement dessinée avec `CustomPainter`
+  * Aucune image externe
+  * Les quatre jambes sont animées à différentes phases pour créer un véritable mouvement de galop
+  * Rebond vertical synchronisé du corps
+  * Remplace le `CircularProgressIndicator` générique au démarrage
+
+* **Statistiques de voyage sur le Profil** (`TravelStatsCard`) :
+
+  * Nombre de lieux uniques découverts
+  * Nombre de quartiers uniques visités
+  * Calcul à partir des données déjà chargées côté client
+  * Aucun changement backend nécessaire
+  * Nouveau badge **"Explorateur"** pour 15+ lieux
+
+* **Avertissement météo sur une sortie** :
+
+  * Réutilisation des données météo déjà chargées
+  * Bannière indiquant les lieux concernés par la pluie
+
+* **Devise d'affichage FCFA/USD/EUR** :
+
+  * Préférence persistée via `SettingsProvider.currency`
+  * Sélecteur dans les paramètres
+  * Taux fixes et approximatifs
+  * Préfixe `≈` pour éviter de donner une impression de précision garantie
+  * FCFA reste la devise native des données stockées
+
+* **Filtre de prix sur l'Explorateur** :
+
+  * `min_price`
+  * `max_price`
+  * Interface de filtre côté Flutter
+  * Tests backend pour les plages et limites
 
 ### Corrigé
-- Fuite de contrôleurs dans la nouvelle feuille de filtre de prix (deux
-  `TextEditingController` jamais disposés) - corrigée avant livraison
-- `AchievementBadges` : passage à 5 badges risquait un débordement visuel
-  sur téléphones étroits avec l'ancien `Row` à largeur fixe - rendu
-  défilable horizontalement
+
+* Fuite de contrôleurs dans la feuille de filtre de prix : correction des `TextEditingController` non disposés.
+
+* `AchievementBadges` : passage à un affichage défilable horizontalement afin d'éviter les débordements sur les petits écrans.
 
 ---
 
 ## [2.17.0] — Statistiques publiques du site vitrine & corrections critiques
+
 ### Ajouté
-- **Chiffres en direct sur la page d'accueil du site vitrine** (`TUHEU/GLOBE`) :
-  nombre de lieux, catégories, explorateurs inscrits et sorties créées,
-  remplaçant les chiffres codés en dur et déjà obsolètes ("26+ lieux" alors
-  que le catalogue en compte 51 depuis plusieurs versions). Chaque compteur
-  est indépendant et dégrade proprement : si un endpoint échoue ou n'est
-  pas encore déployé, seul ce compteur reste masqué - le reste du site
-  continue de fonctionner normalement
-- Trois nouvelles routes API publiques, sans authentification, renvoyant
-  UNIQUEMENT des compteurs agrégés (jamais de données personnelles) :
-  `GET /destinations/stats/public`, `GET /users/stats/public`,
-  `GET /itineraries/stats/public`
+
+* **Chiffres en direct sur la page d'accueil du site vitrine** :
+
+  * Nombre de lieux
+  * Nombre de catégories
+  * Nombre d'explorateurs inscrits
+  * Nombre de sorties créées
+
+* Remplacement des anciens chiffres codés en dur devenus obsolètes.
+
+* Trois nouvelles routes API publiques :
+
+  * `GET /destinations/stats/public`
+  * `GET /users/stats/public`
+  * `GET /itineraries/stats/public`
+
+* Les routes retournent uniquement des statistiques agrégées.
 
 ### Corrigé
-- **`MESSAGES_FILE` utilisé mais jamais importé dans `user-service/app/
-  storage.py`** : `get_conversation`, `send_message`, `mark_conversation_
-  read` et `get_inbox` levaient toutes une `NameError` dès qu'elles étaient
-  réellement appelées - la messagerie directe n'a probablement jamais
-  fonctionné en production, indépendamment du problème nginx ci-dessous.
-  Trouvé en exécutant réellement la suite de tests de user-service (33
-  tests en erreur avant correction, 33 passants après un simple ajout
-  d'import)
-- **Liste blanche nginx incomplète** (`sites-enabled/fahglobe`) : le même
-  problème que celui résolu pour `/static` en v2.10.0/v2.11.0, mais pour
-  `/users`, `/follow` et `/messages` - absents de la regex, ces requêtes
-  n'atteignaient jamais la passerelle et tombaient sur le 404 générique du
-  site vitrine. Explique très probablement le signalement précédent
-  "je ne vois personne à suivre" (faussement attribué à un manque
-  d'utilisateurs inscrits) - Découvrir, Suivre et la Messagerie n'ont
-  vraisemblablement jamais fonctionné sur le site en production jusqu'à ce
-  correctif. Correction à appliquer manuellement sur le VPS (hors du
-  contrôle du code source, comme les fois précédentes)
+
+* **`MESSAGES_FILE` utilisé mais jamais importé dans `user-service/app/storage.py`** :
+
+  * Les fonctionnalités de conversation et de messagerie pouvaient provoquer une `NameError`.
+  * Correction de l'import manquant.
+  * Suite de tests vérifiée après correction.
+
+* **Liste blanche Nginx incomplète** :
+
+  * Les routes `/users`, `/follow` et `/messages` n'étaient pas correctement transmises à la Gateway.
+  * Les fonctionnalités Découvrir, Suivre et Messagerie pouvaient tomber sur la page 404 du site vitrine.
+  * Configuration de production à corriger sur le VPS.
 
 ---
 
 ## [2.16.0] — Optimisation d'itinéraire
+
 ### Ajouté
-- **Bouton "Optimiser le trajet"** sur l'écran de création de sortie
-  (visible à partir de 3 arrêts) : réordonne les arrêts JOUR PAR JOUR
-  (jamais entre jours différents - les regroupements par jour restent un
-  choix délibéré de l'utilisateur) selon un algorithme glouton du plus
-  proche voisin, en conservant le premier arrêt saisi comme point de
-  départ (respecte un choix intentionnel, ex: partir de son hôtel). Pas la
-  tournée mathématiquement optimale (le problème du voyageur de commerce
-  est NP-difficile), mais un résultat glouton largement suffisant pour 2 à
-  6 arrêts par jour. Entièrement côté client, aucune nouvelle dépendance -
-  réutilise `LocationService.haversineKm()` déjà présent depuis la
-  fonctionnalité de navigation à la boussole (v2.7.0)
+
+* **Bouton "Optimiser le trajet"** sur l'écran de création d'une sortie.
+
+* Visible à partir de trois arrêts.
+
+* Réorganisation des arrêts **jour par jour**, sans mélanger les jours définis par l'utilisateur.
+
+* Utilisation d'un algorithme glouton du **plus proche voisin**.
+
+* Conservation du premier arrêt comme point de départ.
+
+* Réutilisation de `LocationService.haversineKm()`.
+
+* Fonctionnement entièrement côté client sans nouvelle dépendance.
 
 ### Corrigé
-- `create_itinerary_screen.dart` n'avait aucun `dispose()` : chaque
-  contrôleur de texte (titre, description, partage, notes par arrêt)
-  fuyait à la fermeture de l'écran. Corrigé au passage
+
+* `create_itinerary_screen.dart` ne disposait pas correctement ses contrôleurs.
+
+* Ajout de `dispose()` pour éviter les fuites mémoire.
 
 ---
 
 ## [2.15.0] — Planificateur de budget
+
 ### Ajouté
-- **Budget prévu sur une sortie** (`budget_fcfa`, optionnel) : champ de
-  saisie à la création d'une sortie, comparé automatiquement au coût
-  estimé (somme des `avg_price_fcfa` des destinations dans les arrêts) sur
-  une nouvelle carte "Budget" affichée sur la fiche de la sortie, avec un
-  statut visuel 🟢 dans le budget / 🟠 proche du budget (90-105%) /
-  🔴 dépasse le budget. Validé côté serveur (`ge=0`, budget négatif
-  rejeté) - 4 nouveaux tests, suite complète de itinerary-service
-  vérifiée à 27/27 passants après ajout (exécutée réellement, pas
-  seulement une vérification de syntaxe)
+
+* **Budget prévu sur une sortie** (`budget_fcfa`, optionnel).
+
+* Champ de saisie lors de la création d'une sortie.
+
+* Comparaison automatique entre :
+
+  * Le budget prévu
+  * Le coût estimé des destinations
+
+* Nouvelle carte **Budget** avec différents états visuels :
+
+  * 🟢 Dans le budget
+  * 🟠 Proche du budget
+  * 🔴 Dépassement du budget
+
+* Validation backend empêchant les budgets négatifs.
+
+* Nouveaux tests ajoutés au `itinerary-service`.
 
 ---
 
 ## [2.14.0] — Photos réelles pour les 51 destinations
+
 ### Ajouté
-- **51e destination** : Stade d'Olembé (Stade Omnisports Paul Biya), le plus
-  grand stade du Cameroun (60 000 places), site principal de la CAN 2021
-- **Photos réelles fournies directement par l'utilisateur** pour 50 des 51
-  destinations (`recommendation-service/static/images/*.jpg`, servies via
-  un nouveau montage `StaticFiles`, route `/static` ajoutée à
-  `api-gateway/app/config.py`) — remplace la quasi-totalité des
-  placeholders génériques Unsplash qui subsistaient depuis le début du
-  projet. **Les 51 destinations vérifiées une par une par inspection
-  visuelle directe** plutôt que par simple confiance (voir les incidents
-  répétés de jeux de données fabriqués documentés en v2.8.0 et v2.12.0) :
-  49 confirmées correctes - dont une bonne douzaine sans ambiguïté
-  possible, le nom du lieu étant directement lisible sur l'enseigne visible
-  dans la photo elle-même (Calafatas, ICT University, DÔVV, Santa Lucia,
-  Canal Olympia, Institut Français, Direction Générale des Impôts,
-  Rectorat de l'Université de Yaoundé I, etc.) - 1 erreur trouvée et
-  corrigée (voir Corrigé), 1 restée en placeholder honnête faute de
-  meilleure source (voir Corrigé)
+
+* **51e destination** : Stade d'Olembé (Stade Omnisports Paul Biya).
+
+* Photos réelles utilisées pour la grande majorité des destinations.
+
+* Images stockées et servies depuis :
+
+  `recommendation-service/static/images/`
+
+* Ajout du service `StaticFiles`.
+
+* Route `/static` prise en charge par l'API Gateway.
+
+* Vérification individuelle des destinations et de leurs images.
 
 ### Corrigé
-- **Hôpital Central (y041) et Hôpital Général (y042) utilisaient la MÊME
-  photo** : l'enseigne visible sur l'image de y041 indiquait sans
-  ambiguïté "Hôpital Général de Yaoundé" - la mauvaise photo pour un
-  établissement distinct. Aucune photo Wikimedia Commons vérifiable
-  trouvée spécifiquement pour l'Hôpital Central (seul l'Hôpital Général a
-  une catégorie Commons avec un fichier réel) ; y041 remis en placeholder
-  générique honnête plutôt que de laisser la photo d'un AUTRE hôpital,
-  plus trompeur qu'un placeholder générique
-- **Chemin d'image relatif non résolu** (`/static/images/y001.jpg` stocké
-  tel quel dans `destinations.json`) : contrairement aux URLs Wikimedia
-  (absolues), ce format ne peut pas être chargé directement - côté mobile
-  en particulier, le client Dio dédié aux images n'a pas de `baseUrl`
-  configuré, donc un chemin relatif seul ne pointe vers aucun serveur
-  et échoue immédiatement. Résolu via `ApiConstants.resolveImageUrl()`,
-  complétant le chemin avec `baseUrl` uniquement quand l'image n'est pas
-  déjà une URL absolue - déjà implémenté correctement par l'utilisateur
-  lui-même dans cette mise à jour
-- **Photo erronée pour le Monument de la Réunification** (`y001.jpg`
-  affichait un bâtiment institutionnel quelconque, pas la tour spiralée) :
-  remplacée par la photo Wikimedia Commons déjà vérifiée précédemment
-  dans ce projet
-- **`.gitignore` excluait par erreur `recommendation-service/data/*.json`**
-  (destinations.json) au même titre que les données réellement générées à
-  l'exécution (comptes utilisateurs, sorties...) — contrairement à
-  celles-ci, destinations.json est un catalogue de référence édité par
-  l'équipe, pas par les utilisateurs de l'app, et doit être suivi par git
-  comme n'importe quel fichier source. Cette exclusion aurait
-  silencieusement empêché tout changement de ce fichier (photos, liens
-  Google Maps, historique des lieux...) d'être committé puis déployé via
-  `update.sh` sur le VPS
 
-### Refusé (sur demande explicite, pour des raisons légales)
-- Utilisation d'images TripAdvisor demandée à plusieurs reprises pour
-  remplacer les placeholders restants — refusée : contrairement à
-  Wikimedia Commons (Creative Commons) ou à l'API Google Places (utilisée
-  dans les conditions d'utilisation prévues par Google), les photos
-  TripAdvisor restent la propriété de leurs auteurs sans licence
-  d'utilisation accordée ; les copier aurait constitué une violation de
-  droit d'auteur dans un projet soumis académiquement
+* **Hôpital Central et Hôpital Général utilisaient la même photo**.
+
+  * L'image incorrecte a été retirée.
+  * Un placeholder honnête a été conservé lorsqu'une image fiable n'était pas disponible.
+
+* **Chemins d'images relatifs non correctement résolus**.
+
+  * Correction via `ApiConstants.resolveImageUrl()`.
+
+* **Photo incorrecte pour le Monument de la Réunification**.
+
+  * Remplacement par une image vérifiée.
+
+* **`.gitignore` excluait `recommendation-service/data/*.json`**.
+
+  * `destinations.json` est désormais correctement suivi comme donnée de référence du projet.
+
+### Refusé
+
+* Utilisation d'images TripAdvisor rejetée pour éviter une violation potentielle du droit d'auteur.
 
 ---
 
 ## [2.13.0] — Assistant IA : fiabilité et vitesse
+
 ### Corrigé
-- **"L'IA ne répond pas / répond lentement"** : le client HTTP global a un
-  délai d'attente de 15s, pensé pour de simples appels REST (destinations,
-  connexion...). Le pire cas côté serveur pour UN message à l'assistant
-  pouvait légitimement dépasser ce délai : jusqu'à 5s pour récupérer les
-  destinations + jusqu'à 5s pour les itinéraires de l'utilisateur (les deux
-  À LA SUITE, pas en parallèle) + jusqu'à 20s pour Gemini + jusqu'à 20s de
-  PLUS si Gemini échoue et qu'on bascule sur OpenRouter — jusqu'à 50s au
-  total. Le client abandonnait souvent avant même que le serveur ait fini
-  de générer une réponse pourtant valide, perçu comme "ne répond pas du
-  tout" alors que la réponse arrivait simplement trop tard pour un appel
-  déjà expiré. `AssistantProvider.send()` utilise désormais un délai dédié
-  de 60s pour cet appel précis, sans toucher au délai des 15s ailleurs
-  dans l'app
+
+* **Assistant IA perçu comme trop lent ou ne répondant pas**.
+
+* Le délai HTTP global de 15 secondes était insuffisant pour certaines requêtes IA.
+
+* `AssistantProvider.send()` utilise désormais un délai dédié de 60 secondes.
 
 ### Modifié
-- `ai-service/app/clients.py` : les deux appels de "grounding" (destinations
-  + itinéraires de l'utilisateur) tournent désormais EN PARALLÈLE
-  (`ThreadPoolExecutor`) plutôt qu'à la suite — jusqu'à 5s de gagnées sur
-  CHAQUE message, avant même d'atteindre Gemini/OpenRouter
-- Bulle "en train d'écrire" (`AssistantScreen`) : affiche "Encore un
-  instant…" après 6 secondes d'attente, pour qu'une réponse légitimement
-  lente (normal pour une IA, surtout sur le chemin de repli OpenRouter) ne
-  donne plus l'impression que l'app est plantée
+
+* Les appels de récupération du contexte :
+
+  * Destinations
+  * Itinéraires utilisateur
+
+  sont désormais exécutés en parallèle avec `ThreadPoolExecutor`.
+
+* Ajout du message :
+
+  **"Encore un instant…"**
+
+  après plusieurs secondes d'attente afin d'améliorer l'expérience utilisateur.
 
 ---
 
 ## [2.12.0] — Données des lieux : liens Google Maps & fabrications rejetées
-### Ajouté
-- **`maps_url` sur les 50 destinations** + bouton "Voir sur Google Maps"
-  sur la fiche de chaque lieu (`url_launcher`) : liens Google Maps réels,
-  fournis un par un pour chaque lieu — contrairement aux photos (voir
-  Corrigé ci-dessous), ceux-ci ouvrent directement l'app/le navigateur
-  Google Maps avec de vraies photos, avis et itinéraires, sans qu'on ait
-  besoin de les héberger ou de les vérifier nous-mêmes
 
-### Corrigé (fabrications rejetées, sans changement de données)
-- Deux nouveaux jeux de données d'images "prêts à coller" fournis pour les
-  50 lieux, tous deux rejetés après vérification — même schéma que
-  l'incident déjà documenté en v2.8.0 (fichier ChatGPT), mais à l'échelle
-  du jeu de données complet cette fois :
-  - Lot 1 : URLs `upload.wikimedia.org/wikipedia/commons/X/XY/...` — le
-    préfixe `X/XY` correspond au hash MD5 réel du fichier calculé par les
-    serveurs Wikimedia ; il ne peut pas être deviné. Confirmé cassé par
-    l'utilisateur lui-même après application (plus aucune image nulle
-    part, mobile inclus)
-  - Lot 2 : URLs `lh3.googleusercontent.com/p/AF1Qip...` (format Google
-    Photos) — le caractère juste après "AF1Qip" suivait l'ordre alphabé-
-    tique puis numérique EXACT des 50 entrées (M→N→P...→Z→a→b...→9→10),
-    la preuve qu'il s'agit d'un compteur habillé en identifiant, pas d'un
-    vrai jeton opaque Google
-  - `destinations.json` restauré à la dernière version fiable (17 photos
-    Wikimedia vérifiées + 33 placeholders Unsplash honnêtes) dans les deux
-    cas
-- Recherches supplémentaires infructueuses pour Hôpital Central de
-  Yaoundé, Bibliothèque Nationale, aéroport de Nsimalen : catégorie
-  Wikimedia Commons existante par le NOM (référencée sur Wikidata) mais
-  aucun fichier réel trouvé à l'intérieur — même signal d'alerte que
-  Palais des Congrès (v2.8.0), laissés en placeholder plutôt que de
-  deviner une URL
+### Ajouté
+
+* **`maps_url` sur les destinations**.
+
+* Bouton **"Voir sur Google Maps"** sur la fiche des lieux.
+
+* Ouverture via `url_launcher`.
+
+### Corrigé
+
+* Deux jeux de données d'images non vérifiés ont été rejetés après contrôle.
+
+* Les URLs prétendument Wikimedia et Google Photos n'étaient pas suffisamment fiables.
+
+* Restauration de la dernière version fiable du catalogue.
+
+* Les destinations sans images vérifiables ont conservé des placeholders honnêtes.
 
 ---
 
 ## [2.11.0] — Fiabilité VPS & sécurité
+
 ### Corrigé
-- **Panne complète de `api-gateway` sur le VPS** (502 Bad Gateway sur
-  tout le site, y compris `POST /auth/google` — d'abord suspecté à tort
-  comme un problème de configuration Google Sign-In) : le conteneur
-  s'était arrêté proprement (`Exited (0)`, aucune trace d'erreur/crash)
-  et n'avait pas redémarré tout seul malgré `restart: unless-stopped` —
-  cohérent avec un arrêt EXPLICITE (`docker stop`/`docker compose stop`)
-  plutôt qu'un plantage, cette politique ne redémarre jamais un conteneur
-  arrêté volontairement. `docker compose ps` (sans `-a`) masquait le
-  problème en n'affichant que les conteneurs EN COURS D'EXÉCUTION,
-  cachant totalement `api-gateway` de la liste plutôt que de le montrer
-  arrêté. Résolu par `docker compose up --build -d`
+
+* **Panne complète de `api-gateway` sur le VPS**.
+
+* Le conteneur était arrêté mais `docker compose ps` pouvait masquer certains services arrêtés.
+
+* Recommandation d'utiliser :
+
+  `docker compose ps -a`
+
+* Redémarrage de l'infrastructure avec Docker Compose.
 
 ### Sécurité
-- `backend/.env` ne définissait pas `SECRET_KEY` (utilisé pour signer les
-  JWT) — chaque service se rabattait silencieusement sur la valeur par
-  défaut codée en dur dans le code source, visible par quiconque a accès
-  au dépôt. Recommandé : générer une vraie valeur
-  (`python3 -c "import secrets; print(secrets.token_hex(32))"`) - invalide
-  toutes les sessions actives une fois appliqué, à faire en connaissance
-  de cause
-- Clés API (Gemini, OpenRouter) de nouveau collées en clair dans une
-  conversation de travail (`cat .env`) — même recommandation de rotation
-  qu'en v2.8.0 ; éviter `cat .env` pour vérifier qu'une clé est définie,
-  préférer `grep -c "CLE=." .env` (affiche 1/0 sans jamais montrer la
-  valeur)
+
+* Recommandation de définir une vraie `SECRET_KEY` dans `.env`.
+
+* Recommandation de faire tourner les clés API potentiellement exposées.
+
+* Éviter d'afficher les secrets directement avec `cat .env`.
 
 ---
 
 ## [2.10.0] — Cartes 3D sur le Web
+
 ### Corrigé
-- **Carte vide sur le Web** (fonctionnait déjà sur mobile) : `maplibre_gl`
-  dessine les cartes via la bibliothèque JavaScript MapLibre GL JS dans le
-  navigateur — contrairement à Android/iOS, qui utilisent leurs propres
-  bindings natifs. `web/index.html` ne chargeait jamais cette bibliothèque
-  (absente du fichier depuis le début du projet, jamais remarqué car
-  aucune erreur bruyante ne s'affichait). Ajout des deux balises
-  `<script>`/`<link>` MapLibre GL JS (version 5.24.0, alignée sur
-  `maplibre_gl: ^0.26.2`), avant `flutter_bootstrap.js` comme requis
-- **`Target of URI doesn't exist: 'dart:js_util'`** (bloquait la
-  compilation sur TOUTES les plateformes, pas seulement le Web) : le
-  correctif d'images du Web (v2.9.0) utilisait `dart:js_util`, une
-  bibliothèque qui n'existe que dans le SDK Dart compilé pour le Web —
-  absente pour Android/iOS/Windows. Un `kIsWeb` est une vérification
-  D'EXÉCUTION, pas une exclusion à la COMPILATION : chaque import doit se
-  résoudre pour CHAQUE plateforme ciblée. Remplacé par `dart:js_interop` +
-  `package:web` (le remplacement actuel, activement maintenu, documenté
-  officiellement par Flutter) ; `network_image_safe_web.dart` extrait dans
-  son propre fichier avec import conditionnel (`if (dart.library.html)`),
-  même schéma que `google_web_button_web.dart` pour Google Sign-In
+
+* **Carte vide sur le Web**.
+
+* Ajout des ressources nécessaires à MapLibre GL JS dans `web/index.html`.
+
+* Correction de l'erreur :
+
+  `Target of URI doesn't exist: 'dart:js_util'`
+
+* Migration vers :
+
+  * `dart:js_interop`
+  * `package:web`
+
+* Utilisation d'importations conditionnelles pour séparer les fonctionnalités spécifiques au Web.
 
 ### Modifié
-- `pubspec.yaml` : `flutter_map`/`latlong2` (déjà retirés en v2.8.0)
-  étaient réapparus dans une version locale du fichier — retirés à
-  nouveau ; ajout de `web: ^1.1.0` (nécessaire pour `dart:js_interop`)
+
+* Suppression définitive des anciennes dépendances :
+
+  * `flutter_map`
+  * `latlong2`
+
+* Ajout de :
+
+  `web: ^1.1.0`
 
 ---
 
 ## [2.9.0] — Découverte, navigation vers un lieu & corrections d'affichage
+
 ### Ajouté
-- **Écran "Découvrir"** (`GET /users/discover`, user-service) : parcourir
-  tout le monde utilisant l'app (hors soi-même et les personnes déjà
-  suivies), sans avoir à taper une recherche — nouvel onglet dans l'écran
-  Amis, complémentaire à la recherche par nom/email qui existait déjà
-- **"Le chemin pour y aller" depuis une sortie enregistrée** : `Itinerary
-  MapScreen` ne montrait que le trajet ENTRE les arrêts d'une sortie, jamais
-  depuis la position actuelle de l'utilisateur jusqu'au premier arrêt.
-  Ajout d'un bouton "Itinéraire depuis ma position" qui ouvre le même
-  `DirectionsScreen` (flèche boussole + trajet OSRM en direct) déjà utilisé
-  depuis la fiche d'un lieu
-- Diagrammes d'architecture (SVG interactif + source PlantUML) documentant
-  la pile complète : clients → Nginx → passerelle → 4 microservices (avec
-  leur propre stockage) → API externes gratuites, plus le détail du
-  déploiement (VPS, Docker Compose, dépôt du site séparé)
+
+* **Écran "Découvrir"** :
+
+  * Consultation des utilisateurs de GlobeTrotter
+  * Exclusion de l'utilisateur actuel
+  * Exclusion des utilisateurs déjà suivis
+
+* **Navigation depuis la position actuelle vers une sortie**.
+
+* Bouton :
+
+  **"Itinéraire depuis ma position"**
+
+* Réutilisation de :
+
+  * `DirectionsScreen`
+  * Flèche boussole
+  * OSRM
+
+* Ajout de diagrammes d'architecture :
+
+  * SVG interactif
+  * Sources PlantUML
 
 ### Corrigé
-- **Images qui ne s'affichaient pas / chargeaient lentement sur le Web**
-  (fonctionnaient déjà correctement sur mobile) : pendant le chargement
-  d'une image, `_WebImg` n'affichait RIEN — ni le placeholder, ni aucun
-  indicateur — un espace vide facilement interprété comme "l'image ne
-  s'affiche pas" alors qu'elle chargeait simplement encore. Le placeholder
-  reste désormais visible jusqu'à confirmation du chargement (`onload`) ;
-  ajout d'un filet de sécurité de 15s (bascule vers "appuyer pour
-  réessayer") pour les requêtes qui ne se terminent jamais (ni succès ni
-  échec), un cas qui pouvait laisser une image bloquée indéfiniment
-- **Bouton de langue toujours injoignable au doigt sur l'écran de connexion**,
-  malgré deux séries de correctifs précédentes (geste, taille de la zone de
-  contact) — la cause réelle n'était pas dans le bouton lui-même : dans
-  `AuthScaffold`, le bouton était placé AVANT le `SafeArea`/`SingleChild
-  ScrollView` du formulaire dans le `Stack`. Ce dernier se dimensionne sur
-  tout l'écran disponible (pas seulement la carte visible) et, arrivant
-  après dans la liste des enfants, était peint ET testé au toucher PAR-DESSUS
-  le bouton — absorbant chaque toucher avant qu'il n'atteigne le bouton en
-  dessous, quels que soient les réglages de geste appliqués dans le bouton
-  lui-même. Corrigé en plaçant le bouton en DERNIER enfant du `Stack`
-  (explique aussi pourquoi il semblait "rester coincé à recouvrir du
-  contenu" : impossible à faire glisser ailleurs puisqu'il ne recevait
-  jamais l'évènement de glissement)
 
-### Recherché (sans changement de code)
-- Nouvelle recherche d'images réelles pour Boulangerie Calafatas,
-  Supermarché Dôvv et Marché Artisanal (Tsinga) : adresses et historique
-  confirmés, mais aucune photo Wikimedia Commons trouvée pour ces trois
-  lieux — laissés en placeholder générique honnête plutôt que d'inventer
-  une URL non vérifiée (voir la note de sécurité v2.8.0 sur le même sujet
-  avec le fichier fourni par ChatGPT)
+* Images Web lentes ou donnant l'impression de ne pas se charger.
+
+* Placeholder visible pendant le chargement.
+
+* Ajout d'un mécanisme de réessai.
+
+* Correction du bouton de langue qui ne recevait pas les événements tactiles à cause de l'ordre des widgets dans le `Stack`.
+
+### Recherché
+
+* Recherche d'images réelles supplémentaires pour plusieurs lieux.
+
+* Les lieux sans source fiable ont conservé leurs placeholders.
 
 ---
 
 ## [2.8.0] — Qualité, données & infrastructure
+
 ### Ajouté
-- `founded_year` / `history` sur les destinations (année de fondation +
-  bloc historique optionnel affiché sur la fiche lieu) — renseignés pour
-  11 lieux avec sources vérifiées (Stade Omnisports : 1972, Université de
-  Yaoundé I : 1962, ICT University : 2010, Hôpital Central : 1933, Palais
-  des Congrès : 1982, Hilton Yaoundé : 1974, etc.)
-- Cache mémoire des images (`NetworkImageSafe`) : une photo déjà vue durant
-  la session se réaffiche instantanément (LRU, 150 entrées max) au lieu
-  d'être re-téléchargée à chaque scroll ou changement d'écran — mobile
-  uniquement, le Web s'appuie déjà sur le cache HTTP natif du navigateur
-- `.gitignore` (absent du dépôt jusqu'ici) + `.env.example` (backend) :
-  protège désormais `backend/.env` d'un commit accidentel
-- `update.sh` pour le dépôt du site vitrine (`TUHEU/GLOBE`), jusque-là
-  absent/non versionné — sauvegarde avant mise à jour, `git reset --hard
-  origin/main` (au lieu d'un `git pull` simple, qui échouait dès qu'un
-  artefact de build avait été modifié localement sans être commité),
-  vérification des fichiers essentiels du build, contrôle du site en ligne
+
+* Ajout de :
+
+  * `founded_year`
+  * `history`
+
+  pour plusieurs destinations.
+
+* Cache mémoire des images avec `NetworkImageSafe`.
+
+* Ajout de :
+
+  * `.gitignore`
+  * `.env.example`
+
+* Nouveau `update.sh` pour le site vitrine.
 
 ### Corrigé
-- **Doublon de dépendance carte** : `flutter_map` (2D, tuiles plates) et
-  `maplibre_gl` (3D) coexistaient ; la fiche d'un lieu (`destination_detail_
-  screen.dart`) utilisait encore l'ancienne carte 2D pendant que le reste de
-  l'app était déjà passé à la 3D — remplacée par le même `Map3DView` que les
-  écrans d'itinéraire, `flutter_map`/`latlong2` retirés du projet
-- **Conflit de type `LatLng`** : `maplibre_gl` et `latlong2` définissent
-  chacun une classe nommée `LatLng`, non-interchangeables pour le
-  compilateur — `directions_service.dart` utilisait celle de `latlong2`
-  alors que tous les écrans cartographiques utilisaient déjà celle de
-  `maplibre_gl`, provoquant des erreurs de compilation
-  (`argument_type_not_assignable`) dans `itinerary_map_screen.dart` et
-  `directions_screen.dart`. Uniformisé sur `maplibre_gl` partout
-- **23 signalements `flutter analyze`** (niveau info, aucune erreur) :
-  commentaires de documentation interprétés comme du HTML, `BuildContext`
-  utilisé après un `await` sans vérifier `mounted` (9 occurrences —
-  `main.dart`, `create_itinerary_screen.dart`, `friends_screen.dart`,
-  `home_screen.dart`, `reviews_screen.dart`), paramètres de callback
-  `(_, __)` simplifiés en `(_, _)`, `didUpdateWidget` renommé pour
-  correspondre à la convention Flutter, syntaxe d'éléments null-aware
-  modernisée (`'tag': ?tag`)
-- **Port de développement local incohérent** : `docker compose up --build`
-  publie la passerelle sur le port **4200** (aligné sur Nginx en
-  production), mais `ApiConstants.baseUrl` ciblait encore le port 8000 en
-  mode développement — corrigé pour utiliser 4200 partout ; documentation
-  (`README.md`, `backend/README.md`, `SETUP_GUIDE.md`) mise à jour en
-  conséquence
-- **Minuteur en fuite dans `NetworkImageSafe`** (faisait échouer 4 tests
-  widgets avec `A Timer is still pending even after the widget tree was
-  disposed`) : la requête Dio et le délai de réessai n'étaient jamais
-  annulés à la destruction du widget — ajout d'un `CancelToken` et d'un
-  `Timer` de réessai explicitement annulables dans `dispose()`
-- `undefined_identifier: ScrollDirection` et paramètre `padding` dupliqué
-  dans `home_screen.dart`, introduits lors de l'ajout du masquage de la
-  bulle IA au défilement — import manquant ajouté, les deux `padding:`
-  fusionnés en un seul `EdgeInsets.fromLTRB`
+
+* Suppression du doublon de technologies cartographiques.
+
+* Uniformisation complète sur `maplibre_gl`.
+
+* Correction des conflits de type `LatLng`.
+
+* Correction de nombreux avertissements `flutter analyze`.
+
+* Alignement du port de développement local sur **4200**.
+
+* Correction d'un minuteur non annulé dans `NetworkImageSafe`.
+
+* Correction d'importations et paramètres dupliqués dans `home_screen.dart`.
 
 ### Sécurité
-- Deux clés API (Gemini, OpenRouter) collées en clair dans une conversation
-  de travail — rotation recommandée par précaution, indépendamment du
-  `.gitignore` qui ne protège que les commits futurs, pas l'historique déjà
-  potentiellement exposé
+
+* Recommandation de rotation des clés API potentiellement exposées.
 
 ---
 
 ## [2.7.0] — Navigation guidée & partage
+
 ### Ajouté
-- **Flèche directionnelle boussole** (`DirectionArrow`, `flutter_compass`) :
-  pointe en permanence vers la destination quelle que soit l'orientation du
-  téléphone (cap absolu vers la cible moins cap actuel de l'appareil),
-  avec indication textuelle ("Continuez tout droit" / "Tournez à droite" /
-  "à gauche" / "Faites demi-tour"). Position GPS suivie en direct
-  (`LocationService.watchPosition`) pendant la navigation, plus seulement
-  au chargement de l'écran. Repli sur le cap brut (sans rotation par
-  rapport au téléphone) si aucun magnétomètre n'est disponible
-- **Liens de partage profonds** : partager un lieu ou une sortie inclut
-  désormais un lien (`fahglobe.duckdns.org/app/#/d/<id>` ou `#/i/<id>`) qui
-  ouvre l'app directement sur le bon écran. Format en fragment d'URL (`#`)
-  choisi pour fonctionner sans aucune modification de la configuration
-  Nginx (le fragment n'est jamais envoyé au serveur) ; ouverture directe
-  dans l'app installée (Android App Links / iOS Universal Links) non
-  configurée — nécessite en plus une empreinte de signature et un fichier
-  hébergé côté serveur, non mis en place pour l'instant
-- Bulle "flèche boussole" intégrée à la barre d'info trajet de
-  `DirectionsScreen`, visible aussi bien en regardant la carte que la
-  liste des instructions
+
+* **Flèche directionnelle boussole** (`DirectionArrow`).
+
+* Navigation utilisant :
+
+  * GPS en direct
+  * Orientation de l'appareil
+  * Direction vers la destination
+
+* Instructions textuelles :
+
+  * Continuez tout droit
+  * Tournez à droite
+  * Tournez à gauche
+  * Faites demi-tour
+
+* **Liens de partage profonds** pour les lieux et itinéraires.
+
+* Intégration de la navigation dans `DirectionsScreen`.
 
 ---
 
 ## [2.6.0] — Réseau social : suivre, partager, communiquer
+
 ### Ajouté
-- **Messagerie directe** (`user-service`) : `GET /messages/inbox`,
-  `GET/POST /messages/{other_user_id}` — accès restreint aux personnes
-  qu'on suit ou qui nous suivent (pas de message à un inconnu trouvé via
-  la recherche). Écrans **Boîte de réception** et **Conversation**
-  (bulles de discussion, envoi optimiste), badge de messages non lus sur
-  l'onglet Sorties
-- **Commentaires et likes sur les sorties** (`itinerary-service`) :
-  `POST /itineraries/{id}/like` (bascule), `GET/POST /itineraries/{id}/
-  comments`, `DELETE .../comments/{comment_id}` (auteur uniquement).
-  `like_count` / `liked_by_me` / `comment_count` renvoyés sur toutes les
-  routes d'itinéraires (mes sorties, fil des amis, sorties publiques d'un
-  ami, fiche détaillée). Barre "like + commentaires" (`LikeCommentBar`) et
-  feuille de commentaires (`CommentsSheet`) réutilisées sur le fil des
-  amis et dans l'onglet Mes sorties
-- 14 nouvelles destinations (36 → 50) : écoles secondaires (Lycée
-  Général-Leclerc, Collège Jean-Tabi, Collège François-Xavier-Vogt, Bitame
-  Lucia International School), hôpitaux, aéroport de Nsimalen, Mosquée
-  Centrale, Institut Français, Marché Mvog-Mbi, etc. Catégories `health`
-  et `transport` ajoutées à `PlaceCategories`
+
+* **Messagerie directe** (`user-service`).
+
+* Boîte de réception.
+
+* Conversations entre utilisateurs autorisés.
+
+* Badge de messages non lus.
+
+* **Likes et commentaires sur les sorties**.
+
+* 14 nouvelles destinations, faisant évoluer le catalogue de **36 à 50 destinations**.
+
+* Nouvelles catégories :
+
+  * `health`
+  * `transport`
 
 ### Corrigé
-- **Localisation d'ICT University** : le lieu était enregistré à Mendong ;
-  corrigé vers Zoatoupsi/Messassi (coordonnées vérifiées), conforme à
-  l'adresse réelle
-- **Bouton de langue injoignable au doigt sur mobile** (fonctionnait à la
-  souris) : le geste de glisser (`GestureDetector.onPan*`) perdait
-  systématiquement l'arène de gestes face au `SingleChildScrollView` en
-  arrière-plan sur écran tactile — remplacé par un `Listener` (événements
-  de pointeur bruts, hors arène de gestes), zone de contact invisible
-  agrandie (52px → ~76px) et `HitTestBehavior.opaque`
-- **Bulle IA flottante recouvrant le contenu en fin de liste** : marge
-  basse ajoutée sur les listes des 4 onglets, et la bulle se masque
-  désormais automatiquement pendant un défilement actif vers le bas
-  (réapparaît au défilement vers le haut ou à l'arrêt)
-- **Connexion Google bloquée sur le Web** ("Getting ready" indéfiniment,
-  quel que soit le port/l'origine testés) : `google_sign_in_web` lève une
-  assertion si `serverClientId` est fourni sur le Web (paramètre réservé à
-  Android/iOS) — notre code le passait sur toutes les plateformes sans
-  distinction, faisant échouer `initialize()` à chaque tentative. Corrigé
-  (`serverClientId: kIsWeb ? null : ...`) ; bouton Web désormais construit
-  via un `FutureBuilder` qui attend la fin réelle de l'initialisation
-  avant d'appeler `renderButton()`, pour éliminer aussi une course
-  possible entre les deux
+
+* Localisation d'ICT University corrigée vers Zoatoupsi/Messassi.
+
+* Bouton de langue mobile amélioré.
+
+* Bulle IA empêchée de recouvrir le contenu des listes.
+
+* Correction de la connexion Google sur le Web.
 
 ---
 
 ## [2.5.0] — Bulle de langue déplaçable & corrections diverses
+
 ### Ajouté
-- Sélecteur de langue transformé en bulle flottante déplaçable (icône globe
-  de l'app + badge FR/EN) : un appui simple bascule la langue, un glisser la
-  repositionne n'importe où à l'écran — remplace l'ancien sélecteur fixe en
-  haut à droite, difficile à toucher précisément sur mobile (chevauchait
-  souvent la zone de l'encoche/barre d'état)
+
+* Sélecteur de langue transformé en bulle flottante.
+
+* Appui simple :
+
+  * Changement de langue
+
+* Glissement :
+
+  * Repositionnement de la bulle
 
 ### Corrigé
-- Build Flutter Web servi dans un sous-dossier (`/app/`) : ajout de
-  `--base-href /app/` au build, corrigeant un écran blanc/vide (l'app
-  cherchait ses fichiers à la racine du domaine au lieu du bon sous-chemin)
-- En-tête HTTP non-ASCII (`X-Title: "GlobeTrotter Yaoundé"`) faisant planter
-  le repli OpenRouter avec une `UnicodeEncodeError` — accent retiré
+
+* Correction du `base-href` pour Flutter Web servi dans `/app/`.
+
+* Correction d'un en-tête HTTP contenant des caractères non ASCII.
 
 ---
 
-## [2.4.0] — Fonctionnalités communautaires (portées du Monolithe Phase 1)
+## [2.4.0] — Fonctionnalités communautaires
+
 ### Ajouté
-- **Avis publics sur une destination** (note 1-5 + commentaire), indépendants
-  des avis sur l'application elle-même — `GET/POST /destinations/{id}/reviews`
-  (recommendation-service), section dédiée sur la fiche de chaque lieu
-- **Lieux à proximité** — `GET /destinations/{id}/nearby`, distance à vol
-  d'oiseau (formule de haversine) portée telle quelle depuis le monolithe,
-  carrousel "À proximité" sur la fiche lieu
-- **Localisation en direct** (`geolocator`) : point bleu "vous êtes ici" sur
-  la carte d'itinéraire, badge "à X km de vous" sur la fiche lieu et dans la
-  liste des arrêts d'un itinéraire
-- Coordonnées lat/lng ajoutées aux 26 destinations de Yaoundé (nécessaires
-  pour la carte, la météo et les distances — absentes du jeu de données
-  initial de la Phase 1)
+
+* **Avis publics sur les destinations**.
+
+* Notes de 1 à 5.
+
+* Commentaires sur les lieux.
+
+* **Lieux à proximité** utilisant la formule de Haversine.
+
+* **Localisation en direct** avec `geolocator`.
+
+* Point indiquant la position de l'utilisateur.
+
+* Distances affichées sur les destinations.
+
+* Coordonnées géographiques ajoutées aux destinations.
 
 ---
 
 ## [2.3.0] — Assistant IA conversationnel
+
 ### Ajouté
-- Nouveau microservice `ai-service` (FastAPI, sans état), appelant l'API
-  Gemini (gratuite, `gemini-2.5-flash`), avec le contexte réel de l'app
-  (destinations populaires, itinéraires de l'utilisateur) injecté dans
-  chaque requête pour éviter les réponses hors-sujet ou inventées
-- **Repli automatique et silencieux vers OpenRouter** (`openrouter/free`) en
-  cas d'indisponibilité de Gemini (ex : blocage `403 PERMISSION_DENIED`
-  connu et documenté sur les projets Google Cloud tout neufs) — transparent
-  pour l'utilisateur, qui ne voit jamais quel fournisseur a répondu
-- Écran de discussion (`AssistantScreen`) avec bulle flottante accessible
-  depuis n'importe quel onglet de l'app, suggestions de questions au
-  premier lancement
+
+* Nouveau microservice :
+
+  `ai-service`
+
+* Assistant utilisant Gemini.
+
+* Injection du contexte réel de GlobeTrotter dans les requêtes.
+
+* **Fallback automatique vers OpenRouter**.
+
+* Écran de conversation :
+
+  `AssistantScreen`
+
+* Bulle flottante accessible depuis l'application.
+
+* Suggestions de questions au premier lancement.
 
 ---
 
 ## [2.2.0] — Favoris
+
 ### Ajouté
-- `GET/POST/DELETE /favorites` (user-service), stockage `{user_id: [destination_ids]}`
-- Icône cœur sur chaque carte destination (mise à jour optimiste, pas
-  d'attente réseau perceptible), écran **Favoris** dédié
-- Statistiques de profil enrichies (Itinéraires / Région / Favoris)
+
+* Gestion des favoris :
+
+  * `GET /favorites`
+  * `POST /favorites`
+  * `DELETE /favorites`
+
+* Icône cœur sur les destinations.
+
+* Mise à jour optimiste.
+
+* Écran **Favoris** dédié.
+
+* Statistiques de profil enrichies.
 
 ---
 
 ## [2.1.0] — Carte, météo, itinéraires piétons, connexion Google, avis sur l'app
+
 ### Ajouté
-- Carte interactive (`flutter_map` + OpenStreetMap, gratuite, sans clé API)
-  affichant les arrêts d'un itinéraire, avec tracé de trajet à pied
-  (OSRM, gratuit) et distance/durée estimée
-- Météo en direct par destination (Open-Meteo, gratuite, sans clé API)
-- **Connexion Google** (Web + Android) : Client ID OAuth créé sur Google
-  Cloud Console, backend `POST /auth/google` vérifiant le jeton et émettant
-  le même JWT que la connexion classique
-- **Avis sur l'application** (étoiles + commentaire), distincts des avis sur
-  les destinations ci-dessus — `POST/GET /reviews` (user-service)
+
+* Carte interactive.
+
+* Affichage des arrêts d'un itinéraire.
+
+* Trajets piétons avec OSRM.
+
+* Distance et durée estimée.
+
+* **Météo en direct** avec Open-Meteo.
+
+* **Connexion Google** sur Web et Android.
+
+* Vérification du jeton côté backend.
+
+* **Avis sur l'application** :
+
+  * Étoiles
+  * Commentaires
 
 ### Modifié
-- Migration de `google_sign_in` v6 → v7 (changement d'API cassant :
-  singleton `GoogleSignIn.instance`, `initialize()`, `authenticate()`,
-  `.authentication` désormais synchrone)
-- Images de destinations (Wikimedia Commons) rendues via une balise HTML
-  `<img>` native sur le Web (`HtmlElementView`) plutôt que via le canvas
-  CanvasKit, qui exige des en-têtes CORS que Wikimedia n'envoie pas
-  systématiquement
 
-> **Note (v2.8.0)** : `flutter_map` a depuis été entièrement retiré du
-> projet (voir Corrigé, v2.8.0) — la carte s'appuie désormais uniquement
-> sur `maplibre_gl` (rendu 3D), y compris sur la fiche d'un lieu.
+* Migration de `google_sign_in` v6 vers v7.
+
+* Adaptation des images de destinations pour le Web.
+
+> **Note :** `flutter_map` a ensuite été retiré et remplacé par MapLibre dans les versions suivantes.
 
 ---
 
 ## [2.0.0] — Phase 2 : Microservices
+
 ### Ajouté
-- Décomposition du monolithe en **5 services indépendants** :
-  `user-service`, `itinerary-service`, `recommendation-service`,
-  `ai-service`, `api-gateway` — chacun avec son propre stockage JSON et
-  son propre conteneur Docker
-- Orchestration via **Docker Compose**, déploiement identique en local et
-  sur le VPS
-- Nouveau `update.sh` adapté à Docker Compose (sauvegarde des données,
-  `git pull`, `docker compose up --build -d`, vérification de santé) —
-  remplace l'ancien script Phase 1 (venv + systemd)
+
+* Décomposition du monolithe en **5 services indépendants** :
+
+  * `user-service`
+  * `itinerary-service`
+  * `recommendation-service`
+  * `ai-service`
+  * `api-gateway`
+
+* Chaque service dispose de son propre stockage.
+
+* Conteneurisation avec Docker.
+
+* Orchestration avec **Docker Compose**.
+
+* Nouveau système `update.sh` adapté au déploiement Docker.
 
 ### Modifié
-- **Migration complète du VPS** : arrêt et désactivation du service
-  systemd `fahglobe` (Phase 1), passerelle Docker publiée sur le même
-  port `4200` pour rester compatible avec la configuration Nginx
-  existante sans aucune modification de celle-ci côté domaine public
-- Configuration Nginx (`sites-enabled/fahglobe`) mise à jour pour
-  proxifier les nouvelles routes Phase 2 (`/auth`, `/reviews`,
-  `/favorites`, `/assistant`, `/health`) vers l'API — les anciennes règles
-  ne couvraient que les routes historiques de la Phase 1
-- Migration des données réelles de production (25 comptes utilisateurs,
-  5 itinéraires) vers la nouvelle structure par service
+
+* Migration complète du VPS.
+
+* Remplacement de l'ancien système systemd de la Phase 1.
+
+* API Gateway publiée sur le port **4200**.
+
+* Configuration Nginx étendue pour les nouvelles routes.
+
+* Migration des données de production vers la nouvelle architecture.
 
 ### Corrigé
-- Cycle de dépendances circulaire dans `docker-compose.yml`
-  (`itinerary-service` ↔ `recommendation-service`) empêchant le démarrage
-- Dépendance manquante (`requests`) dans `user-service`, requise par
-  `google-auth` pour la vérification des jetons Google
+
+* Cycle de dépendances circulaire dans `docker-compose.yml`.
+
+* Dépendance `requests` manquante dans `user-service`.
 
 ### Sécurité
-- **Historique Git nettoyé** (`git filter-repo`) : suppression rétroactive
-  des fichiers `users.json`, `reviews.json`, `favorites.json`,
-  `itineraries.json` accidentellement committés avec des données réelles
-  d'utilisateurs (emails, hachages de mots de passe) dans un dépôt public —
-  ces fichiers sont désormais exclus via `.gitignore` et ne vivent que
-  sur le VPS (montage Docker), jamais dans le code source
+
+* Nettoyage de l'historique Git afin de supprimer des données utilisateur accidentellement committées.
+
+* Mise en place de règles `.gitignore` pour empêcher de nouveaux commits de données sensibles.
 
 ---
 
 ## [1.6.0] — Thème & Langue
+
 ### Ajouté
-- Système de thème clair / sombre / système, persisté localement (`SettingsProvider` + `shared_preferences`)
-- Palette dédiée claire et sombre (`AppTheme`), cohérente avec l'identité Cameroun + le site web (vert, orange, or)
-- Système de traduction léger FR/EN (`AppStrings`) couvrant toute l'interface (navigation, dashboard, profil, authentification)
-- Écran **Paramètres** (`SettingsScreen`) avec sélecteurs de thème et de langue (`SegmentedButton`)
-- Sélecteur de langue flottant (FR/EN) visible dès l'écran de connexion, avant toute inscription
-- Nouveau **dashboard** sur l'onglet Explorer : bandeau d'accueil dégradé avec avatar, salutation personnalisée et 3 pastilles de statistiques (lieux, catégories, sorties)
+
+* Thème :
+
+  * Clair
+  * Sombre
+  * Système
+
+* Préférences persistées localement.
+
+* Palette visuelle dédiée.
+
+* Système de traduction :
+
+  * Français
+  * Anglais
+
+* Écran **Paramètres**.
+
+* Sélecteur de langue visible dès l'écran de connexion.
+
+* Nouveau dashboard sur l'onglet Explorer.
 
 ### Modifié
-- `main.dart` : chargement des préférences (thème/langue) au démarrage, `MaterialApp` piloté par `ThemeMode`
-- Tous les écrans principaux (Explore, Recommandations, Sorties, Profil, Login, Register) traduits via `AppStrings`
-- Précision : les **données** du backend (noms de lieux, descriptions) restent en français — seul le chrome de l'interface est traduit
+
+* `main.dart` charge les préférences au démarrage.
+
+* Écrans principaux traduits.
+
+* Les données du backend restent principalement en français.
 
 ### Corrigé
-- `auth_scaffold.dart` : classe `_Glow` manquante (référencée mais jamais définie), causant une erreur de compilation
-- `register_screen.dart` : chips de centres d'intérêt trop pâles (fond blanc 8% opacité) remplacées par un widget `_InterestChip` à fort contraste (fond marine plein / or plein)
-- `constants.dart` : incohérence de slash final entre `prodUrl` et les URLs de développement ; branches conditionnelles mortes nettoyées ; port aligné sur 4200
+
+* Classe `_Glow` manquante.
+
+* Amélioration du contraste des centres d'intérêt.
+
+* Correction des URLs et du port de production.
 
 ---
 
 ## [1.5.0] — Déploiement production (VPS)
+
 ### Ajouté
-- Guide complet de déploiement backend sur VPS Ubuntu : systemd + Nginx + Let's Encrypt
-- Service systemd `fahglobe` (Gunicorn + workers Uvicorn, redémarrage automatique, logs dédiés)
-- Configuration Nginx unique servant à la fois :
-  - le site statique (`/var/www/GLOBE`)
-  - l'API FastAPI en reverse proxy (port interne 4200) sur les routes `/register`, `/login`, `/destinations`, `/recommendations`, `/itineraries`, `/docs`
-- HTTPS via Certbot / Let's Encrypt sur le domaine `fahglobe.duckdns.org`
-- `update.sh` — script de mise à jour du backend : sauvegarde automatique des données JSON (`data/*.json`) avant chaque mise à jour, `git pull`, réinstallation des dépendances, redémarrage du service, vérification de santé (`curl` sur l'API)
-- `restore.sh` — script de restauration d'une sauvegarde en cas de problème, avec sauvegarde de sécurité de l'état courant avant tout rollback
+
+* Guide complet de déploiement sur VPS Ubuntu.
+
+* Utilisation de :
+
+  * systemd
+  * Nginx
+  * Let's Encrypt
+
+* Service systemd `fahglobe`.
+
+* Reverse proxy pour :
+
+  * Le site vitrine
+  * L'API FastAPI
+
+* HTTPS activé.
+
+* Script `update.sh`.
+
+* Script `restore.sh`.
 
 ### Modifié
-- `lib/core/constants.dart` (Flutter) : ajout de `prodUrl`, logique `kReleaseMode` pour que tous les builds de production (APK, Web, Windows) utilisent automatiquement le backend hébergé
+
+* Ajout de `prodUrl` dans Flutter.
+
+* Les builds de production utilisent automatiquement le backend hébergé.
 
 ### Corrigé
-- Faute de frappe dans le nom du fichier Nginx (`fahgobe` → `fahglobe`)
-- 403 sur le site : mauvais contenu déployé dans `/var/www/GLOBE` (fichier isolé au lieu de la structure complète `index.html` + `app/` + `downloads/`)
-- 404 sur `/docs/` : regex Nginx n'acceptait pas le slash final (`/?` ajouté à la regex)
+
+* Correction du nom du fichier Nginx.
+
+* Correction d'un problème 403 lié au contenu du site.
+
+* Correction des routes `/docs/`.
 
 ---
 
 ## [1.4.0] — Site de téléchargement / vitrine web
+
 ### Ajouté
-- Site vitrine complet (`website/index.html`) : landing page + hub de téléchargement + présentation des fonctionnalités
-- **Détection automatique de l'appareil** du visiteur (Android / Windows / autre) avec mise en avant de la version recommandée
-- Mockup de téléphone en pur CSS affichant le vrai contenu de l'app (Mont Fébé, Marché Central, catégories, barre de navigation)
-- Section fonctionnalités (6 cartes), section communauté (lien WhatsApp + Google Form), footer institutionnel
-- Structure de dossier prête à l'emploi : `app/` (accueil du build Flutter Web) et `downloads/` (APK + zip Windows)
-- Animations au scroll, responsive mobile, respect de `prefers-reduced-motion`
-- `README_DEPLOY.md` détaillant la procédure de build + déploiement
+
+* Site vitrine complet.
+
+* Landing page.
+
+* Hub de téléchargement.
+
+* Présentation des fonctionnalités.
+
+* Détection automatique de l'appareil :
+
+  * Android
+  * Windows
+  * Autres plateformes
+
+* Mockup de téléphone en CSS.
+
+* Section fonctionnalités.
+
+* Section communauté.
+
+* Structure :
+
+  * `app/`
+  * `downloads/`
+
+* Animations au scroll.
+
+* Responsive mobile.
+
+* Support de `prefers-reduced-motion`.
+
+* Documentation `README_DEPLOY.md`.
 
 ### Design
-- Palette bleu nuit + orange reprenant l'identité visuelle du poster fourni par l'utilisateur
-- Typographies Unbounded / Outfit / JetBrains Mono
+
+* Palette bleu nuit et orange.
+
+* Typographies :
+
+  * Unbounded
+  * Outfit
+  * JetBrains Mono
 
 ---
 
 ## [1.3.0] — Icônes de l'application
+
 ### Ajouté
-- Série 1 : 5 concepts d'icônes aux couleurs du Cameroun (Boussole, Les 7 Collines, Le Monument, Globe Afrique, Y Route)
-- Série 2 : 5 concepts alternatifs bleu/orange inspirés du poster de présentation du projet (Orbit, Swoosh G, Pin Globe, Trail, Étoile CM)
-- Collages de vote prêts pour diffusion WhatsApp (format sondage)
-- Sources SVG éditables fournies pour chaque icône
+
+* Première série de concepts d'icônes inspirés du Cameroun :
+
+  * Boussole
+  * Les 7 Collines
+  * Monument
+  * Globe Afrique
+  * Y Route
+
+* Deuxième série de concepts bleu/orange.
+
+* Collages prêts pour les votes WhatsApp.
+
+* Sources SVG éditables.
 
 ---
 
 ## [1.2.0] — Amélioration du design (GUI)
+
 ### Ajouté
-- Refonte complète de l'écran de connexion (`AuthScaffold`) : fond dégradé Cameroun, silhouette des collines de Yaoundé en `CustomPainter`, halos lumineux, carte en glassmorphism (blur + bordure translucide)
-- Layout adaptatif : colonne unique sur mobile, panneau de branding + formulaire côte à côte sur web/desktop (≥ 900px)
-- Composants partagés : `glassInput()`, `GradientButton`
-- Animations d'entrée (fondu + glissement) sur le logo et la carte de connexion
-- Thème global affiné : cartes arrondies, boutons et champs cohérents, snackbars flottantes
+
+* Refonte complète de l'écran de connexion.
+
+* Fond dégradé inspiré du Cameroun.
+
+* Silhouette des collines de Yaoundé avec `CustomPainter`.
+
+* Effets lumineux.
+
+* Glassmorphism.
+
+* Layout adaptatif :
+
+  * Mobile
+  * Web
+  * Desktop
+
+* Composants réutilisables :
+
+  * `glassInput()`
+  * `GradientButton`
+
+* Animations d'entrée.
+
+* Thème global amélioré.
 
 ---
 
 ## [1.1.0] — Questionnaire beta-testeurs
+
 ### Ajouté
-- Questionnaire Google Form (10 questions max, FR + EN) pour orienter la roadmap produit
-- Couvre : profil utilisateur, habitudes de découverte, catégories préférées, fonctionnalités actuelles utilisées, fonctionnalités futures désirées, frustrations, plateforme préférée, score de recommandation (NPS), question ouverte
-- Grille d'exploitation des résultats pour la défense académique
+
+* Questionnaire Google Form.
+
+* Maximum de 10 questions.
+
+* Versions française et anglaise.
+
+* Questions sur :
+
+  * Profil utilisateur
+  * Habitudes de découverte
+  * Catégories préférées
+  * Fonctionnalités utilisées
+  * Fonctionnalités futures
+  * Frustrations
+  * Plateforme préférée
+  * Score de recommandation
+  * Commentaires libres
+
+* Grille d'exploitation des résultats pour la défense académique.
 
 ---
 
 ## [1.0.0] — Phase 1 : Le Monolithe (version initiale)
+
 ### Contexte projet
-- Recentrage du projet générique "GlobeTrotter" (voyage international) vers **GlobeTrotter Yaoundé**, guide local pour Yaoundé, Cameroun
 
-### Backend (FastAPI, Python)
-- Architecture monolithique conforme à la spec Phase 1 : un seul serveur, stockage JSON (volontairement sans base de données, pour illustrer les limites étudiées en cours)
-- `app/storage.py` : couche d'accès aux données isolée (repository pattern), écriture atomique par fichier temporaire, verrou `threading.Lock`, prête à être remplacée par MySQL en Phase 2
-- `app/security.py` : authentification JWT, hashage bcrypt des mots de passe
-- 7 endpoints REST :
-  - `POST /register`, `POST /login`, `GET /me`
-  - `GET /destinations` (recherche par texte, tag, catégorie, quartier), `GET /destinations/{id}`, `GET /categories`
-  - `GET /recommendations` (score pondéré : préférences × 3, affinité sorties passées × 1.5, popularité × 1)
-  - `POST/GET/PUT/DELETE /itineraries` (création, consultation, modification, suppression, partage par email)
-- Jeu de données : 26 lieux réels de Yaoundé (Monument de la Réunification, Mont Fébé, Marché Central, Marché Mokolo, Musée National, Zoo de Mvog-Betsi, Parc de la Méfou, restaurants, hôtels, etc.) répartis en 8 catégories, avec quartier, prix en FCFA, meilleur moment de visite
+* Recentrage du projet générique **GlobeTrotter** vers :
 
-### Frontend (Flutter — Web, Mobile, Desktop)
-- Architecture Provider (state management) + Dio (client HTTP) + shared_preferences (persistance du JWT)
-- Détection automatique de l'URL du backend selon la plateforme (Web, Android émulateur, Windows/Desktop, appareil physique via IP LAN)
-- Écrans : Connexion, Inscription (avec sélection des centres d'intérêt), Explorer (recherche + filtres par catégorie), Recommandations personnalisées (avec justification), Mes sorties (création multi-étapes, partage), Détail d'un lieu, Profil
-- Composants réutilisables : `DestinationCard`
-- Un seul code source pour les 3 plateformes cibles (`flutter build web|apk|windows`)
+  **GlobeTrotter Yaoundé**
 
-### Base de données (Phase 1)
-- Stockage 100 % fichiers JSON (`destinations.json`, `users.json`, `itineraries.json`) — conforme à la spécification pédagogique de la Phase 1, qui exclut délibérément l'usage d'une base de données pour faire vivre aux étudiants les limites du JSON (absence de transactions, d'indexation, de gestion de la concurrence)
+* Transformation du concept de voyage international en guide local dédié à Yaoundé, Cameroun.
+
+### Backend — FastAPI / Python
+
+* Architecture monolithique.
+
+* Un seul serveur backend.
+
+* Stockage JSON volontairement utilisé dans le cadre pédagogique.
+
+* `app/storage.py` :
+
+  * Repository pattern
+  * Écriture atomique
+  * Fichiers temporaires
+  * `threading.Lock`
+
+* `app/security.py` :
+
+  * JWT
+  * Hashage bcrypt des mots de passe
+
+* Endpoints REST pour :
+
+  * Inscription
+  * Connexion
+  * Profil
+  * Destinations
+  * Catégories
+  * Recommandations
+  * Itinéraires
+
+* Système de recommandations pondéré utilisant :
+
+  * Préférences utilisateur
+  * Sorties passées
+  * Popularité
+
+* Jeu de données initial composé de **26 lieux réels de Yaoundé**.
+
+### Frontend — Flutter
+
+* Application multi-plateforme :
+
+  * Web
+  * Mobile
+  * Desktop
+
+* Architecture Provider.
+
+* Client HTTP Dio.
+
+* Persistance avec `shared_preferences`.
+
+* Détection automatique de l'URL backend selon la plateforme.
+
+* Écrans :
+
+  * Connexion
+  * Inscription
+  * Explorer
+  * Recommandations
+  * Mes sorties
+  * Création d'itinéraires
+  * Détail d'un lieu
+  * Profil
+
+* Composant réutilisable :
+
+  `DestinationCard`
+
+* Un seul code source pour les plateformes cibles.
+
+### Stockage — Phase 1
+
+* Stockage 100 % JSON :
+
+  * `destinations.json`
+  * `users.json`
+  * `itineraries.json`
+
+* Utilisation volontaire du stockage par fichiers afin d'illustrer les limites du modèle monolithique et préparer la transition vers l'architecture distribuée.
 
 ### Documentation
-- `README.md` (backend) et `SETUP_GUIDE.md` (frontend) détaillant l'installation et le lancement sur les 3 plateformes
+
+* `README.md` pour le backend.
+
+* `SETUP_GUIDE.md` pour le frontend.
 
 ---
 
-## Notes de version — Phase du projet
+# Notes de version — Phase du projet
 
-| Phase | Statut | Contenu |
-|---|---|---|
-| **Phase 1 — Monolithe** | ✅ Complétée | API REST unique, stockage JSON, Flutter multi-plateforme |
-| **Phase 2 — Microservices** | ✅ Complétée et déployée en production | 5 services (user, itinerary, recommendation, ai, api-gateway), Docker Compose, connexion Google, assistant IA, carte 3D, météo, avis, favoris, localisation, réseau social (suivi, messagerie, commentaires/likes), navigation guidée, liens de partage profonds |
-| Phase 3 — Déploiement cloud | À venir | Conteneurisation avancée, load balancing, auto-scaling |
-| Phase 4 — Résilience | À venir | Cache, files de messages, circuit breakers |
+| Phase                           | Statut                  | Contenu                                                                                                                             |
+| ------------------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **Phase 1 — Monolithe**         | ✅ Complétée             | API REST unique, stockage JSON, Flutter multi-plateforme                                                                            |
+| **Phase 2 — Microservices**     | ✅ Complétée et déployée | Architecture distribuée, Docker Compose, IA, cartes, météo, réseau social, messagerie, navigation et fonctionnalités communautaires |
+| **Phase 3 — Déploiement cloud** | À venir                 | Conteneurisation avancée, load balancing, auto-scaling                                                                              |
+| **Phase 4 — Résilience**        | À venir                 | Cache, files de messages, circuit breakers                                                                                          |
 
 ---
 
-## Infrastructure actuelle (production)
+# Infrastructure actuelle
 
-| Composant | Emplacement | Détails |
-|---|---|---|
-| API Gateway | VPS Ubuntu, Docker Compose | `api-gateway`, port interne 4200 (inchangé depuis la Phase 1 pour compatibilité Nginx). En local, `docker compose up --build` publie désormais aussi sur 4200 (aligné avec la prod depuis v2.8.0) |
-| Microservices | Docker Compose (même hôte) | `user-service` (8001), `itinerary-service` (8002), `recommendation-service` (8003), `ai-service` (8004) |
-| Assistant IA | `ai-service` | Gemini 2.5 Flash (gratuit), repli automatique vers OpenRouter (`openrouter/free`) |
-| Reverse proxy | Nginx | HTTPS (Let's Encrypt), routage API + site statique, règles étendues aux routes Phase 2 |
-| Domaine | `fahglobe.duckdns.org` | DNS dynamique DuckDNS |
-| Site + téléchargements | `/var/www/GLOBE` | Vitrine, hub de téléchargement, app Flutter Web (dépôt Git séparé `TUHEU/GLOBE`), déployé via son propre `update.sh` (v2.8.0) |
-| Sauvegardes backend | `~/BACKEND-GLOBE-V2/backups/` | Automatiques à chaque `update.sh`, 10 dernières conservées |
-| Sauvegardes site | `/var/www/GLOBE_backups/` | Automatiques à chaque `update.sh` du site, 10 dernières conservées |
-| Dépôt de code (backend) | GitHub (`TUHEU/BACKEND-GLOBE`) | Historique nettoyé (`git filter-repo`) ; `.gitignore` + `.env.example` (v2.8.0) ; `git pull` automatique via `update.sh` |
-| Dépôt de code (site) | GitHub (`TUHEU/GLOBE`) | Build Flutter Web + APK + zip Windows, mis à jour via son propre `update.sh` |
-| Vérification de conteneurs | VPS | `docker compose ps -a` (inclut les conteneurs ARRÊTÉS) recommandé plutôt que `docker compose ps` seul, qui masque un service tombé silencieusement (voir v2.11.0) |
+| Composant           | Emplacement                 | Détails                                                                          |
+| ------------------- | --------------------------- | -------------------------------------------------------------------------------- |
+| API Gateway         | VPS Ubuntu / Docker Compose | Point d'entrée principal de l'API                                                |
+| Microservices       | Docker Compose              | Services spécialisés pour utilisateurs, itinéraires, recommandations, IA et chat |
+| Assistant IA        | `ai-service`                | Gemini avec fallback OpenRouter                                                  |
+| Chat communautaire  | `chat-service`              | Communication en temps réel via WebSocket                                        |
+| Reverse Proxy       | Nginx                       | HTTPS et routage des services                                                    |
+| Domaine             | DuckDNS                     | Domaine public du projet                                                         |
+| Site vitrine        | `/var/www/GLOBE`            | Site de présentation et application Flutter Web                                  |
+| Sauvegardes Backend | VPS                         | Sauvegardes automatiques avant les mises à jour                                  |
+| Dépôt Backend       | GitHub                      | Code source de l'architecture backend                                            |
+| Dépôt Site          | GitHub                      | Site vitrine et builds publics                                                   |
+
+---
+
+## GlobeTrotter Yaoundé — Évolution du projet
+
+**GlobeTrotter Yaoundé** a évolué progressivement :
+
+🚀 **Phase 1** — Application monolithique avec API REST et stockage JSON
+
+🏗️ **Phase 2** — Migration vers une architecture distribuée basée sur les microservices
+
+🤖 **Intelligence artificielle** — Assistant conversationnel avec contexte réel
+
+🗺️ **Navigation** — Cartes interactives, météo et itinéraires
+
+👥 **Réseau social** — Suivi, likes, commentaires et messagerie
+
+💬 **Temps réel** — Chat communautaire avec WebSocket et partage de médias
+
+🔔 **Notifications** — Gestion centralisée des événements utilisateur
+
+📍 **Communauté** — Contribution des utilisateurs avec proposition de nouveaux lieux
+
+🌍 **Vision** — Transformer GlobeTrotter Yaoundé en une plateforme complète permettant de découvrir, planifier, partager et vivre l'expérience de Yaoundé avec une véritable communauté d'explorateurs.
