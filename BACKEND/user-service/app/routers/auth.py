@@ -43,6 +43,7 @@ def login(body: LoginRequest):
     user = storage.find_user_by_email(body.email)
     if not user or not verify_password(body.password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
+    storage.record_login(user["id"])
     token = create_access_token(user["id"], user["full_name"], user["email"])
     return {"access_token": token, "token_type": "bearer", "user": _public(user)}
 
@@ -87,6 +88,7 @@ def login_with_google(body: GoogleAuthRequest):
         full_name=idinfo.get("name") or idinfo["email"].split("@")[0],
         google_sub=idinfo["sub"],
     )
+    storage.record_login(user["id"])
     token = create_access_token(user["id"], user["full_name"], user["email"])
     return {"access_token": token, "token_type": "bearer", "user": _public(user)}
 

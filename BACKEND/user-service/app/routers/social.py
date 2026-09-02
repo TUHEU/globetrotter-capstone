@@ -45,9 +45,9 @@ def follow(user_id: str, current=Depends(get_current_user)):
     target = storage.find_user_by_id(user_id)
     if not target:
         raise HTTPException(status_code=404, detail="User not found")
+    already_following = user_id in storage.get_following(current["id"])
     ids = storage.follow_user(current["id"], user_id)
-    target = storage.find_user_by_id(user_id)
-    if target:
+    if not already_following:
         storage.add_notification(
             user_id=user_id,
             type_="follow",
@@ -89,21 +89,20 @@ def follow_status(user_id: str, current=Depends(get_current_user)):
 
 @router.get("/users/stats/public")
 def public_user_stats():
-    """Statistiques PUBLIQUES et anonymes, sans authentification - juste des
-    compteurs agrégés, jamais une donnée individuelle (aucun nom, email,
-    ni identifiant). Destiné au site vitrine (TUHEU/GLOBE) pour afficher
-    "X personnes utilisent déjà GlobeTrotter" + un graphique de croissance,
-    pas à un usage interne à l'app (qui a déjà /users/discover pour ça,
-    lui-même protégé par authentification).
-    Nom de route explicite en /public pour qu'il n'y ait jamais de doute
-    en le relisant plus tard sur le fait qu'il est volontairement ouvert.
+    """Anonymous public community metrics for the website.
 
-    "weekly_growth" groupe les inscriptions par semaine ISO (ex: "2026-W07")
-    à partir du VRAI `created_at` de chaque compte - pas de données
-    inventées pour "faire joli" sur un graphique.
+    - total_users: all registered accounts
+    - weekly_growth: newly-created accounts by ISO week
+    - total_login_events: successful logins recorded since tracking began
+    - unique_logged_in_users: distinct accounts with a recorded successful login
+    - weekly_logins: distinct logged-in accounts per ISO week
+
+    No names, emails, passwords, or user ids are exposed here. The existing
+    users.json does not contain login timestamps, so historical login activity
+    is not invented; new successful logins are recorded from this version onward.
     """
     users = storage.get_users()
-    weekly: dict = {}
+    weekly_signups: dict = {}
     for u in users:
         created = u.get("created_at", "")
         if not created:
@@ -113,6 +112,35 @@ def public_user_stats():
         except ValueError:
             continue
         week_key = dt.strftime("%Y-W%V")
-        weekly[week_key] = weekly.get(week_key, 0) + 1
-    weekly_growth = [{"week": k, "count": v} for k, v in sorted(weekly.items())]
-    return {"total_users": len(users), "weekly_growth": weekly_growth}
+        weekly_signups[week_key] = weekly_signups.get(week_key, 0) + 1
+
+    events = storage.get_login_events()
+    weekly_login_users: dict[str, set[str]] = {}
+    unique_users: set[str] = set()
+    for event in events:
+        user_id = event.get("user_id")
+        created = event.get("created_at", "")
+        if not user_id or not created:
+            continue
+        try:
+            dt = datetime.fromisoformat(created)
+        except ValueError:
+            continue
+        week_key = dt.strftime("%Y-W%V")
+        unique_users.add(user_id)
+        weekly_login_users.setdefault(week_key, set()).add(user_id)
+
+    weekly_logins = [
+        {"week": week, "count": len(ids)}
+        for week, ids in sorted(weekly_login_users.items())
+    ]
+
+    return {
+        "total_users": len(users),
+        "weekly_growth": [
+            {"week": k, "count": v} for k, v in sorted(weekly_signups.items())
+        ],
+        "total_login_events": len(events),
+        "unique_logged_in_users": len(unique_users),
+        "weekly_logins": weekly_logins,
+    }

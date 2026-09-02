@@ -66,3 +66,16 @@ def test_me_returns_current_user(client, registered_user):
     res = client.get("/me", headers=registered_user["headers"])
     assert res.status_code == 200
     assert res.json()["email"] == registered_user["email"]
+
+
+def test_successful_login_is_recorded_in_public_stats(client, registered_user):
+    res = client.post("/login", json={"email": "test@example.com", "password": "password123"})
+    assert res.status_code == 200
+
+    stats = client.get("/users/stats/public")
+    assert stats.status_code == 200
+    data = stats.json()
+    assert data["total_users"] == 1
+    assert data["total_login_events"] == 1
+    assert data["unique_logged_in_users"] == 1
+    assert len(data["weekly_logins"]) == 1

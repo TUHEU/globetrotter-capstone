@@ -30,3 +30,4 @@ FOLLOWS_FILE = DATA_DIR / "follows.json"
 MESSAGES_FILE = DATA_DIR / "messages.json"
 
 NOTIFICATIONS_FILE = DATA_DIR / 'notifications.json'
+LOGIN_EVENTS_FILE = DATA_DIR / "login_events.json"

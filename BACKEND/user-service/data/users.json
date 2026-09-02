@@ -1,1 +1,666 @@
-[]
+[
+  {
+    "id": "deecfaf108f2",
+    "full_name": "FAHDIL",
+    "email": "nadaljunior999@gmail.com",
+    "password_hash": "$2b$12$COzPpGZ5PQ/HV.BxdI9v9escFIxkE8xW8UNx1DvVpzqPgjv1tonne",
+    "preferences": [
+      "food",
+      "photo"
+    ],
+    "google_sub": "118382553111331292219",
+    "created_at": "2026-07-28T00:00:00"
+  },
+  {
+    "id": "0799b176f7b8",
+    "full_name": "Fahdil",
+    "email": "nadaljunior96@gmail.com",
+    "password_hash": "$2b$12$yvjMFOCoSgETMElvVcWkWegaZgQeG0PsYVpvUWlOykiZdZr8wSu5W",
+    "preferences": [
+      "food",
+      "sport",
+      "family",
+      "luxury"
+    ],
+    "google_sub": "109640912324984685169",
+    "created_at": "2026-07-31T00:00:00"
+  },
+  {
+    "id": "5fc8511b23d3",
+    "full_name": "NADAL",
+    "email": "nadaljunior9@gmail.com",
+    "password_hash": "$2b$12$SfnMIxwtNG2yf6iT50BNP.4OTO/okLa.ZpG4e5Tc4ovtW6hu6bEpq",
+    "preferences": [
+      "culture",
+      "sport",
+      "photo",
+      "food"
+    ],
+    "created_at": "2026-08-03T00:00:00"
+  },
+  {
+    "id": "b34183fc2f5b",
+    "full_name": "FAHDIL",
+    "email": "nadaljunior@gmail.com",
+    "password_hash": "$2b$12$wX0XGh/lZQU3Bq6q5H/b2ubRwsbmUprrteAVLy/8hO0t/jaDHbw0i",
+    "preferences": [
+      "food"
+    ],
+    "created_at": "2026-08-06T00:00:00"
+  },
+  {
+    "id": "0ee8269ad603",
+    "full_name": "alex",
+    "email": "alex@gmail.com",
+    "password_hash": "$2b$12$btcRHYPgAFul.HA8MABovuLBZX6IXxXn4zLBW47N6e8jRIFnH7qMC",
+    "preferences": [
+      "food",
+      "shopping"
+    ],
+    "created_at": "2026-08-09T00:00:00"
+  },
+  {
+    "id": "18fd773b7d2b",
+    "full_name": "Asongwe Lewis Fon",
+    "email": "fonasongwelewis@gmail.com",
+    "password_hash": "$2b$12$ybZyf1eMCP4TAUwdb63zq.7Kv8Xisv1gnkwmgFl4Y/lzlgAXKXWDG",
+    "preferences": [
+      "food",
+      "history",
+      "nightlife"
+    ],
+    "created_at": "2026-08-12T00:00:00"
+  },
+  {
+    "id": "b80c3d31daeb",
+    "full_name": "Fazzio",
+    "email": "fazziootavio10@gmail.com",
+    "password_hash": "$2b$12$HN6mh2PqkeGZR7YzpuD5heROpKGZEF.NsLlbm3sVuhYFJb6289xDu",
+    "preferences": [
+      "luxury"
+    ],
+    "created_at": "2026-08-15T00:00:00"
+  },
+  {
+    "id": "72ecb75d80c1",
+    "full_name": "Afu",
+    "email": "abangbi384@gmail.com",
+    "password_hash": "$2b$12$WkypRQBLHcGTEDC9YgC1OOSLZ3goQgbccjKkxW6j26MLzTK/74HXa",
+    "preferences": [],
+    "google_sub": "109420846505545872345",
+    "created_at": "2026-08-18T00:00:00"
+  },
+  {
+    "id": "2000b36bec66",
+    "full_name": "tabs",
+    "email": "tabengsthebeast@gmail.com",
+    "password_hash": "$2b$12$.tT.NkfAng.9osKWNfAjK.frvJOueuCps5mWs/whUgopUYviP2Yl6",
+    "preferences": [],
+    "created_at": "2026-08-21T00:00:00"
+  },
+  {
+    "id": "718cde9eeca8",
+    "full_name": "rao0ul",
+    "email": "saoul@gmail.com",
+    "password_hash": "$2b$12$YwpWQkc6zpjIgvX7B3cRq.rcCixsbhz6UNC/xBzyQ5vASYgfFPCwe",
+    "preferences": [
+      "art",
+      "food"
+    ],
+    "created_at": "2026-08-24T00:00:00"
+  },
+  {
+    "id": "d04f125b9bdf",
+    "full_name": "Bruno",
+    "email": "bruno@gmail.com",
+    "password_hash": "$2b$12$SSNDlu8a3DQMQLwp0oJuKeqlDnJ45cKLMp4k505Xaf5NNwRk8/W.y",
+    "preferences": [
+      "nature"
+    ],
+    "created_at": "2026-08-27T00:00:00"
+  },
+  {
+    "id": "dff358c1bd65",
+    "full_name": "Tito Davi",
+    "email": "titodavi@gmail.com",
+    "password_hash": "$2b$12$M7qa1ceHuRodY7wxAiXTXe.vYgWd65rQfPZBm.vuaO5A4oRj67RtW",
+    "preferences": [],
+    "created_at": "2026-08-30T00:00:00"
+  },
+  {
+    "id": "2120141b2901",
+    "full_name": "daa92",
+    "email": "bagnawe.gnoga@ictuniversity.edu.cm",
+    "password_hash": "$2b$12$Wn9qWukJ/tALllMYYiMVKOO7GcFdZiiRLDYE.xls/ZrJ18W3uiB4y",
+    "preferences": [
+      "culture",
+      "nature",
+      "history",
+      "relax"
+    ],
+    "created_at": "2026-07-29T00:00:00"
+  },
+  {
+    "id": "e9acd7e6e450",
+    "full_name": "kynmmarshall",
+    "email": "kynmmarshall@gmail.com",
+    "password_hash": "$2b$12$l16hY91S9tI3fyiuuxSxhevaTnnwrtzkdI8NPh3J9UO8gk9Ik6Aai",
+    "preferences": [
+      "sport",
+      "nightlife",
+      "romance",
+      "photo"
+    ],
+    "google_sub": "112458534288748085092",
+    "created_at": "2026-08-01T00:00:00"
+  },
+  {
+    "id": "a9f0f2a4aaa3",
+    "full_name": "Jaden-Ray",
+    "email": "kongor.etamini@ictuniversity.edu.cm",
+    "password_hash": "$2b$12$UkVyWultgs3OyZvdnWk1O.E4sIW6Miocw5xhMOHTOc3Xv89CZg0sy",
+    "preferences": [
+      "sport",
+      "family",
+      "food",
+      "nightlife",
+      "nature",
+      "luxury",
+      "romance"
+    ],
+    "created_at": "2026-08-04T00:00:00"
+  },
+  {
+    "id": "f36f8fd22570",
+    "full_name": "MONTHE",
+    "email": "monthec39@gmail.com",
+    "password_hash": "$2b$12$7GxxkzreAf7M6YvihQzecO2AR3/xoF6w8lBrGQkumsD9/3lkgoNmq",
+    "preferences": [
+      "culture",
+      "history",
+      "food",
+      "shopping",
+      "luxury"
+    ],
+    "created_at": "2026-08-07T00:00:00"
+  },
+  {
+    "id": "1045f109f869",
+    "full_name": "djuikem Tangue yolaine Sheilla",
+    "email": "tangueyolaine@gmail.com",
+    "password_hash": "$2b$12$yoH2V5Gwlb6I134JTNcRoOMdhJp3kF2tA6JSxeF1CgVZdImRTzZtG",
+    "preferences": [
+      "culture",
+      "history",
+      "nature",
+      "shopping",
+      "family",
+      "relax",
+      "sport",
+      "hiking",
+      "romance",
+      "events",
+      "luxury",
+      "wildlife",
+      "photo",
+      "art",
+      "nightlife",
+      "food"
+    ],
+    "created_at": "2026-08-10T00:00:00"
+  },
+  {
+    "id": "98ae54351706",
+    "full_name": "Nganso Brenda Gracie",
+    "email": "brendagracie971@gmail.com",
+    "password_hash": "$2b$12$ryV92jT0yue7LUwaXRAQW.qkfQWUCMyzjgUmCcflOuOU8JOEQH9oi",
+    "preferences": [
+      "food",
+      "culture",
+      "shopping"
+    ],
+    "created_at": "2026-08-13T00:00:00"
+  },
+  {
+    "id": "50a55824cfa9",
+    "full_name": "FOSSOUO KENGNE GAETAN",
+    "email": "fkengnegaetn@gmail.com",
+    "password_hash": "$2b$12$ry4rZX4xQ16f.T8E1KNkgOSzNJ2kQxkxdNdqFvKLKlkOaklJta15K",
+    "preferences": [
+      "food",
+      "history",
+      "nightlife",
+      "wildlife",
+      "events",
+      "hiking",
+      "luxury",
+      "sport",
+      "relax",
+      "family",
+      "shopping",
+      "art",
+      "culture",
+      "nature",
+      "romance",
+      "photo"
+    ],
+    "created_at": "2026-08-16T00:00:00"
+  },
+  {
+    "id": "f9ca52e85080",
+    "full_name": "MOUSTAPHA SIDI MOHAMED",
+    "email": "mousbi829@gmail.com",
+    "password_hash": "$2b$12$eaF6aBDKAzoyn2DURN3MqOEGWfPT0m75v/Gh.1511XHkx6.Jgt2Ku",
+    "preferences": [],
+    "created_at": "2026-08-19T00:00:00"
+  },
+  {
+    "id": "57df5520dfa1",
+    "full_name": "Naomie",
+    "email": "naomitankoua49@gmail.com",
+    "password_hash": "$2b$12$x7rVTRJ8WLrRu5LFDNE5HOPwAFZkh2oDb/4C9zJPbGLl9O5ICg7ue",
+    "preferences": [
+      "food",
+      "culture"
+    ],
+    "created_at": "2026-08-22T00:00:00"
+  },
+  {
+    "id": "2a481b6e78f0",
+    "full_name": "Amina",
+    "email": "boubakaryamina119@gmail.com",
+    "password_hash": "$2b$12$RdirytjOjHg9XhISk5aPpOf4TFFSGHbyMHzfgWN3oqxFBXPunSA2e",
+    "preferences": [
+      "food",
+      "culture"
+    ],
+    "created_at": "2026-08-25T00:00:00"
+  },
+  {
+    "id": "6668c710437d",
+    "full_name": "Tankoua Naomi",
+    "email": "naomitankoua@gmail.com",
+    "password_hash": "$2b$12$J.z3coAyCMaV45LHeJaCKO7.PXRWLZ/q86qRNgT6ew8G5ckJ2TQsi",
+    "preferences": [
+      "food",
+      "culture",
+      "events",
+      "relax",
+      "shopping",
+      "art"
+    ],
+    "created_at": "2026-08-28T00:00:00"
+  },
+  {
+    "id": "960e28952093",
+    "full_name": "Janel",
+    "email": "mariepierreondoua83@gmail.com",
+    "password_hash": "$2b$12$EXJkoi5jnSCfvIl56RbqiuTdCsdbCfyZjJjr3B2M7v6Jo/.x5uJlG",
+    "preferences": [
+      "food",
+      "sport",
+      "culture"
+    ],
+    "created_at": "2026-08-31T00:00:00"
+  },
+  {
+    "id": "9f0608e3b756",
+    "full_name": "bruno",
+    "email": "brunoero@gmail.com",
+    "password_hash": "$2b$12$67Co.HgX8FtIvPcF1Rc6zOps7YRTu3BEPaPdbPtXR08KksZLw/GeG",
+    "preferences": [
+      "food",
+      "culture"
+    ],
+    "created_at": "2026-07-30T00:00:00"
+  },
+  {
+    "id": "8ef75972d838",
+    "full_name": "Tuheu Tchoubi Pempeme Moussa Fahdil",
+    "email": "tuheu.moussa@ictuniversity.edu.cm",
+    "password_hash": "$2b$12$Pvjwedx..hEnIcdp.GWPi.cgMpU2.qrqQfDL/vA0FXA5vWWmS1wMO",
+    "preferences": [],
+    "google_sub": "105408011326865996565",
+    "created_at": "2026-08-02T00:00:00"
+  },
+  {
+    "id": "fc31cd49043d",
+    "full_name": "admin",
+    "email": "kali@gmail.com",
+    "password_hash": "$2b$12$H.C9f9xmcfOWLGtgExwpgek.uyuvEpH7DRyDraEZW/s8NYah0wEmW",
+    "preferences": [
+      "relax",
+      "nature"
+    ],
+    "created_at": "2026-08-05T00:00:00"
+  },
+  {
+    "id": "9f58f8f4e938",
+    "full_name": "Atsimbom mabemando Joshua",
+    "email": "atsimbom.joshua@ictuniversity.edu.cm",
+    "password_hash": "$2b$12$g./0C0O0MPXLjkJ3WfBLc.4rxBTBhfzb5wdrNy9iXvAP7QUWmhypK",
+    "preferences": [],
+    "google_sub": "115878846503747082881",
+    "created_at": "2026-08-08T00:00:00"
+  },
+  {
+    "id": "74d914959593",
+    "full_name": "Moussa Fahdil Tuheu Tchoubi Pempeme",
+    "email": "tuheu.moussa@gmail.com",
+    "password_hash": "$2b$12$I913i1XkY0EaOC4ouiSBP.8xJhtnX3Z3jhz0JrldoEpIeF78bFFnm",
+    "preferences": [],
+    "google_sub": "108399666534877249396",
+    "created_at": "2026-08-11T00:00:00"
+  },
+  {
+    "id": "783d269f7fc8",
+    "full_name": "GAETAN FOSSOUO KENGNE",
+    "email": "fkengnegaetan@gmail.com",
+    "password_hash": "$2b$12$sNh3rRohhWr7YsqyKkEbFejpbyLWRmEVy5Mw2ydln5Iwc5rEFUR72",
+    "preferences": [],
+    "google_sub": "113945219373167136623",
+    "created_at": "2026-08-14T00:00:00"
+  },
+  {
+    "id": "828391a70eb7",
+    "full_name": "GAETAN FOSSOUO KENGNE",
+    "email": "fkengnegaetan@gmail.com",
+    "password_hash": "$2b$12$dwdHWmC7ADGuuoIEX2i3qewN6RZqh7a6h96KNQLJvEYzxVKU449Qe",
+    "preferences": [],
+    "google_sub": "113945219373167136623",
+    "created_at": "2026-08-17T00:00:00"
+  },
+  {
+    "id": "0caa2d265636",
+    "full_name": "Kamdeu Yamdjeuson Neil Marshall",
+    "email": "kamdeu.neil@ictuniversity.edu.cm",
+    "password_hash": "$2b$12$VqnAOqx6sTgRZ8MRHPqROeRLqGhNdzlH0fjLX/sN5D0NLtRExiYBm",
+    "preferences": [],
+    "google_sub": "109091951254242854626",
+    "created_at": "2026-08-20T00:00:00"
+  },
+  {
+    "id": "2491d9c90660",
+    "full_name": "Kamdeu",
+    "email": "kamdeu7@gmail.com",
+    "password_hash": "$2b$12$zbBSjA.wAZJARb0Uwf2X5OTcAfbKCINPvZr4tY1FS6tdMdrB1nY3y",
+    "preferences": [],
+    "google_sub": "101272640627591171498",
+    "created_at": "2026-08-23T00:00:00"
+  },
+  {
+    "id": "96001bbad017",
+    "full_name": "Lito jean",
+    "email": "litojean@gnail.com",
+    "password_hash": "$2b$12$WMzV7tf7gZOfZ0vI0RbsrufHhZrt6jZCgrXUfpv6xwBXvcWsAghAm",
+    "preferences": [],
+    "created_at": "2026-08-26T00:00:00"
+  },
+  {
+    "id": "befe5d3a518c",
+    "full_name": "Daniel Victor",
+    "email": "dv1861371@gmail.com",
+    "password_hash": "$2b$12$R2i.fjEPIKWKXuPJqv6Y6uHlLRgKjAB/2haxlHM.FKOQ0vHRH81rS",
+    "preferences": [],
+    "google_sub": "113258773778201074879",
+    "created_at": "2026-08-29T00:00:00"
+  },
+  {
+    "id": "d489af1b5bde",
+    "full_name": "Tito dadju",
+    "email": "titodadju@gmail.com",
+    "password_hash": "$2b$12$6LXBVxJjZfppGuFgBmv24umCElJM4bzQEnZ4Iv/k9W9jbu3PqV9NW",
+    "preferences": [],
+    "created_at": "2026-07-28T00:00:00"
+  },
+  {
+    "id": "a061d0f4b7ec",
+    "full_name": "kiki",
+    "email": "kikidebongui@gmail.com",
+    "password_hash": "$2b$12$Vp7KIg9I3QpjgG.ZOTbD/eqyp5tEY0bK8S5W.MQR4X.Ynwz782yYy",
+    "preferences": [
+      "history"
+    ],
+    "created_at": "2026-07-31T00:00:00"
+  },
+  {
+    "id": "baf008c3ac98",
+    "full_name": "KWETE NGNOUBA Junior Rayan",
+    "email": "kwete.ngnouba@ictuniversity.edu.cm",
+    "password_hash": "$2b$12$yv/8pX5686MsGgt6fqUU3uXqhVN5WBda9u3Ym1ELtOhcw.OxieOh6",
+    "preferences": [],
+    "google_sub": "108369218619380086875",
+    "created_at": "2026-08-03T00:00:00"
+  },
+  {
+    "id": "0bda59a49e3c",
+    "full_name": "Junior Kwete",
+    "email": "kwetejunior9@gmail.com",
+    "password_hash": "$2b$12$fnNpFzRJ/WchRbYM3el2DujEK7ODRQ/VsGwc/8N/vKXC9KL8cU61i",
+    "preferences": [],
+    "google_sub": "114853404733117769513",
+    "created_at": "2026-08-06T00:00:00"
+  },
+  {
+    "id": "85222c9bf9fc",
+    "full_name": "Raphaëlle-Emma Nga Ndzana",
+    "email": "raphaelleemmangandzana@gmail.com",
+    "password_hash": "$2b$12$ZyLhnbWFqll3QGk.bMj5cuKkUu0IM9kp8dcctiZPjhHEr8P4wnbYW",
+    "preferences": [],
+    "google_sub": "104495866226257761299",
+    "created_at": "2026-08-09T00:00:00"
+  },
+  {
+    "id": "d14639462606",
+    "full_name": "Saoul",
+    "email": "saoul018@gmail.com",
+    "password_hash": "$2b$12$rlnKRP1TjcmsGUqFk.caW.NwS6FShwKa741VUkQ0peVw10HqEoef6",
+    "preferences": [],
+    "google_sub": "105936238704104497818",
+    "created_at": "2026-08-12T00:00:00"
+  },
+  {
+    "id": "008bf5191a0c",
+    "full_name": "SOH RAOUL DARIL TANKAM",
+    "email": "daril.tankam@facsciences-uy1.cm",
+    "password_hash": "$2b$12$uqpBa21B9O.v1dbt2a6xHebe5q8EyK7Q8rCkqCcNKFRz6H7oOtfVa",
+    "preferences": [],
+    "google_sub": "104243295353180888338",
+    "created_at": "2026-08-15T00:00:00"
+  },
+  {
+    "id": "cbab972a37d8",
+    "full_name": "SaoulVPN",
+    "email": "saoulvpn@gmail.com",
+    "password_hash": "$2b$12$am0oIn70X2AMLnNI.phaLeu4ywvHJEKEmRhkaBortimCdhUNry3eS",
+    "preferences": [],
+    "google_sub": "100859155883069341275",
+    "created_at": "2026-08-18T00:00:00"
+  },
+  {
+    "id": "7648b1262fbb",
+    "full_name": "Tankam Soh Raoul Daril",
+    "email": "tankam.soh@ictuniversity.edu.cm",
+    "password_hash": "$2b$12$ZIdLZc3wW05jyUPzJsh74umN0Zl1CHSQ9h2DZomqeLV7a9BbUmC9G",
+    "preferences": [],
+    "google_sub": "112239810181332116533",
+    "created_at": "2026-08-21T00:00:00"
+  },
+  {
+    "id": "75775e5e7ab5",
+    "full_name": "raouldarilt",
+    "email": "raouldarilt@gmail.com",
+    "password_hash": "$2b$12$tE7aUW5OmZ45CLAa9rF52uYUFXhX12zeoGgG7DboqH1PzmcO4muHa",
+    "preferences": [],
+    "google_sub": "101205453778411227971",
+    "created_at": "2026-08-24T00:00:00"
+  },
+  {
+    "id": "ae313c486875",
+    "full_name": "Saoulforotheruse",
+    "email": "saoulforotheruse@gmail.com",
+    "password_hash": "$2b$12$xAEfmdndqMl1Y.Bq2RYbFu1xXMTolTlCYYUCPsxm4Zu/fRJTquZ06",
+    "preferences": [],
+    "google_sub": "116171100037884384711",
+    "created_at": "2026-08-27T00:00:00"
+  },
+  {
+    "id": "48acd9c13858",
+    "full_name": "Kwake Arabella Aza",
+    "email": "kwake.arabella@ictuniversity.edu.cm",
+    "password_hash": "$2b$12$gAJXAB2Rh45AOjr5QrEHFuWg4mZlhKMsbUUnmuZy8CPHaW49K9Cim",
+    "preferences": [],
+    "google_sub": "110616217992826421815",
+    "created_at": "2026-08-30T00:00:00"
+  },
+  {
+    "id": "0469d4174b61",
+    "full_name": "NGAMENI YOUDJEU ETHEL RYAN",
+    "email": "ngameni.youdjeu@ictuniversity.edu.cm",
+    "password_hash": "$2b$12$CdD/KrXb0uQAXVk3MvhN.Ou9Osd98SM6gYbZrMlMChtLX21TmFpw6",
+    "preferences": [],
+    "google_sub": "113805943249078303089",
+    "created_at": "2026-07-29T00:00:00"
+  },
+  {
+    "id": "1ae34f09dab4",
+    "full_name": "Njoh Priso",
+    "email": "elwillisz058@gmail.com",
+    "password_hash": "$2b$12$dG1alHDUKosgxFjFGJ5KCuVYuk.U.C259hzLnQUGzoJsgvj6Mlllu",
+    "preferences": [
+      "food",
+      "art",
+      "sport",
+      "events"
+    ],
+    "created_at": "2026-08-01T00:00:00"
+  },
+  {
+    "id": "76b62e40fb59",
+    "full_name": "EYONG SEANNA TABE",
+    "email": "eyong.seanna@ictuniversity.edu.cm",
+    "password_hash": "$2b$12$t0Nr9O3jlayb0xnR3eUtN.yQezZuucJGPK.l4GNTgvVT0W7iD/Lae",
+    "preferences": [],
+    "google_sub": "109650038168306515262",
+    "created_at": "2026-08-04T00:00:00"
+  },
+  {
+    "id": "8eac753d92a8",
+    "full_name": "Tchoubi Pierre",
+    "email": "tchoubipierre1@gmail.com",
+    "password_hash": "$2b$12$yt4iM666u9i30G4rZeEGCOy5PmypPtEWhQdMRvjqP6y07VlKnXIje",
+    "preferences": [],
+    "google_sub": "117912586779575059991",
+    "created_at": "2026-08-07T00:00:00"
+  },
+  {
+    "id": "b4c4e3358557",
+    "full_name": "Tchoubi Pierre",
+    "email": "tchoubipierre456@gmail.com",
+    "password_hash": "$2b$12$fftp6RWmIkoLIi4NBpkJbuQ55/YkYXJa3P5V00vPya9aHgAQArQjG",
+    "preferences": [],
+    "google_sub": "107176087587875926681",
+    "created_at": "2026-08-10T00:00:00"
+  },
+  {
+    "id": "3678b3bea66f",
+    "full_name": "Pierre Tchoubi",
+    "email": "tchoubipierre0000@gmail.com",
+    "password_hash": "$2b$12$oK3og6GMo3LqxW49UBmLDOhwCjobA6QWs5zeyaDJwTp5g0SBpRMR6",
+    "preferences": [],
+    "google_sub": "115578428474971240656",
+    "created_at": "2026-08-13T00:00:00"
+  },
+  {
+    "id": "cd2de2cde895",
+    "full_name": "glory",
+    "email": "glory@example.com",
+    "password_hash": "$2b$12$0ceNqGV1zCtWgJauq/7SmuadSG.EKYxvD.yIuXmIGbTS6Zei8ZboC",
+    "preferences": [
+      "culture",
+      "history",
+      "nature",
+      "art"
+    ],
+    "created_at": "2026-08-16T00:00:00"
+  },
+  {
+    "id": "7efa7f249a39",
+    "full_name": "Yann",
+    "email": "yann@gmail.com",
+    "password_hash": "$2b$12$g1O6/jjLdQx1rpeoOEZQd.Y0xtowGik.V.eJR82o0X1Rm6CPVH7Ze",
+    "preferences": [
+      "food",
+      "culture",
+      "nature",
+      "history",
+      "art",
+      "shopping",
+      "nightlife",
+      "family",
+      "relax",
+      "romance",
+      "photo",
+      "sport",
+      "wildlife",
+      "hiking",
+      "luxury",
+      "events"
+    ],
+    "created_at": "2026-08-19T00:00:00"
+  },
+  {
+    "id": "d587fadf9ee1",
+    "full_name": "Dylan Bagnawe",
+    "email": "dylanbagnawe@gmail.com",
+    "password_hash": "$2b$12$N4CpwH.2dPR5p5wZT24M9.p2Vj6m.uBDWDxLNSUjjW1/ay5Kd.xLW",
+    "preferences": [],
+    "google_sub": "106208730992557302153",
+    "created_at": "2026-08-22T00:00:00"
+  },
+  {
+    "id": "96c02180c708",
+    "full_name": "Elisabeth Ahanda",
+    "email": "eliz08.ahanda@gmail.com",
+    "password_hash": "$2b$12$rk8PEhHJ2E8qYuPj8ngLLOcvXUwAcijMoLC/rKQ3BOPnzVxv.Paqi",
+    "preferences": [],
+    "google_sub": "108351924043238870251",
+    "created_at": "2026-08-25T00:00:00"
+  },
+  {
+    "id": "99c3c27a0e0d",
+    "full_name": "Anime World",
+    "email": "ngameniryan237@gmail.com",
+    "password_hash": "$2b$12$dcYk4MfFp3dObjR4MT8Zzu6kyXKmqhfE3tifh2p9F4Z.EgUBKo0e.",
+    "preferences": [],
+    "google_sub": "108641391784964504404",
+    "created_at": "2026-08-28T00:00:00"
+  },
+  {
+    "id": "4b64c584a414",
+    "full_name": "Sunita Naah",
+    "email": "sunitaformu2007@gmail.com",
+    "password_hash": "$2b$12$/yQp0Gl8RFBW.0BluKCXi.OW3xQDKn1eK.bj0w5xHPiSRPCXKtABy",
+    "preferences": [
+      "food",
+      "history",
+      "romance",
+      "wildlife",
+      "events",
+      "nature",
+      "shopping",
+      "relax",
+      "photo"
+    ],
+    "created_at": "2026-08-31T00:00:00"
+  },
+  {
+    "id": "c01b0674f84c",
+    "full_name": "Sheilla Djuikem",
+    "email": "sheilladjuikem@gmail.com",
+    "password_hash": "$2b$12$bii/WKDfrP3RjJ0MJicxKeTJJ9hUMjuhUtqg.ZfKLegN5YPP5ISQG",
+    "preferences": [],
+    "google_sub": "109572101737965152286",
+    "created_at": "2026-07-30T00:00:00"
+  }
+]

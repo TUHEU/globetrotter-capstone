@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 
 from .config import (
     USERS_FILE, REVIEWS_FILE, FAVORITES_FILE, FOLLOWS_FILE, MESSAGES_FILE,
-    NOTIFICATIONS_FILE, DATA_DIR,
+    NOTIFICATIONS_FILE, LOGIN_EVENTS_FILE, DATA_DIR,
 )
 
 _lock = threading.Lock()
@@ -58,11 +58,29 @@ def find_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
 
 
 def create_user(user: Dict[str, Any]) -> Dict[str, Any]:
+    # Every newly-created account gets a real creation timestamp so public
+    # analytics can report weekly signups without inventing dates.
+    user.setdefault("created_at", datetime.now(timezone.utc).isoformat())
     with _lock:
         users = get_users()
         users.append(user)
         _write(USERS_FILE, users)
     return user
+
+
+def record_login(user_id: str) -> Dict[str, Any]:
+    """Record one successful login event. Only the user id and timestamp are
+    stored; public stats aggregate these records and never expose identities."""
+    event = {"user_id": user_id, "created_at": datetime.now(timezone.utc).isoformat()}
+    with _lock:
+        events = _read(LOGIN_EVENTS_FILE)
+        events.append(event)
+        _write(LOGIN_EVENTS_FILE, events)
+    return event
+
+
+def get_login_events() -> List[Dict[str, Any]]:
+    return _read(LOGIN_EVENTS_FILE)
 
 
 def find_or_create_google_user(email: str, full_name: str, google_sub: str) -> Dict[str, Any]:

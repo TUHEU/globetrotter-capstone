@@ -18,6 +18,7 @@ def isolated_data(tmp_path, monkeypatch):
     monkeypatch.setattr(storage, "FAVORITES_FILE", tmp_path / "favorites.json")
     monkeypatch.setattr(storage, "FOLLOWS_FILE", tmp_path / "follows.json")
     monkeypatch.setattr(storage, "MESSAGES_FILE", tmp_path / "messages.json")
+    monkeypatch.setattr(storage, "LOGIN_EVENTS_FILE", tmp_path / "login_events.json")
     monkeypatch.setattr(storage, "DATA_DIR", tmp_path)
     yield
 
