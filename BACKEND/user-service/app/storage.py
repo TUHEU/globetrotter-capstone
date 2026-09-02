@@ -14,7 +14,10 @@ from typing import Any, Dict, List, Optional
 
 from datetime import datetime, timezone
 
-from .config import USERS_FILE, REVIEWS_FILE, FAVORITES_FILE, FOLLOWS_FILE, MESSAGES_FILE, DATA_DIR
+from .config import (
+    USERS_FILE, REVIEWS_FILE, FAVORITES_FILE, FOLLOWS_FILE, MESSAGES_FILE,
+    NOTIFICATIONS_FILE, DATA_DIR,
+)
 
 _lock = threading.Lock()
 

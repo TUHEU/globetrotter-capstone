@@ -17,6 +17,7 @@ ROUTES = [
     ("/reviews", USER_SERVICE_URL),        # avis sur l'application
     ("/favorites", USER_SERVICE_URL),      # destinations sauvegardées
     ("/users", USER_SERVICE_URL),          # recherche d'utilisateurs (amis)
+    ("/notifications", USER_SERVICE_URL),  # cloche de notifications - routeur déjà prêt côté user-service, juste absent d'ici (404 permanent avant ce correctif)
     ("/follow", USER_SERVICE_URL),         # suivre / ne plus suivre
     ("/messages", USER_SERVICE_URL),       # messagerie directe
     ("/static/message_images", USER_SERVICE_URL),  # photos envoyées en message

@@ -62,6 +62,15 @@ services:
       - itinerary-service
     restart: unless-stopped
 
+  chat-service:
+    build: ./chat-service
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-globetrotter-phase2-secret-change-me}
+    volumes:
+      - ./chat-service/data:/app/data
+      - ./chat-service/static:/app/static  # photos/vidéos/audios envoyés dans le chat, sinon perdues à chaque redeploy (voir user-service/static plus bas pour le même souci)
+    restart: unless-stopped
+
   api-gateway:
     build: ./api-gateway
     ports:
@@ -71,9 +80,11 @@ services:
       ITINERARY_SERVICE_URL: http://itinerary-service:8002
       RECOMMENDATION_SERVICE_URL: http://recommendation-service:8003
       AI_SERVICE_URL: http://ai-service:8004
+      CHAT_SERVICE_URL: http://chat-service:8005
     depends_on:
       - user-service
       - itinerary-service
       - recommendation-service
       - ai-service
+      - chat-service
     restart: unless-stopped
