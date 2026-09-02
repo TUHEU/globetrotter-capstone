@@ -50,6 +50,14 @@ class FriendsProvider extends ChangeNotifier {
     }
   }
 
+  List<dynamic> _results(dynamic data) {
+    if (data is Map<String, dynamic>) {
+      final value = data['results'];
+      return value is List ? value : const [];
+    }
+    return data is List ? data : const [];
+  }
+
   Future<void> loadFollowLists() async {
     loadingLists = true;
     followListsError = null;
@@ -61,16 +69,16 @@ class FriendsProvider extends ChangeNotifier {
     String? firstError;
     try {
       final res = await ApiClient.instance.dio.get('/follow/following');
-      final raw = (res.data['results'] as List?) ?? const [];
-      following = raw.map((j) => Friend.fromJson(j)).toList();
+      final raw = _results(res.data);
+      following = raw.map((j) => Friend.fromJson(Map<String, dynamic>.from(j as Map))).toList();
     } catch (e) {
       firstError = 'following: $e';
     }
 
     try {
       final res = await ApiClient.instance.dio.get('/follow/followers');
-      final raw = (res.data['results'] as List?) ?? const [];
-      followers = raw.map((j) => Friend.fromJson(j)).toList();
+      final raw = _results(res.data);
+      followers = raw.map((j) => Friend.fromJson(Map<String, dynamic>.from(j as Map))).toList();
     } catch (e) {
       firstError ??= 'followers: $e';
     }
@@ -81,6 +89,7 @@ class FriendsProvider extends ChangeNotifier {
   }
 
   Future<void> follow(Friend user) async {
+    if (isFollowing(user.id)) return;
     // Mise à jour optimiste, comme FavoritesProvider.toggle().
     following = [...following, user];
     // Disparaît aussi de "Découvrir" - suivre quelqu'un depuis cet écran ne
@@ -98,6 +107,7 @@ class FriendsProvider extends ChangeNotifier {
 
   Future<void> unfollow(String userId) async {
     final removed = following.where((f) => f.id == userId).toList();
+    if (removed.isEmpty) return;
     following = following.where((f) => f.id != userId).toList();
     notifyListeners();
     try {
