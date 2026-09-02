@@ -10,6 +10,7 @@ class FriendsProvider extends ChangeNotifier {
   bool searching = false;
   bool loadingLists = false;
   bool loadingDiscover = false;
+  String? followListsError;
 
   Set<String> get followingIds => following.map((f) => f.id).toSet();
   bool isFollowing(String userId) => followingIds.contains(userId);
@@ -51,21 +52,32 @@ class FriendsProvider extends ChangeNotifier {
 
   Future<void> loadFollowLists() async {
     loadingLists = true;
+    followListsError = null;
     notifyListeners();
+
+    // Do not use one Future.wait for both calls: if only /followers fails,
+    // the old code discarded the successful /following response too and the
+    // UI looked completely empty. Each list is refreshed independently.
+    String? firstError;
     try {
-      final res = await Future.wait([
-        ApiClient.instance.dio.get('/follow/following'),
-        ApiClient.instance.dio.get('/follow/followers'),
-      ]);
-      following = (res[0].data['results'] as List).map((j) => Friend.fromJson(j)).toList();
-      followers = (res[1].data['results'] as List).map((j) => Friend.fromJson(j)).toList();
-    } catch (_) {
-      // Pas connecté / erreur réseau : on garde les listes précédentes plutôt
-      // que de les vider brutalement.
-    } finally {
-      loadingLists = false;
-      notifyListeners();
+      final res = await ApiClient.instance.dio.get('/follow/following');
+      final raw = (res.data['results'] as List?) ?? const [];
+      following = raw.map((j) => Friend.fromJson(j)).toList();
+    } catch (e) {
+      firstError = 'following: $e';
     }
+
+    try {
+      final res = await ApiClient.instance.dio.get('/follow/followers');
+      final raw = (res.data['results'] as List?) ?? const [];
+      followers = raw.map((j) => Friend.fromJson(j)).toList();
+    } catch (e) {
+      firstError ??= 'followers: $e';
+    }
+
+    followListsError = firstError;
+    loadingLists = false;
+    notifyListeners();
   }
 
   Future<void> follow(Friend user) async {
@@ -101,6 +113,7 @@ class FriendsProvider extends ChangeNotifier {
     following = [];
     followers = [];
     discover = [];
+    followListsError = null;
     notifyListeners();
   }
 }

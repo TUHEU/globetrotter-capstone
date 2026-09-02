@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:dio/dio.dart';
@@ -12,6 +13,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -75,6 +77,7 @@ class GlobalChatScreen extends StatefulWidget {
 class _GlobalChatScreenState extends State<GlobalChatScreen> {
   WebSocketChannel? _channel;
   StreamSubscription? _sub;
+  Timer? _reconnectTimer;
   bool _connected = false;
   bool _connecting = false;
 
@@ -89,6 +92,8 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
   final _player = AudioPlayer();
   bool _recording = false;
   String? _recPath;
+  StreamSubscription<Uint8List>? _recordStreamSub;
+  BytesBuilder? _recordBytes;
   String? _playingUrl;
   bool _isPlaying = false;
   Duration _pos = Duration.zero, _dur = Duration.zero;
@@ -111,6 +116,8 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
 
   @override
   void dispose() {
+    _reconnectTimer?.cancel();
+    _recordStreamSub?.cancel();
     _sub?.cancel();
     _channel?.sink.close();
     _textCtrl.dispose();
@@ -122,41 +129,72 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
 
   // ── WS ──────────────────────────────────────────────────────────────────
   Future<void> _connect() async {
-    if (_connecting) return;
+    if (_connecting || !mounted) return;
+    _reconnectTimer?.cancel();
     setState(() { _connecting = true; _connected = false; });
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token') ?? '';
+    if (token.isEmpty) {
+      if (mounted) {
+        setState(() => _connecting = false);
+        _snack('Session expirée. Reconnectez-vous.');
+      }
+      return;
+    }
 
-    // Load history
+    // Load history first. If this fails in production it usually means the
+    // Nginx /chat route is not forwarded to the API gateway. Do not swallow
+    // the error silently: the user needs a useful status.
     try {
       final res = await ApiClient.instance.dio.get('/chat/history');
-      final list = (res.data['messages'] as List)
-          .map((m) => _ChatMsg.fromJson(m as Map<String, dynamic>))
+      final rawList = (res.data['messages'] as List?) ?? const [];
+      final list = rawList
+          .map((m) => _ChatMsg.fromJson(Map<String, dynamic>.from(m as Map)))
           .toList();
-      setState(() { _msgs.clear(); _msgs.addAll(list); });
-      _jumpBottom();
-    } catch (_) {}
+      if (mounted) {
+        setState(() { _msgs.clear(); _msgs.addAll(list); });
+        _jumpBottom();
+      }
+    } on DioException catch (e) {
+      if (mounted) {
+        final status = e.response?.statusCode;
+        _snack(status == 404
+            ? 'Chat indisponible: route /chat non configurée sur le serveur.'
+            : 'Impossible de charger le chat (${status ?? 'réseau'}).');
+      }
+    }
 
-    // Connect WebSocket
     final wsBase = ApiConstants.baseUrl
         .replaceFirst('https://', 'wss://')
         .replaceFirst('http://', 'ws://');
     try {
-      _channel = WebSocketChannel.connect(Uri.parse('$wsBase/ws/chat?token=$token'));
-      await _channel!.ready;
+      await _sub?.cancel();
+      await _channel?.sink.close();
+      _channel = WebSocketChannel.connect(
+          Uri.parse('$wsBase/ws/chat?token=${Uri.encodeQueryComponent(token)}'));
+      await _channel!.ready.timeout(const Duration(seconds: 10));
+      if (!mounted) return;
       setState(() { _connected = true; _connecting = false; });
-      _sub = _channel!.stream.listen(_onMsg,
-          onError: (_) => _reconnect(), onDone: _reconnect);
+      _sub = _channel!.stream.listen(
+        _onMsg,
+        onError: (_) => _scheduleReconnect(),
+        onDone: _scheduleReconnect,
+        cancelOnError: true,
+      );
     } catch (_) {
-      setState(() => _connecting = false);
-      _reconnect();
+      if (mounted) setState(() => _connecting = false);
+      _scheduleReconnect();
     }
   }
 
-  void _reconnect() {
-    setState(() => _connected = false);
-    Future.delayed(const Duration(seconds: 3), _connect);
+  void _scheduleReconnect() {
+    if (!mounted) return;
+    if (_connected || _connecting) {
+      setState(() { _connected = false; _connecting = false; });
+    }
+    _reconnectTimer?.cancel();
+    _reconnectTimer = Timer(const Duration(seconds: 3), _connect);
   }
 
   void _onMsg(dynamic raw) {
@@ -208,25 +246,45 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
   }
 
   Future<void> _pickImage() async {
-    final f = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 80);
+    final f = await ImagePicker().pickImage(
+        source: ImageSource.gallery, imageQuality: 80);
     if (f == null) return;
-    await _upload(f.path, f.mimeType ?? 'image/jpeg', 'image');
+    final ct = f.mimeType ?? _mime(f.name.split('.').last, fallback: 'image/jpeg');
+    if (kIsWeb) {
+      await _uploadBytes(await f.readAsBytes(), f.name, ct, 'image');
+    } else {
+      await _uploadPath(f.path, f.name, ct, 'image');
+    }
   }
 
   Future<void> _pickVideo() async {
     final f = await ImagePicker().pickVideo(source: ImageSource.gallery);
     if (f == null) return;
-    await _upload(f.path, 'video/mp4', 'video');
+    final ct = f.mimeType ?? _mime(f.name.split('.').last, fallback: 'video/mp4');
+    if (kIsWeb) {
+      await _uploadBytes(await f.readAsBytes(), f.name, ct, 'video');
+    } else {
+      await _uploadPath(f.path, f.name, ct, 'video');
+    }
   }
 
   Future<void> _pickFile() async {
-    final files = await FilePicker.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['mp3', 'ogg', 'wav', 'm4a', 'aac', 'mp4', 'mov', 'webm']);
-    if (files.isEmpty || files.first.path == null) return;
-    final f = files.first;
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['mp3', 'ogg', 'wav', 'm4a', 'aac', 'mp4', 'mov', 'webm'],
+      withData: kIsWeb,
+    );
+    if (result == null || result.files.isEmpty) return;
+    final f = result.files.first;
     final ct = _mime(f.extension ?? '');
-    await _upload(f.path!, ct, ct.startsWith('audio') ? 'audio' : 'video');
+    final kind = ct.startsWith('audio') ? 'audio' : 'video';
+    if (kIsWeb) {
+      final bytes = f.bytes;
+      if (bytes == null) { _snack('Impossible de lire ce fichier sur le web.'); return; }
+      await _uploadBytes(bytes, f.name, ct, kind);
+    } else if (f.path != null) {
+      await _uploadPath(f.path!, f.name, ct, kind);
+    }
   }
 
   Future<void> _sendLocation() async {
@@ -246,47 +304,130 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
   }
 
   Future<void> _startRec() async {
-    if (kIsWeb) { _snack('Non disponible sur web'); return; }
-    if (!await _recorder.hasPermission()) { _snack('Permission micro refusée'); return; }
-    final tmp = await _tmpPath();
-    _recPath = '$tmp/voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
-    await _recorder.start(const RecordConfig(encoder: AudioEncoder.aacLc), path: _recPath!);
-    setState(() => _recording = true);
+    if (!await _recorder.hasPermission()) {
+      _snack('Permission micro refusée');
+      return;
+    }
+    try {
+      if (kIsWeb) {
+        _recordBytes = BytesBuilder(copy: false);
+        final stream = await _recorder.startStream(
+          const RecordConfig(
+            encoder: AudioEncoder.pcm16bits,
+            sampleRate: 44100,
+            numChannels: 1,
+          ),
+        );
+        _recordStreamSub = stream.listen((chunk) => _recordBytes?.add(chunk));
+      } else {
+        final dir = await getTemporaryDirectory();
+        _recPath = '${dir.path}/voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
+        await _recorder.start(
+          const RecordConfig(encoder: AudioEncoder.aacLc),
+          path: _recPath!,
+        );
+      }
+      if (mounted) setState(() => _recording = true);
+    } catch (e) {
+      _snack('Impossible de démarrer le micro: $e');
+    }
   }
 
   Future<void> _stopRec() async {
-    final p = await _recorder.stop();
-    setState(() => _recording = false);
-    if (p != null) await _upload(p, 'audio/x-m4a', 'audio');
-  }
-
-  Future<String> _tmpPath() async {
-    if (kIsWeb) return '/tmp';
-    // Use app temp dir on mobile/desktop
     try {
-      final dir = await _getTempDirectory();
-      return dir;
-    } catch (_) { return '/tmp'; }
+      final p = await _recorder.stop();
+      if (mounted) setState(() => _recording = false);
+      if (kIsWeb) {
+        await _recordStreamSub?.cancel();
+        _recordStreamSub = null;
+        final bytes = _recordBytes?.takeBytes() ?? Uint8List(0);
+        _recordBytes = null;
+        if (bytes.isNotEmpty) {
+          final wav = _pcm16ToWav(bytes, sampleRate: 44100, channels: 1);
+          await _uploadBytes(
+            wav,
+            'voice_${DateTime.now().millisecondsSinceEpoch}.wav',
+            'audio/wav',
+            'audio',
+          );
+        }
+      } else if (p != null) {
+        await _uploadPath(p, p.split(RegExp(r'[\\/]')).last, 'audio/x-m4a', 'audio');
+      }
+    } catch (e) {
+      if (mounted) setState(() => _recording = false);
+      _snack('Erreur enregistrement: $e');
+    }
   }
 
-  Future<String> _getTempDirectory() async {
-    // Dynamically call path_provider to avoid web issues
-    // On web this code is unreachable because kIsWeb guard above
-    return '/tmp'; // overridden per-platform by path_provider import below
+  Uint8List _pcm16ToWav(Uint8List pcm, {required int sampleRate, required int channels}) {
+    const bitsPerSample = 16;
+    final byteRate = sampleRate * channels * (bitsPerSample ~/ 8);
+    final blockAlign = channels * (bitsPerSample ~/ 8);
+    final out = BytesBuilder(copy: false);
+    final header = ByteData(44);
+
+    void ascii(int offset, String value) {
+      for (var i = 0; i < value.length; i++) {
+        header.setUint8(offset + i, value.codeUnitAt(i));
+      }
+    }
+
+    ascii(0, 'RIFF');
+    header.setUint32(4, 36 + pcm.length, Endian.little);
+    ascii(8, 'WAVE');
+    ascii(12, 'fmt ');
+    header.setUint32(16, 16, Endian.little);
+    header.setUint16(20, 1, Endian.little); // PCM
+    header.setUint16(22, channels, Endian.little);
+    header.setUint32(24, sampleRate, Endian.little);
+    header.setUint32(28, byteRate, Endian.little);
+    header.setUint16(32, blockAlign, Endian.little);
+    header.setUint16(34, bitsPerSample, Endian.little);
+    ascii(36, 'data');
+    header.setUint32(40, pcm.length, Endian.little);
+
+    out.add(header.buffer.asUint8List());
+    out.add(pcm);
+    return out.takeBytes();
   }
 
-  Future<void> _upload(String path, String ct, String kind) async {
+  Future<void> _uploadPath(
+      String path, String filename, String ct, String kind) async {
+    final file = await MultipartFile.fromFile(
+      path, filename: filename, contentType: DioMediaType.parse(ct));
+    await _uploadMultipart(file, ct, kind);
+  }
+
+  Future<void> _uploadBytes(
+      Uint8List bytes, String filename, String ct, String kind) async {
+    final file = MultipartFile.fromBytes(
+      bytes, filename: filename, contentType: DioMediaType.parse(ct));
+    await _uploadMultipart(file, ct, kind);
+  }
+
+  Future<void> _uploadMultipart(
+      MultipartFile file, String ct, String kind) async {
+    if (!_connected) {
+      _snack('Le chat est déconnecté. Reconnexion en cours…');
+      _scheduleReconnect();
+      return;
+    }
     _snack('Envoi…');
     try {
-      final form = FormData.fromMap({
-        'file': await MultipartFile.fromFile(path, filename: path.split('/').last,
-            contentType: DioMediaType.parse(ct)),
-      });
-      final res = await ApiClient.instance.dio.post('/chat/upload', data: form);
+      final form = FormData.fromMap({'file': file});
+      final res = await ApiClient.instance.dio.post(
+        '/chat/upload',
+        data: form,
+        options: Options(sendTimeout: const Duration(seconds: 60), receiveTimeout: const Duration(seconds: 60)),
+      );
       final url = res.data['url'] as String;
       _ws({'type': kind, 'text': '', 'media_url': url, 'media_content_type': ct});
+    } on DioException catch (e) {
+      final detail = e.response?.data is Map ? e.response?.data['detail'] : null;
+      _snack('Échec de l’envoi: ${detail ?? e.response?.statusCode ?? 'réseau'}');
     } catch (e) {
-      _snack('Erreur: ${e.toString().substring(0, 60)}');
+      _snack('Échec de l’envoi: $e');
     }
   }
 
@@ -318,11 +459,13 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
   void _snack(String m) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
 
-  String _mime(String ext) => const {
+  String _mime(String ext, {String fallback = 'application/octet-stream'}) => const {
     'mp3': 'audio/mpeg', 'ogg': 'audio/ogg', 'wav': 'audio/wav',
     'm4a': 'audio/x-m4a', 'aac': 'audio/aac',
     'mp4': 'video/mp4', 'mov': 'video/quicktime', 'webm': 'video/webm',
-  }[ext.toLowerCase()] ?? 'application/octet-stream';
+    'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png',
+    'webp': 'image/webp', 'gif': 'image/gif',
+  }[ext.toLowerCase()] ?? fallback;
 
   // ─────────────────────────────────────────────────────────────────────────
   // Build

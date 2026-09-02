@@ -113,7 +113,7 @@ ALLOWED_MIME = {
     "image/jpeg", "image/png", "image/webp", "image/gif",
     # Audio
     "audio/mpeg", "audio/ogg", "audio/mp4", "audio/wav",
-    "audio/x-m4a", "audio/aac",
+    "audio/x-m4a", "audio/aac", "audio/webm",
     # Video
     "video/mp4", "video/quicktime", "video/webm", "video/x-matroska",
 }
@@ -121,7 +121,7 @@ ALLOWED_MIME = {
 MIME_TO_KIND = {
     **{m: "image" for m in ("image/jpeg", "image/png", "image/webp", "image/gif")},
     **{m: "audio" for m in ("audio/mpeg", "audio/ogg", "audio/mp4", "audio/wav",
-                             "audio/x-m4a", "audio/aac")},
+                             "audio/x-m4a", "audio/aac", "audio/webm")},
     **{m: "video" for m in ("video/mp4", "video/quicktime", "video/webm",
                               "video/x-matroska")},
 }

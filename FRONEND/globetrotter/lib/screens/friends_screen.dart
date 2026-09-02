@@ -67,6 +67,18 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
       ),
       body: Column(
         children: [
+          if (friendsProvider.followListsError != null)
+            MaterialBanner(
+              content: Text(s.isFr
+                  ? 'Impossible de charger les abonnés. Vérifiez la route /follow du serveur.'
+                  : 'Could not load followers. Check the server /follow route.'),
+              actions: [
+                TextButton(
+                  onPressed: friendsProvider.loadFollowLists,
+                  child: Text(s.isFr ? 'RÉESSAYER' : 'RETRY'),
+                ),
+              ],
+            ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: TextField(

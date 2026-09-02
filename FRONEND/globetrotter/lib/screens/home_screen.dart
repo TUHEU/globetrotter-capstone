@@ -52,6 +52,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _index = 0;
   bool _hideBubble = false;
+  bool _hideMobileNav = false;
 
   @override
   void initState() {
@@ -138,10 +139,20 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: NotificationListener<UserScrollNotification>(
         onNotification: (n) {
-          if (n.direction == ScrollDirection.reverse && !_hideBubble) {
-            setState(() => _hideBubble = true);
-          } else if (n.direction == ScrollDirection.forward && _hideBubble) {
-            setState(() => _hideBubble = false);
+          if (n.direction == ScrollDirection.reverse) {
+            if (!_hideBubble || (!isWide && !_hideMobileNav)) {
+              setState(() {
+                _hideBubble = true;
+                if (!isWide) _hideMobileNav = true;
+              });
+            }
+          } else if (n.direction == ScrollDirection.forward) {
+            if (_hideBubble || (!isWide && _hideMobileNav)) {
+              setState(() {
+                _hideBubble = false;
+                if (!isWide) _hideMobileNav = false;
+              });
+            }
           }
           return false;
         },
@@ -184,13 +195,31 @@ class _HomeScreenState extends State<HomeScreen> {
       // Mobile bottom nav
       bottomNavigationBar: isWide
           ? null
-          : NavigationBar(
-              selectedIndex: _index,
-              onDestinationSelected: (i) => setState(() => _index = i),
-              destinations: navItems
-                  .map((e) => NavigationDestination(
-                      icon: Icon(e.icon), selectedIcon: Icon(e.activeIcon), label: e.label))
-                  .toList(),
+          : AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOut,
+              height: _hideMobileNav ? 0 : 80,
+              child: ClipRect(
+                child: OverflowBox(
+                  alignment: Alignment.topCenter,
+                  minHeight: 0,
+                  maxHeight: 80,
+                  child: NavigationBar(
+                    selectedIndex: _index,
+                    onDestinationSelected: (i) => setState(() {
+                      _index = i;
+                      _hideMobileNav = false;
+                      _hideBubble = false;
+                    }),
+                    destinations: navItems
+                        .map((e) => NavigationDestination(
+                            icon: Icon(e.icon),
+                            selectedIcon: Icon(e.activeIcon),
+                            label: e.label))
+                        .toList(),
+                  ),
+                ),
+              ),
             ),
       // FABs
       floatingActionButton: isWide

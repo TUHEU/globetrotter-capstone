@@ -24,6 +24,8 @@ DATA_DIRS=(
   "user-service/data"
   "itinerary-service/data"
   "recommendation-service/data"
+  "chat-service/data"
+  "chat-service/static"
 )
 
 # ---------- Couleurs pour la lisibilité ----------

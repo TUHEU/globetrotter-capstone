@@ -80,25 +80,12 @@ docker run -p 8005:8005 -e SECRET_KEY=your_secret globetrotter-chat
 {"type": "online", "count": 12}
 ```
 
-## nginx config (add to your VPS nginx)
-```nginx
-# WebSocket upgrade for chat
-location /ws/chat {
-    proxy_pass http://localhost:8005;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-    proxy_set_header Host $host;
-    proxy_read_timeout 86400;
-}
+## nginx config (production)
 
-location /chat/ {
-    proxy_pass http://localhost:8005;
-}
+`chat-service` is intentionally **not exposed on a host port** in Docker Compose.
+Nginx must therefore proxy chat traffic to the API Gateway on `127.0.0.1:4200`.
+Use the ready-to-copy file at `../nginx-fahglobe-routes.conf`.
 
-location /static/chat_uploads/ {
-    proxy_pass http://localhost:8005;
-}
-```
-
-Or route through the API gateway (port 4200) which already handles WebSocket proxying.
+Important routes are `/chat/`, `/ws/chat`, and `/static/chat_uploads/`.
+The same Nginx file also includes `/users`, `/follow`, `/messages`, and
+`/notifications`, which are required for followers and social features.
