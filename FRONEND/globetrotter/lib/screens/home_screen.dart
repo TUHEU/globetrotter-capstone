@@ -33,7 +33,7 @@ import 'itinerary_map_screen.dart';
 import 'login_screen.dart';
 import 'reviews_screen.dart';
 import 'settings_screen.dart';
-import 'global_chat_screen.dart';
+import 'chat_hub_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
@@ -110,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
       const _ExploreTab(),
       const _RecommendationsTab(),
       const _TripsTab(),
-      const GlobalChatScreen(),
+      const ChatHubScreen(),
       const _ProfileTab(),
     ];
 
@@ -373,7 +373,7 @@ class _DesktopSidebar extends StatelessWidget {
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const GlobalChatScreen())),
+                    MaterialPageRoute(builder: (_) => const ChatHubScreen())),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
                   child: Row(children: [
@@ -1550,7 +1550,7 @@ class _ProfileTab extends StatelessWidget {
                 subtitle: Text(s.isFr ? 'Discuter avec toute la communauté' : 'Chat with the whole community'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (_) => const GlobalChatScreen())),
+                    .push(MaterialPageRoute(builder: (_) => const ChatHubScreen())),
               ),
               ListTile(
                 leading: const Icon(Icons.settings_outlined),
