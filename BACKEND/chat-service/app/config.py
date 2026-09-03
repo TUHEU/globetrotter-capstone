@@ -19,3 +19,6 @@ MAX_UPLOAD_BYTES = 50 * 1024 * 1024
 
 # Keep only the last N messages in the JSON file (rolling window)
 MAX_STORED_MESSAGES = 500
+
+# Messages can be edited or deleted by their author only within this window
+EDIT_DELETE_WINDOW_SECONDS = 5 * 60

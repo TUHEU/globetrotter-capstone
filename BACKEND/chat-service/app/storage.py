@@ -1,13 +1,27 @@
 """Chat Service – JSON-file storage (rolling window, thread-safe)."""
 import json
 import threading
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from .config import DATA_DIR, MAX_STORED_MESSAGES
+from .config import DATA_DIR, MAX_STORED_MESSAGES, EDIT_DELETE_WINDOW_SECONDS
 
 MESSAGES_FILE = DATA_DIR / "messages.json"
 _lock = threading.Lock()
+
+
+def _within_edit_window(ts: str) -> bool:
+    """True if the message's `ts` (ISO 8601, UTC) is still inside the
+    edit/delete window (default 5 minutes)."""
+    try:
+        sent = datetime.fromisoformat(ts)
+        if sent.tzinfo is None:
+            sent = sent.replace(tzinfo=timezone.utc)
+    except (ValueError, TypeError):
+        return False
+    age = (datetime.now(timezone.utc) - sent).total_seconds()
+    return 0 <= age <= EDIT_DELETE_WINDOW_SECONDS
 
 
 def _read() -> List[Dict[str, Any]]:
@@ -42,20 +56,55 @@ def append_message(msg: Dict[str, Any]) -> None:
         _write(msgs)
 
 
-def delete_message(message_id: str, requester_id: str) -> bool:
-    """Delete a message. Only the author can delete their own message."""
+def delete_message(message_id: str, requester_id: str) -> str:
+    """Delete a message. Only the author can delete their own message, and
+    only within EDIT_DELETE_WINDOW_SECONDS of sending it.
+
+    Returns one of: "ok", "not_found", "forbidden", "expired".
+    """
     with _lock:
         msgs = _read()
-        new_msgs = []
-        found = False
+        target = None
         for m in msgs:
-            if m["id"] == message_id and m["user_id"] == requester_id:
-                found = True
-            else:
-                new_msgs.append(m)
-        if found:
-            _write(new_msgs)
-        return found
+            if m["id"] == message_id:
+                target = m
+                break
+        if target is None:
+            return "not_found"
+        if target["user_id"] != requester_id:
+            return "forbidden"
+        if not _within_edit_window(target.get("ts", "")):
+            return "expired"
+        new_msgs = [m for m in msgs if m["id"] != message_id]
+        _write(new_msgs)
+        return "ok"
+
+
+def edit_message(
+    message_id: str, requester_id: str, new_text: str
+) -> tuple[str, Optional[Dict[str, Any]]]:
+    """Edit the text of a text message. Only the author can edit their own
+    message, only within EDIT_DELETE_WINDOW_SECONDS, and only for text
+    messages (editing captions on media isn't supported).
+
+    Returns (status, updated_message_or_None) where status is one of:
+    "ok", "not_found", "forbidden", "expired", "not_editable".
+    """
+    with _lock:
+        msgs = _read()
+        for m in msgs:
+            if m["id"] == message_id:
+                if m["user_id"] != requester_id:
+                    return "forbidden", None
+                if m.get("type") != "text":
+                    return "not_editable", None
+                if not _within_edit_window(m.get("ts", "")):
+                    return "expired", None
+                m["text"] = new_text
+                m["edited"] = True
+                _write(msgs)
+                return "ok", dict(m)
+        return "not_found", None
 
 
 def add_reaction(

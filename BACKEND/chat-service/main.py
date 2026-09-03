@@ -8,12 +8,16 @@ Public group chat room where every registered user can:
   • Share video clips (MP4/MOV/WEBM)
   • Share their GPS location (lat/lng)
   • React with emoji to any message
-  • Delete their own messages
+  • Edit or delete their own text messages within 5 minutes of sending
 
-Transport: WebSocket (/ws/chat?token=<JWT>)
-REST:       POST /chat/upload   → media upload → returns URL
-            GET  /chat/history  → last N messages (auth required)
-            GET  /chat/online   → count of live connections
+Transport: WebSocket (/ws/chat?token=<JWT>) — types: text/image/audio/video/
+           location/delete/edit/react (send), message/delete/edit/reaction/
+           system/online/error (receive)
+REST:       POST   /chat/upload            → media upload → returns URL
+            GET    /chat/history           → last N messages (auth required)
+            GET    /chat/online            → count of live connections
+            DELETE /chat/messages/{id}     → delete own message (≤5 min)
+            PATCH  /chat/messages/{id}     → edit own text message (≤5 min)
 
 Run: uvicorn main:app --reload --host 0.0.0.0 --port 8005
 """
@@ -41,7 +45,13 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
 from app.config import SECRET_KEY, ALGORITHM, DATA_DIR, UPLOAD_DIR, MAX_UPLOAD_BYTES
-from app.storage import load_messages, append_message, delete_message, add_reaction
+from app.storage import (
+    load_messages,
+    append_message,
+    delete_message,
+    edit_message,
+    add_reaction,
+)
 from app.connection_manager import ConnectionManager
 
 logging.basicConfig(level=logging.INFO)
@@ -174,17 +184,40 @@ def online_count():
     return {"online": manager.count()}
 
 
+_DELETE_EDIT_ERRORS = {
+    "not_found": (404, "Message introuvable"),
+    "forbidden": (403, "Vous ne pouvez modifier que vos propres messages"),
+    "expired": (403, "Le délai de 5 minutes est dépassé"),
+    "not_editable": (400, "Ce type de message ne peut pas être modifié"),
+}
+
+
 @app.delete("/chat/messages/{message_id}")
 def remove_message(message_id: str, current=Depends(get_current_user)):
-    ok = delete_message(message_id, current["id"])
-    if not ok:
-        raise HTTPException(status_code=404, detail="Message not found or not yours")
+    status = delete_message(message_id, current["id"])
+    if status != "ok":
+        code, detail = _DELETE_EDIT_ERRORS[status]
+        raise HTTPException(status_code=code, detail=detail)
     # Broadcast deletion
     import asyncio
     asyncio.create_task(
         manager.broadcast(json.dumps({"type": "delete", "message_id": message_id}))
     )
     return {"deleted": True}
+
+
+@app.patch("/chat/messages/{message_id}")
+async def edit_message_rest(
+    message_id: str,
+    text: str = Query(..., min_length=1, max_length=4000),
+    current=Depends(get_current_user),
+):
+    status, updated = edit_message(message_id, current["id"], text.strip())
+    if status != "ok":
+        code, detail = _DELETE_EDIT_ERRORS[status]
+        raise HTTPException(status_code=code, detail=detail)
+    await manager.broadcast(json.dumps({"type": "edit", "message": updated}))
+    return {"message": updated}
 
 
 @app.post("/chat/messages/{message_id}/react")
@@ -240,14 +273,39 @@ async def websocket_chat(websocket: WebSocket, token: str = Query(...)):
 
             msg_type = payload.get("type", "text")
 
-            # ── Delete own message ──────────────────────────────────────
+            # ── Delete own message (within the edit/delete window) ───────
             if msg_type == "delete":
                 mid = payload.get("message_id", "")
-                ok = delete_message(mid, user["id"])
-                if ok:
+                status = delete_message(mid, user["id"])
+                if status == "ok":
                     await manager.broadcast(
                         json.dumps({"type": "delete", "message_id": mid})
                     )
+                else:
+                    _, detail = _DELETE_EDIT_ERRORS[status]
+                    await websocket.send_text(json.dumps({
+                        "type": "error", "action": "delete",
+                        "message_id": mid, "detail": detail,
+                    }))
+                continue
+
+            # ── Edit own text message (within the edit/delete window) ────
+            if msg_type == "edit":
+                mid = payload.get("message_id", "")
+                new_text = (payload.get("text") or "").strip()
+                if not mid or not new_text:
+                    continue
+                status, updated = edit_message(mid, user["id"], new_text)
+                if status == "ok":
+                    await manager.broadcast(
+                        json.dumps({"type": "edit", "message": updated})
+                    )
+                else:
+                    _, detail = _DELETE_EDIT_ERRORS[status]
+                    await websocket.send_text(json.dumps({
+                        "type": "error", "action": "edit",
+                        "message_id": mid, "detail": detail,
+                    }))
                 continue
 
             # ── Emoji reaction ──────────────────────────────────────────
