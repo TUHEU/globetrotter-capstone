@@ -42,6 +42,7 @@ class _ChatMsg {
   final Map<String, dynamic>? location;
   Map<String, List<String>> reactions;
   bool edited;
+  final Map<String, dynamic>? replyTo; // {id, user_name, type, text} snapshot
   final DateTime ts;
 
   // Author can edit/delete their own text message for this long after
@@ -61,6 +62,7 @@ class _ChatMsg {
     this.location,
     Map<String, List<String>>? reactions,
     this.edited = false,
+    this.replyTo,
     required this.ts,
   }) : reactions = reactions ?? {};
 
@@ -77,6 +79,7 @@ class _ChatMsg {
       location: j['location'] as Map<String, dynamic>?,
       reactions: raw.map((k, v) => MapEntry(k, List<String>.from(v as List))),
       edited: j['edited'] as bool? ?? false,
+      replyTo: j['reply_to'] as Map<String, dynamic>?,
       ts: DateTime.tryParse(j['ts'] as String? ?? '') ?? DateTime.now(),
     );
   }
@@ -104,6 +107,17 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
   bool _showEmoji = false;
   int _online = 0;
 
+  // Typing indicator: userId -> userName, each entry auto-expires a few
+  // seconds after the last "typing" event from that user (no explicit
+  // "stopped typing" event from the server, so a timeout is the signal).
+  final Map<String, String> _typingUsers = {};
+  final Map<String, Timer> _typingExpiry = {};
+  DateTime? _lastTypingSent;
+
+  // Message currently being replied to, shown as a preview above the
+  // input bar until sent or cancelled.
+  _ChatMsg? _replyTarget;
+
   // Audio
   final _recorder = AudioRecorder();
   final _player = AudioPlayer();
@@ -124,11 +138,24 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
     _myId = auth.user?.id ?? '';
     _myName = auth.user?.fullName ?? 'Explorateur';
     _connect();
+    _textCtrl.addListener(_onTextChanged);
     _player.onPositionChanged.listen((p) { if (mounted) setState(() => _pos = p); });
     _player.onDurationChanged.listen((d) { if (mounted) setState(() => _dur = d); });
     _player.onPlayerComplete.listen((_) {
       if (mounted) setState(() { _isPlaying = false; _playingUrl = null; _pos = Duration.zero; });
     });
+  }
+
+  void _onTextChanged() {
+    if (_textCtrl.text.trim().isEmpty) return;
+    final now = DateTime.now();
+    // Throttle to at most one "typing" event every 2.5s so a burst of
+    // keystrokes doesn't spam the socket.
+    if (_lastTypingSent != null && now.difference(_lastTypingSent!) < const Duration(milliseconds: 2500)) {
+      return;
+    }
+    _lastTypingSent = now;
+    _ws({'type': 'typing'});
   }
 
   @override
@@ -137,10 +164,14 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
     _recordStreamSub?.cancel();
     _sub?.cancel();
     _channel?.sink.close();
+    _textCtrl.removeListener(_onTextChanged);
     _textCtrl.dispose();
     _scroll.dispose();
     _recorder.dispose();
     _player.dispose();
+    for (final t in _typingExpiry.values) {
+      t.cancel();
+    }
     super.dispose();
   }
 
@@ -222,6 +253,10 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
         case 'message':
           final msg = _ChatMsg.fromJson(data['message'] as Map<String, dynamic>);
           _msgs.add(msg);
+          // They just sent a real message, so they're no longer "typing" -
+          // don't wait for the timeout to clear it.
+          _typingUsers.remove(msg.userId);
+          _typingExpiry.remove(msg.userId)?.cancel();
           // Only alert for messages from other people, and only when this
           // chat isn't the screen currently on-screen (no point pinging
           // someone about a message they're already looking at).
@@ -236,6 +271,17 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
             NotificationService.instance
                 .showMessage(title: msg.userName, body: preview);
           }
+          break;
+        case 'typing':
+          final uid = data['user_id'] as String? ?? '';
+          final uname = data['user_name'] as String? ?? '';
+          if (uid.isEmpty || uid == _myId) break;
+          _typingUsers[uid] = uname;
+          _typingExpiry.remove(uid)?.cancel();
+          _typingExpiry[uid] = Timer(const Duration(seconds: 4), () {
+            if (!mounted) return;
+            setState(() => _typingUsers.remove(uid));
+          });
           break;
         case 'system':
           _msgs.add(_ChatMsg(
@@ -281,13 +327,55 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
     _channel!.sink.add(json.encode(p));
   }
 
+  String _previewFor(String type, String text) => switch (type) {
+        'image' => '📷 Photo',
+        'audio' => '🎵 Message vocal',
+        'video' => '🎬 Vidéo',
+        'location' => '📍 Position',
+        _ => text,
+      };
+
+  Widget _replyPreviewBar(ThemeData theme) {
+    final target = _replyTarget!;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+        border: Border(top: BorderSide(color: theme.dividerColor, width: 0.5)),
+      ),
+      child: Row(children: [
+        Container(width: 3, height: 32, color: theme.colorScheme.primary),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(target.userName,
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700,
+                      color: theme.colorScheme.primary)),
+              Text(_previewFor(target.type, target.text),
+                  maxLines: 1, overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 12)),
+            ],
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.close, size: 18),
+          onPressed: () => setState(() => _replyTarget = null),
+        ),
+      ]),
+    );
+  }
+
   // ── Send ────────────────────────────────────────────────────────────────
   void _sendText() {
     final t = _textCtrl.text.trim();
     if (t.isEmpty) return;
-    _ws({'type': 'text', 'text': t});
+    final payload = <String, dynamic>{'type': 'text', 'text': t};
+    if (_replyTarget != null) payload['reply_to'] = _replyTarget!.id;
+    _ws(payload);
     _textCtrl.clear();
-    setState(() => _showEmoji = false);
+    setState(() { _showEmoji = false; _replyTarget = null; });
   }
 
   Future<void> _pickImage() async {
@@ -585,6 +673,23 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
                   itemBuilder: (_, i) => _bubble(_msgs[i], theme, isDark),
                 ),
         ),
+        if (_typingUsers.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                _typingUsers.length == 1
+                    ? '${_typingUsers.values.first} est en train d\'écrire…'
+                    : '${_typingUsers.values.join(', ')} sont en train d\'écrire…',
+                style: TextStyle(
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
+              ),
+            ),
+          ),
+        if (_replyTarget != null) _replyPreviewBar(theme),
         if (_showEmoji) SizedBox(
           height: 270,
           child: EmojiPicker(
@@ -680,7 +785,14 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
                         topRight: const Radius.circular(18),
                         bottomLeft: Radius.circular(isMe ? 18 : 4),
                         bottomRight: Radius.circular(isMe ? 4 : 18)),
-                      child: _content(m, fg, theme, isMe),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (m.replyTo != null) _replyQuote(m.replyTo!, fg, isMe),
+                          _content(m, fg, theme, isMe),
+                        ],
+                      ),
                     ),
                   ),
                   if (m.reactions.isNotEmpty) _reactions(m),
@@ -707,6 +819,33 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
               onPressed: () => _options(m),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _replyQuote(Map<String, dynamic> reply, Color fg, bool isMe) {
+    final quotedName = reply['user_name'] as String? ?? '';
+    final quotedType = reply['type'] as String? ?? 'text';
+    final quotedText = reply['text'] as String? ?? '';
+    return Container(
+      margin: const EdgeInsets.fromLTRB(10, 8, 10, 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        color: (isMe ? Colors.white : Colors.black).withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(8),
+        border: Border(left: BorderSide(color: fg.withValues(alpha: 0.6), width: 3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(quotedName,
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
+                  color: fg.withValues(alpha: 0.85))),
+          Text(_previewFor(quotedType, quotedText),
+              maxLines: 1, overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 11, color: fg.withValues(alpha: 0.7))),
         ],
       ),
     );
@@ -905,6 +1044,25 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
               child: Text(e, style: const TextStyle(fontSize: 26)))).toList()),
         ),
         const Divider(height: 24),
+        if (m.type != 'system')
+          ListTile(
+            leading: const Icon(Icons.reply_outlined),
+            title: const Text('Répondre'),
+            onTap: () {
+              Navigator.pop(context);
+              setState(() => _replyTarget = m);
+            },
+          ),
+        if (m.type == 'text')
+          ListTile(
+            leading: const Icon(Icons.copy_outlined),
+            title: const Text('Copier'),
+            onTap: () {
+              Navigator.pop(context);
+              Clipboard.setData(ClipboardData(text: m.text));
+              _snack('Message copié');
+            },
+          ),
         if (m.userId == _myId) ...[
           if (m.type == 'text')
             ListTile(

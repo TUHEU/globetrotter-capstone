@@ -9,10 +9,13 @@ Public group chat room where every registered user can:
   • Share their GPS location (lat/lng)
   • React with emoji to any message
   • Edit or delete their own text messages within 5 minutes of sending
+  • See a "user is typing…" indicator
+  • Reply to a specific earlier message (quoted preview)
 
 Transport: WebSocket (/ws/chat?token=<JWT>) — types: text/image/audio/video/
-           location/delete/edit/react (send), message/delete/edit/reaction/
-           system/online/error (receive)
+           location/delete/edit/react/typing (send, text/image/audio/video
+           also accept an optional reply_to=<message_id>) — message/delete/
+           edit/reaction/typing/system/online/error (receive)
 REST:       POST   /chat/upload            → media upload → returns URL
             GET    /chat/history           → last N messages (auth required)
             GET    /chat/online            → count of live connections
@@ -51,6 +54,7 @@ from app.storage import (
     delete_message,
     edit_message,
     add_reaction,
+    find_message,
 )
 from app.connection_manager import ConnectionManager
 
@@ -309,6 +313,15 @@ async def websocket_chat(websocket: WebSocket, token: str = Query(...)):
                     }))
                 continue
 
+            # ── Typing indicator (ephemeral, not stored) ─────────────────
+            if msg_type == "typing":
+                await manager.broadcast(json.dumps({
+                    "type": "typing",
+                    "user_id": user["id"],
+                    "user_name": user["full_name"],
+                }))
+                continue
+
             # ── Emoji reaction ──────────────────────────────────────────
             if msg_type == "react":
                 mid = payload.get("message_id", "")
@@ -328,6 +341,20 @@ async def websocket_chat(websocket: WebSocket, token: str = Query(...)):
             if msg_type not in allowed_kinds:
                 continue
 
+            reply_preview = None
+            reply_to_id = payload.get("reply_to")
+            if reply_to_id:
+                original = find_message(reply_to_id)
+                if original is not None:
+                    # Snapshot at send-time so the quote still makes sense
+                    # even if the original is edited/deleted afterwards.
+                    reply_preview = {
+                        "id": original["id"],
+                        "user_name": original["user_name"],
+                        "type": original["type"],
+                        "text": original.get("text", ""),
+                    }
+
             message = {
                 "id": uuid.uuid4().hex,
                 "user_id": user["id"],
@@ -338,6 +365,7 @@ async def websocket_chat(websocket: WebSocket, token: str = Query(...)):
                 "media_url": payload.get("media_url"),         # image/audio/video
                 "media_content_type": payload.get("media_content_type"),
                 "location": payload.get("location"),           # {lat, lng, label?}
+                "reply_to": reply_preview,
                 "reactions": {},
                 "ts": _now(),
             }

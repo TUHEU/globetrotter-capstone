@@ -5,6 +5,7 @@ import '../core/constants.dart';
 import '../models/destination.dart';
 import '../services/location_service.dart';
 import '../services/weather_service.dart';
+import '../widgets/destination_activity_section.dart';
 import '../widgets/destination_reviews_section.dart';
 import '../widgets/map3d_view.dart';
 import '../widgets/nearby_places_section.dart';
@@ -219,6 +220,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                               CreateItineraryScreen(preselected: destination))),
                     ),
                   ),
+                  DestinationActivitySection(destinationId: destination.id),
                   const SizedBox(height: 28),
                   NearbyPlacesSection(destinationId: destination.id),
                   const SizedBox(height: 28),

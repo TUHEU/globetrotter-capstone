@@ -69,6 +69,20 @@ def public_itineraries_for_user(owner_id: str, current=Depends(get_current_user)
     return {"count": len(items), "results": items}
 
 
+@router.get("/itineraries/destination-activity/{destination_id}")
+def destination_activity(destination_id: str, current=Depends(get_current_user)):
+    """Powers the "X visiting today / tomorrow / this week" line on a
+    destination page - computed live from public itineraries' start_date +
+    each stop's day offset, not a separately-maintained counter, so it's
+    always consistent with whatever trips people actually have planned.
+    Registered BEFORE /itineraries/{it_id} so FastAPI doesn't try to match
+    "destination-activity" as an itinerary id (harmless either way here
+    since the path has an extra segment, but kept consistent with the
+    /itineraries/feed convention above).
+    """
+    return storage.destination_activity(destination_id)
+
+
 @router.patch("/itineraries/{it_id}/visibility")
 def set_visibility(it_id: str, body: VisibilityUpdate, current=Depends(get_current_user)):
     it = next((i for i in storage.get_itineraries() if i["id"] == it_id), None)

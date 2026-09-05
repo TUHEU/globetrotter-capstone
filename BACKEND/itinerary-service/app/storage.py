@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from .config import ITINERARIES_FILE, COMMENTS_FILE, LIKES_FILE, DATA_DIR
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 _lock = threading.Lock()
 
@@ -55,6 +55,43 @@ def get_public_itineraries_for_owners(owner_ids: List[str]) -> List[Dict[str, An
     results = [i for i in get_itineraries() if i["owner_id"] in owner_set and i.get("is_public", False)]
     results.sort(key=lambda i: i.get("created_at", ""), reverse=True)
     return results
+
+
+def destination_activity(destination_id: str) -> Dict[str, int]:
+    """How many (public) itineraries have this destination scheduled for
+    today, tomorrow, or sometime in the next 7 days - computed from
+    start_date + each stop's day offset, not stored separately, so it's
+    always in sync with whatever trips people actually plan/edit.
+
+    Only PUBLIC itineraries count - a private trip shouldn't leak "N
+    people are visiting this place today" to random visitors of the
+    destination page.
+    """
+    today = date.today()
+    counts = {"today": 0, "tomorrow": 0, "this_week": 0}
+    for it in get_itineraries():
+        if not it.get("is_public", False):
+            continue
+        start_raw = it.get("start_date")
+        if not start_raw:
+            continue
+        try:
+            start = date.fromisoformat(start_raw[:10])
+        except ValueError:
+            continue
+        for stop in it.get("stops", []):
+            if stop.get("destination_id") != destination_id:
+                continue
+            day_offset = max(int(stop.get("day", 1)), 1) - 1
+            visit_date = start + timedelta(days=day_offset)
+            delta_days = (visit_date - today).days
+            if delta_days == 0:
+                counts["today"] += 1
+            elif delta_days == 1:
+                counts["tomorrow"] += 1
+            if 0 <= delta_days <= 7:
+                counts["this_week"] += 1
+    return counts
 
 
 def create_itinerary(it: Dict[str, Any]) -> Dict[str, Any]:

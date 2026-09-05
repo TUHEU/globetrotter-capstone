@@ -46,6 +46,11 @@ def load_messages() -> List[Dict[str, Any]]:
         return _read()
 
 
+def find_message(message_id: str) -> Optional[Dict[str, Any]]:
+    with _lock:
+        return next((m for m in _read() if m["id"] == message_id), None)
+
+
 def append_message(msg: Dict[str, Any]) -> None:
     with _lock:
         msgs = _read()
