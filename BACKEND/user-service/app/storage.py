@@ -53,6 +53,9 @@ def find_user_by_email(email: str) -> Optional[Dict[str, Any]]:
     return next((u for u in get_users() if u["email"] == email), None)
 
 
+ALLOWED_AVATARS = {"boy", "girl", "lion", "car", "bike", "controller"}
+
+
 def find_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
     return next((u for u in get_users() if u["id"] == user_id), None)
 
@@ -61,11 +64,25 @@ def create_user(user: Dict[str, Any]) -> Dict[str, Any]:
     # Every newly-created account gets a real creation timestamp so public
     # analytics can report weekly signups without inventing dates.
     user.setdefault("created_at", datetime.now(timezone.utc).isoformat())
+    user.setdefault("avatar", None)
     with _lock:
         users = get_users()
         users.append(user)
         _write(USERS_FILE, users)
     return user
+
+
+def set_avatar(user_id: str, avatar: str) -> Optional[Dict[str, Any]]:
+    """Updates the picked avatar (one of ALLOWED_AVATARS). Returns the
+    updated user record, or None if the user doesn't exist."""
+    with _lock:
+        users = get_users()
+        for u in users:
+            if u["id"] == user_id:
+                u["avatar"] = avatar
+                _write(USERS_FILE, users)
+                return u
+        return None
 
 
 def record_login(user_id: str) -> Dict[str, Any]:

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../core/api_client.dart';
+import '../core/avatars.dart';
 import '../models/friend.dart';
 import '../providers/friends_provider.dart';
 import '../providers/messages_provider.dart';
@@ -85,10 +86,11 @@ class _ChatHubScreenState extends State<ChatHubScreen> {
               )
             else
               ...p.inbox.map((entry) => ListTile(
-                    leading: CircleAvatar(
-                      child: Text(entry.partnerName.isNotEmpty
-                          ? entry.partnerName[0].toUpperCase()
-                          : '?'),
+                    leading: UserAvatar(
+                      name: entry.partnerName,
+                      avatar: entry.partnerAvatar,
+                      color: Theme.of(context).colorScheme.primary,
+                      radius: 20,
                     ),
                     title: Text(entry.partnerName,
                         style: TextStyle(
@@ -255,10 +257,11 @@ class _NewMessageSheetState extends State<_NewMessageSheet> {
                             itemBuilder: (_, i) {
                               final Friend u = p.searchResults[i];
                               return ListTile(
-                                leading: CircleAvatar(
-                                  child: Text(u.fullName.isNotEmpty
-                                      ? u.fullName[0].toUpperCase()
-                                      : '?'),
+                                leading: UserAvatar(
+                                  name: u.fullName,
+                                  avatar: u.avatar,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  radius: 20,
                                 ),
                                 title: Text(u.fullName),
                                 subtitle: Text(u.email,

@@ -27,13 +27,16 @@ def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
 
 
-def create_access_token(user_id: str, full_name: str = "", email: str = "") -> str:
+def create_access_token(user_id: str, full_name: str = "", email: str = "", avatar: str | None = None) -> str:
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    # full_name/email are non-secret and rarely change, so we embed them as
-    # claims: other services can trust "who is this" without a network call
-    # back to User Service on every request. Tradeoff: if a user renames
-    # themselves, existing tokens show the old name until they log in again.
-    payload = {"sub": user_id, "full_name": full_name, "email": email, "exp": expire}
+    # full_name/email/avatar are non-secret and rarely change, so we embed
+    # them as claims: other services can trust "who is this" without a
+    # network call back to User Service on every request. Tradeoff: if a
+    # user renames themselves or changes avatar, existing tokens show the
+    # old value until they log in again (or, for avatar specifically, until
+    # the /me/avatar endpoint hands back a freshly-minted token — see
+    # routers/auth.py::update_avatar).
+    payload = {"sub": user_id, "full_name": full_name, "email": email, "avatar": avatar, "exp": expire}
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 

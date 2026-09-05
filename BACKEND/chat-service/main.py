@@ -83,9 +83,10 @@ def _decode_token(token: str) -> Optional[dict]:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = payload.get("sub")
         full_name = payload.get("full_name", "Explorateur")
+        avatar = payload.get("avatar")
         if not user_id:
             return None
-        return {"id": user_id, "full_name": full_name}
+        return {"id": user_id, "full_name": full_name, "avatar": avatar}
     except JWTError:
         return None
 
@@ -331,6 +332,7 @@ async def websocket_chat(websocket: WebSocket, token: str = Query(...)):
                 "id": uuid.uuid4().hex,
                 "user_id": user["id"],
                 "user_name": user["full_name"],
+                "avatar": user.get("avatar"),
                 "type": msg_type,
                 "text": payload.get("text", ""),
                 "media_url": payload.get("media_url"),         # image/audio/video

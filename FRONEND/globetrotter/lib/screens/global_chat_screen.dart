@@ -19,6 +19,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../core/api_client.dart';
+import '../core/avatars.dart';
 import '../core/constants.dart';
 import '../providers/auth_provider.dart';
 import '../providers/settings_provider.dart';
@@ -34,6 +35,7 @@ class _ChatMsg {
   final String id;
   final String userId;
   final String userName;
+  final String? avatar;
   final String type; // text|image|audio|video|location|system
   String text;
   final String? mediaUrl;
@@ -52,6 +54,7 @@ class _ChatMsg {
     required this.id,
     required this.userId,
     required this.userName,
+    this.avatar,
     required this.type,
     this.text = '',
     this.mediaUrl,
@@ -67,6 +70,7 @@ class _ChatMsg {
       id: j['id'] as String? ?? UniqueKey().toString(),
       userId: j['user_id'] as String? ?? '',
       userName: j['user_name'] as String? ?? 'Inconnu',
+      avatar: j['avatar'] as String?,
       type: j['type'] as String? ?? 'text',
       text: j['text'] as String? ?? '',
       mediaUrl: j['media_url'] as String?,
@@ -634,13 +638,8 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
           if (!isMe) ...[
             GestureDetector(
               onTap: () => showChatUserSheet(context,
-                  userId: m.userId, userName: m.userName, avatarColor: _col(m.userId)),
-              child: CircleAvatar(
-                radius: 15,
-                backgroundColor: _col(m.userId),
-                child: Text(m.userName.isNotEmpty ? m.userName[0].toUpperCase() : '?',
-                    style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)),
-              ),
+                  userId: m.userId, userName: m.userName, avatar: m.avatar, avatarColor: _col(m.userId)),
+              child: UserAvatar(name: m.userName, avatar: m.avatar, color: _col(m.userId), radius: 15),
             ),
             const SizedBox(width: 6),
           ],
@@ -653,7 +652,7 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
                   if (!isMe)
                     GestureDetector(
                       onTap: () => showChatUserSheet(context,
-                          userId: m.userId, userName: m.userName, avatarColor: _col(m.userId)),
+                          userId: m.userId, userName: m.userName, avatar: m.avatar, avatarColor: _col(m.userId)),
                       child: Padding(
                         padding: const EdgeInsets.only(left: 4, bottom: 2),
                         child: Text(m.userName,
@@ -696,6 +695,18 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
             ),
           ),
           if (isMe) const SizedBox(width: 4),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: IconButton(
+              icon: const Icon(Icons.more_vert, size: 16),
+              padding: EdgeInsets.zero,
+              visualDensity: VisualDensity.compact,
+              constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
+              tooltip: 'Options',
+              onPressed: () => _options(m),
+            ),
+          ),
         ],
       ),
     );

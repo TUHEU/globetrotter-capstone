@@ -30,3 +30,4 @@ class UserPublic(BaseModel):
     full_name: str
     email: EmailStr
     preferences: List[str] = []
+    avatar: str | None = None

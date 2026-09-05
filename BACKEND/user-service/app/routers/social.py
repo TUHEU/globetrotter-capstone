@@ -17,7 +17,7 @@ router = APIRouter(tags=["Social"])
 
 
 def _public(u: dict) -> dict:
-    return {"id": u["id"], "full_name": u["full_name"], "email": u["email"]}
+    return {"id": u["id"], "full_name": u["full_name"], "email": u["email"], "avatar": u.get("avatar")}
 
 
 @router.get("/users/search")

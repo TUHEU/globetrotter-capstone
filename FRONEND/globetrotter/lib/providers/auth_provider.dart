@@ -300,6 +300,23 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  /// Persists the picked avatar server-side and refreshes the stored token,
+  /// since chat/social read the avatar straight off the JWT claim rather
+  /// than looking it up per-request (see backend/.../security.py).
+  Future<bool> updateAvatar(String avatarKey) async {
+    try {
+      final res = await ApiClient.instance.dio
+          .patch('/me/avatar', queryParameters: {'avatar': avatarKey});
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', res.data['access_token']);
+      user = User.fromJson(res.data['user']);
+      notifyListeners();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');

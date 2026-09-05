@@ -29,6 +29,11 @@ def _public_name(user_id: str) -> str:
     return u["full_name"] if u else "Utilisateur supprimé"
 
 
+def _public_avatar(user_id: str) -> str | None:
+    u = storage.find_user_by_id(user_id)
+    return u.get("avatar") if u else None
+
+
 @router.get("/messages/inbox")
 def inbox(current=Depends(get_current_user)):
     entries = storage.get_inbox(current["id"])
@@ -38,6 +43,7 @@ def inbox(current=Depends(get_current_user)):
             {
                 "partner_id": e["partner_id"],
                 "partner_name": _public_name(e["partner_id"]),
+                "partner_avatar": _public_avatar(e["partner_id"]),
                 "last_message": e["last_message"],
                 "unread_count": e["unread_count"],
             }
@@ -59,6 +65,7 @@ def conversation(other_user_id: str, current=Depends(get_current_user)):
     return {
         "partner_id": other_user_id,
         "partner_name": target["full_name"],
+        "partner_avatar": target.get("avatar"),
         "messages": msgs,
     }
 

@@ -29,12 +29,14 @@ class Message {
 class InboxEntry {
   final String partnerId;
   final String partnerName;
+  final String? partnerAvatar;
   final Message lastMessage;
   final int unreadCount;
 
   InboxEntry({
     required this.partnerId,
     required this.partnerName,
+    this.partnerAvatar,
     required this.lastMessage,
     required this.unreadCount,
   });
@@ -42,6 +44,7 @@ class InboxEntry {
   factory InboxEntry.fromJson(Map<String, dynamic> j) => InboxEntry(
         partnerId: j['partner_id'],
         partnerName: j['partner_name'],
+        partnerAvatar: j['partner_avatar'] as String?,
         lastMessage: Message.fromJson(j['last_message']),
         unreadCount: j['unread_count'] ?? 0,
       );

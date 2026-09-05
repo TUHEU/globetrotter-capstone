@@ -46,6 +46,7 @@ class MessagesProvider extends ChangeNotifier {
         inbox[idx] = InboxEntry(
           partnerId: e.partnerId,
           partnerName: e.partnerName,
+          partnerAvatar: e.partnerAvatar,
           lastMessage: e.lastMessage,
           unreadCount: 0,
         );

@@ -16,3 +16,10 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     reply: str
+
+
+class PlaceSuggestionRequest(BaseModel):
+    name: str = Field(min_length=1, max_length=200)
+    category: str = ""
+    quartier: str = ""
+    draft_description: str = Field(default="", max_length=2000)

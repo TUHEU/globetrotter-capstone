@@ -14,7 +14,7 @@ from .. import clients
 from ..config import GEMINI_MODEL
 from ..gemini_client import ask_gemini, GeminiError
 from ..openrouter_client import ask_openrouter, OpenRouterError
-from ..models import ChatRequest, ChatResponse
+from ..models import ChatRequest, ChatResponse, PlaceSuggestionRequest
 from ..security import get_current_user, get_raw_token
 
 router = APIRouter(prefix="/assistant", tags=["Assistant"])
@@ -120,3 +120,43 @@ def chat(
 @router.get("/health")
 def assistant_health():
     return {"service": "ai-service", "model": GEMINI_MODEL}
+
+
+@router.post("/place-suggestions", response_model=ChatResponse)
+def place_suggestions(body: PlaceSuggestionRequest, current=Depends(get_current_user)):
+    """Helps someone filling in the "Add a place" form: suggests an
+    improved description and asks 1-2 useful follow-up questions (best
+    time to visit, missing practical info), based only on what they've
+    already typed - never invents facts (price, hours) that weren't given.
+    """
+    system_instruction = f"""Tu aides un utilisateur de GlobeTrotter (Yaoundé, Cameroun) à
+rédiger la fiche d'un nouveau lieu qu'il ajoute à l'application.
+
+Lieu : {body.name}
+Catégorie : {body.category or "non précisée"}
+Quartier : {body.quartier or "non précisé"}
+Description actuelle rédigée par l'utilisateur : "{body.draft_description or "(vide pour l'instant)"}"
+
+En 4 à 6 lignes maximum :
+1. Si la description est vide ou très courte, propose une version améliorée
+   et plus vivante (2-3 phrases), basée UNIQUEMENT sur les infos données
+   ci-dessus - ne jamais inventer un prix, un horaire ou un fait qui n'est
+   pas fourni.
+2. Pose 1 à 2 questions concrètes pour compléter la fiche - par exemple le
+   meilleur moment pour visiter (matin/soir, saison sèche/pluies), ou une
+   info pratique manquante (prix, accès, durée de visite).
+
+Réponds dans la langue de la description fournie (français par défaut si
+la description est vide)."""
+
+    try:
+        reply = ask_gemini(system_instruction, [], "Aide-moi à améliorer cette fiche de lieu.")
+    except GeminiError as gemini_error:
+        try:
+            reply = ask_openrouter(
+                system_instruction, [], "Aide-moi à améliorer cette fiche de lieu."
+            )
+        except OpenRouterError:
+            raise HTTPException(status_code=502, detail=str(gemini_error))
+
+    return {"reply": reply}

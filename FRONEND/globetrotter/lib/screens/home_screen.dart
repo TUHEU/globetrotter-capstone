@@ -4,7 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../core/api_client.dart';
 import '../core/app_strings.dart';
+import '../core/avatars.dart';
 import '../core/constants.dart';
+import '../models/user.dart';
 import '../providers/auth_provider.dart';
 import '../providers/destination_provider.dart';
 import '../providers/favorites_provider.dart';
@@ -16,6 +18,7 @@ import '../providers/settings_provider.dart';
 import '../services/deep_link_service.dart';
 import '../services/share_service.dart';
 import '../widgets/achievement_badges.dart';
+import '../widgets/draggable_assistant_button.dart';
 import '../widgets/travel_stats_card.dart';
 import '../widgets/destination_card.dart';
 import '../widgets/like_comment_bar.dart';
@@ -169,26 +172,11 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(child: pages[_index]),
           ]),
 
-          // ── Floating AI bubble ────────────────────────────────────────
-          Positioned(
-            right: 20,
-            bottom: isWide ? 20 : 80,
-            child: IgnorePointer(
-              ignoring: _hideBubble,
-              child: AnimatedSlide(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeOut,
-                offset: _hideBubble ? const Offset(0, 0.4) : Offset.zero,
-                child: AnimatedOpacity(
-                  duration: const Duration(milliseconds: 200),
-                  opacity: _hideBubble ? 0 : 1,
-                  child: _AssistantBubble(
-                    onTap: () => Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (_) => const AssistantScreen())),
-                  ),
-                ),
-              ),
-            ),
+          // ── Floating AI bubble (draggable, like the language button) ───
+          DraggableAssistantButton(
+            hidden: _hideBubble,
+            onTap: () => Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => const AssistantScreen())),
           ),
         ]),
       ),
@@ -419,33 +407,6 @@ class _DesktopSidebar extends StatelessWidget {
             }),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// AI Assistant bubble
-// ─────────────────────────────────────────────────────────────────────────────
-class _AssistantBubble extends StatelessWidget {
-  final VoidCallback onTap;
-  const _AssistantBubble({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Material(
-      color: scheme.secondary,
-      shape: const CircleBorder(),
-      elevation: 6,
-      shadowColor: scheme.secondary.withValues(alpha: 0.4),
-      child: InkWell(
-        customBorder: const CircleBorder(),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Icon(Icons.smart_toy_outlined, color: scheme.onSecondary, size: 26),
-        ),
       ),
     );
   }
@@ -1453,6 +1414,106 @@ class _TripsTab extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 // Profile Tab
 // ─────────────────────────────────────────────────────────────────────────────
+void _openAvatarPicker(BuildContext context, User? user) {
+  showModalBottomSheet(
+    context: context,
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+    builder: (_) => _AvatarPickerSheet(currentAvatar: user?.avatar),
+  );
+}
+
+class _AvatarPickerSheet extends StatefulWidget {
+  final String? currentAvatar;
+  const _AvatarPickerSheet({required this.currentAvatar});
+
+  @override
+  State<_AvatarPickerSheet> createState() => _AvatarPickerSheetState();
+}
+
+class _AvatarPickerSheetState extends State<_AvatarPickerSheet> {
+  bool _saving = false;
+
+  Future<void> _pick(String key) async {
+    setState(() => _saving = true);
+    final ok = await context.read<AuthProvider>().updateAvatar(key);
+    if (!mounted) return;
+    setState(() => _saving = false);
+    if (ok) {
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(context.read<SettingsProvider>().s.isFr
+              ? 'Échec de la mise à jour de l\'avatar'
+              : 'Failed to update avatar')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = context.watch<SettingsProvider>().s;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(s.isFr ? 'Choisir un avatar' : 'Choose an avatar',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 4),
+            Text(
+              s.isFr
+                  ? 'Visible par tout le monde (chat, profil, amis).'
+                  : 'Visible to everyone (chat, profile, friends).',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 14,
+              runSpacing: 14,
+              children: kAvatarOptions.map((a) {
+                final selected = a.key == widget.currentAvatar;
+                return GestureDetector(
+                  onTap: _saving ? null : () => _pick(a.key),
+                  child: Container(
+                    width: 76,
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: selected
+                            ? Theme.of(context).colorScheme.primary
+                            : Colors.grey.shade300,
+                        width: selected ? 2 : 1,
+                      ),
+                      color: selected
+                          ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.08)
+                          : null,
+                    ),
+                    child: Column(
+                      children: [
+                        Text(a.emoji, style: const TextStyle(fontSize: 30)),
+                        const SizedBox(height: 4),
+                        Text(s.isFr ? a.labelFr : a.labelEn,
+                            style: const TextStyle(fontSize: 11), textAlign: TextAlign.center),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            if (_saving) ...[
+              const SizedBox(height: 12),
+              const Center(child: CircularProgressIndicator()),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _ProfileTab extends StatelessWidget {
   const _ProfileTab();
 
@@ -1471,14 +1532,32 @@ class _ProfileTab extends StatelessWidget {
           _TripIoHeader(title: s.navProfile),
           Padding(
             padding: EdgeInsets.fromLTRB(isWide ? 48 : 20, 20, isWide ? 48 : 20, 0),
-            child: CircleAvatar(
-            radius: 44,
-            backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.15),
-            child: Text(
-              user?.fullName.isNotEmpty == true ? user!.fullName[0].toUpperCase() : '?',
-              style: TextStyle(fontSize: 32, color: theme.colorScheme.primary),
+            child: GestureDetector(
+              onTap: () => _openAvatarPicker(context, user),
+              child: Stack(
+                children: [
+                  UserAvatar(
+                    name: user?.fullName ?? '',
+                    avatar: user?.avatar,
+                    color: theme.colorScheme.primary,
+                    radius: 44,
+                  ),
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: theme.scaffoldBackgroundColor, width: 2),
+                      ),
+                      child: const Icon(Icons.edit, size: 14, color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
           ),
           const SizedBox(height: 12),
           Text(

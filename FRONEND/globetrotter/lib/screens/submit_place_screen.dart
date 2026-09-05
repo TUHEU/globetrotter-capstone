@@ -37,6 +37,8 @@ class _SubmitPlaceScreenState extends State<SubmitPlaceScreen> {
   XFile? _photo;
   bool _submitting = false;
   bool _locating = false;
+  bool _aiLoading = false;
+  String? _aiSuggestion;
 
   @override
   void dispose() {
@@ -44,6 +46,35 @@ class _SubmitPlaceScreenState extends State<SubmitPlaceScreen> {
     _descController.dispose();
     _quartierController.dispose();
     super.dispose();
+  }
+
+  Future<void> _getAiSuggestions() async {
+    if (_nameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(context.read<SettingsProvider>().s.isFr
+              ? 'Indiquez d\'abord le nom du lieu.'
+              : 'Enter the place name first.')));
+      return;
+    }
+    setState(() { _aiLoading = true; _aiSuggestion = null; });
+    try {
+      final res = await ApiClient.instance.dio.post('/assistant/place-suggestions', data: {
+        'name': _nameController.text.trim(),
+        'category': _category,
+        'quartier': _quartierController.text.trim(),
+        'draft_description': _descController.text.trim(),
+      });
+      if (mounted) setState(() => _aiSuggestion = res.data['reply'] as String?);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(context.read<SettingsProvider>().s.isFr
+                ? 'L\'assistant IA n\'a pas pu répondre pour le moment.'
+                : 'The AI assistant couldn\'t respond right now.')));
+      }
+    } finally {
+      if (mounted) setState(() => _aiLoading = false);
+    }
   }
 
   Future<void> _useMyLocation() async {
@@ -145,6 +176,35 @@ class _SubmitPlaceScreenState extends State<SubmitPlaceScreen> {
               validator: (v) =>
                   (v == null || v.trim().length < 10) ? s.descriptionTooShort : null,
             ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: _aiLoading ? null : _getAiSuggestions,
+                icon: _aiLoading
+                    ? const SizedBox(
+                        width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Icon(Icons.auto_awesome, size: 16),
+                label: Text(s.isFr ? 'Aide de l\'IA' : 'AI help'),
+              ),
+            ),
+            if (_aiSuggestion != null)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.auto_awesome, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text(_aiSuggestion!, style: const TextStyle(fontSize: 13))),
+                  ],
+                ),
+              ),
             const SizedBox(height: 12),
 
             TextFormField(

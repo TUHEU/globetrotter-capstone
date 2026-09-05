@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../core/avatars.dart';
 import '../models/friend.dart';
 import '../providers/friends_provider.dart';
 import '../providers/settings_provider.dart';
@@ -228,12 +229,11 @@ class _UserTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.15),
-        child: Text(
-          user.fullName.isNotEmpty ? user.fullName[0].toUpperCase() : '?',
-          style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.w700),
-        ),
+      leading: UserAvatar(
+        name: user.fullName,
+        avatar: user.avatar,
+        color: theme.colorScheme.primary,
+        radius: 20,
       ),
       title: Text(user.fullName),
       subtitle: Text(user.email),

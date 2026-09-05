@@ -19,7 +19,7 @@ router = APIRouter(tags=["Auth"])
 
 
 def _public(user: dict) -> dict:
-    return {k: user[k] for k in ("id", "full_name", "email", "preferences")}
+    return {k: user.get(k) for k in ("id", "full_name", "email", "preferences", "avatar")}
 
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
@@ -34,7 +34,7 @@ def register(body: RegisterRequest):
         "preferences": [p.lower() for p in body.preferences],
     }
     storage.create_user(user)
-    token = create_access_token(user["id"], user["full_name"], user["email"])
+    token = create_access_token(user["id"], user["full_name"], user["email"], user.get("avatar"))
     return {"access_token": token, "token_type": "bearer", "user": _public(user)}
 
 
@@ -44,7 +44,7 @@ def login(body: LoginRequest):
     if not user or not verify_password(body.password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     storage.record_login(user["id"])
-    token = create_access_token(user["id"], user["full_name"], user["email"])
+    token = create_access_token(user["id"], user["full_name"], user["email"], user.get("avatar"))
     return {"access_token": token, "token_type": "bearer", "user": _public(user)}
 
 
@@ -89,10 +89,28 @@ def login_with_google(body: GoogleAuthRequest):
         google_sub=idinfo["sub"],
     )
     storage.record_login(user["id"])
-    token = create_access_token(user["id"], user["full_name"], user["email"])
+    token = create_access_token(user["id"], user["full_name"], user["email"], user.get("avatar"))
     return {"access_token": token, "token_type": "bearer", "user": _public(user)}
 
 
 @router.get("/me", response_model=UserPublic)
 def me(current=Depends(get_current_user)):
     return _public(current)
+
+
+@router.patch("/me/avatar", response_model=TokenResponse)
+def update_avatar(avatar: str, current=Depends(get_current_user)):
+    """Sets the picked avatar and returns a freshly-minted token carrying
+    it — chat and other services read avatar/name straight off the JWT
+    (no per-request lookup), so without reissuing the token here the new
+    avatar wouldn't show up anywhere until the next login."""
+    if avatar not in storage.ALLOWED_AVATARS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"avatar must be one of {sorted(storage.ALLOWED_AVATARS)}",
+        )
+    user = storage.set_avatar(current["id"], avatar)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    token = create_access_token(user["id"], user["full_name"], user["email"], user.get("avatar"))
+    return {"access_token": token, "token_type": "bearer", "user": _public(user)}

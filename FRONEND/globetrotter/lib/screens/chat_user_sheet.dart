@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../core/api_client.dart';
+import '../core/avatars.dart';
 import '../models/friend.dart';
 import '../providers/friends_provider.dart';
 import '../providers/settings_provider.dart';
@@ -14,22 +15,25 @@ Future<void> showChatUserSheet(
   BuildContext context, {
   required String userId,
   required String userName,
+  String? avatar,
   required Color avatarColor,
 }) {
   return showModalBottomSheet(
     context: context,
     shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-    builder: (_) => _ChatUserSheet(userId: userId, userName: userName, avatarColor: avatarColor),
+    builder: (_) => _ChatUserSheet(
+        userId: userId, userName: userName, avatar: avatar, avatarColor: avatarColor),
   );
 }
 
 class _ChatUserSheet extends StatefulWidget {
   final String userId;
   final String userName;
+  final String? avatar;
   final Color avatarColor;
   const _ChatUserSheet(
-      {required this.userId, required this.userName, required this.avatarColor});
+      {required this.userId, required this.userName, this.avatar, required this.avatarColor});
 
   @override
   State<_ChatUserSheet> createState() => _ChatUserSheetState();
@@ -58,7 +62,7 @@ class _ChatUserSheetState extends State<_ChatUserSheet> {
   Future<void> _toggleFollow() async {
     setState(() => _busy = true);
     final friends = context.read<FriendsProvider>();
-    final friend = Friend(id: widget.userId, fullName: widget.userName, email: '');
+    final friend = Friend(id: widget.userId, fullName: widget.userName, email: '', avatar: widget.avatar);
     if (_isFollowing == true) {
       await friends.unfollow(widget.userId);
     } else {
@@ -76,14 +80,8 @@ class _ChatUserSheetState extends State<_ChatUserSheet> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircleAvatar(
-              radius: 32,
-              backgroundColor: widget.avatarColor,
-              child: Text(
-                widget.userName.isNotEmpty ? widget.userName[0].toUpperCase() : '?',
-                style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w700),
-              ),
-            ),
+            UserAvatar(
+                name: widget.userName, avatar: widget.avatar, color: widget.avatarColor, radius: 32),
             const SizedBox(height: 10),
             Text(widget.userName,
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),

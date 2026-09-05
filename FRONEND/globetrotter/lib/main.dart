@@ -78,6 +78,18 @@ class _BootstrapState extends State<_Bootstrap> {
   }
 
   Future<bool> _init() async {
+    // The globe/car loading animation is otherwise so quick to finish (auto-
+    // login is usually near-instant) that it just flickers by unseen. Keep
+    // it on screen for at least 5s regardless of how fast the real work
+    // finishes, without ever making startup slower than necessary — the
+    // real work and the timer run in parallel, not one after the other.
+    final minDelay = Future.delayed(const Duration(seconds: 5));
+    final result = await _doInit();
+    await minDelay;
+    return result;
+  }
+
+  Future<bool> _doInit() async {
     await context.read<SettingsProvider>().load();
     if (!mounted) return false;
     final auth = context.read<AuthProvider>();
