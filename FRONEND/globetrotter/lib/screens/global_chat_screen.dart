@@ -22,6 +22,10 @@ import '../core/api_client.dart';
 import '../core/constants.dart';
 import '../providers/auth_provider.dart';
 import '../providers/settings_provider.dart';
+import '../services/notification_service.dart';
+import 'chat_user_sheet.dart';
+import 'location_view_screen.dart';
+import 'video_view_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Model
@@ -212,7 +216,22 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
     setState(() {
       switch (data['type']) {
         case 'message':
-          _msgs.add(_ChatMsg.fromJson(data['message'] as Map<String, dynamic>));
+          final msg = _ChatMsg.fromJson(data['message'] as Map<String, dynamic>);
+          _msgs.add(msg);
+          // Only alert for messages from other people, and only when this
+          // chat isn't the screen currently on-screen (no point pinging
+          // someone about a message they're already looking at).
+          if (msg.userId != _myId && !(ModalRoute.of(context)?.isCurrent ?? true)) {
+            final preview = switch (msg.type) {
+              'image' => '📷 Photo',
+              'audio' => '🎵 Message vocal',
+              'video' => '🎬 Vidéo',
+              'location' => '📍 Position partagée',
+              _ => msg.text,
+            };
+            NotificationService.instance
+                .showMessage(title: msg.userName, body: preview);
+          }
           break;
         case 'system':
           _msgs.add(_ChatMsg(
@@ -613,11 +632,15 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isMe) ...[
-            CircleAvatar(
-              radius: 15,
-              backgroundColor: _col(m.userId),
-              child: Text(m.userName.isNotEmpty ? m.userName[0].toUpperCase() : '?',
-                  style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)),
+            GestureDetector(
+              onTap: () => showChatUserSheet(context,
+                  userId: m.userId, userName: m.userName, avatarColor: _col(m.userId)),
+              child: CircleAvatar(
+                radius: 15,
+                backgroundColor: _col(m.userId),
+                child: Text(m.userName.isNotEmpty ? m.userName[0].toUpperCase() : '?',
+                    style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)),
+              ),
             ),
             const SizedBox(width: 6),
           ],
@@ -628,11 +651,15 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
                 crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   if (!isMe)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4, bottom: 2),
-                      child: Text(m.userName,
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
-                              color: _col(m.userId))),
+                    GestureDetector(
+                      onTap: () => showChatUserSheet(context,
+                          userId: m.userId, userName: m.userName, avatarColor: _col(m.userId)),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 4, bottom: 2),
+                        child: Text(m.userName,
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
+                                color: _col(m.userId))),
+                      ),
                     ),
                   Container(
                     constraints: BoxConstraints(
@@ -764,7 +791,9 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
       // ── Video ─────────────────────────────────────────────────────────────
       case 'video':
         return GestureDetector(
-          onTap: () => _snack('Téléchargez la vidéo depuis : ${ApiConstants.resolveImageUrl(m.mediaUrl ?? "")}'),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) =>
+                  VideoViewScreen(url: ApiConstants.resolveImageUrl(m.mediaUrl ?? '')))),
           child: Stack(alignment: Alignment.center, children: [
             Container(width: 240, height: 160, color: Colors.black,
                 child: const Icon(Icons.videocam, color: Colors.white38, size: 48)),
@@ -798,7 +827,8 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
             ]),
             const SizedBox(height: 8),
             GestureDetector(
-              onTap: () => _snack('Maps: https://maps.google.com/?q=$lat,$lng'),
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => LocationViewScreen(lat: lat, lng: lng, label: label))),
               child: Container(
                 width: 210, height: 90,
                 decoration: BoxDecoration(

@@ -15,9 +15,13 @@ import 'providers/messages_provider.dart';
 import 'providers/notifications_provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
+import 'services/notification_service.dart';
 import 'widgets/globe_car_loader.dart';
 
 void main() {
+  // Fire-and-forget: permission may not resolve until a later user gesture
+  // (browsers require one for the prompt), so the app never waits on this.
+  NotificationService.instance.init();
   runApp(const GlobeTrotterApp());
 }
 
