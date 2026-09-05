@@ -30,7 +30,7 @@ import json
 import logging
 import mimetypes
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -49,7 +49,10 @@ from fastapi.responses import FileResponse
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
-from app.config import SECRET_KEY, ALGORITHM, DATA_DIR, UPLOAD_DIR, MAX_UPLOAD_BYTES
+from app.config import (
+    SECRET_KEY, ALGORITHM, DATA_DIR, UPLOAD_DIR, MAX_UPLOAD_BYTES,
+    LIVEKIT_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET, GLOBAL_CALL_ROOM,
+)
 from app.storage import (
     load_messages,
     append_message,
@@ -60,6 +63,7 @@ from app.storage import (
 )
 from app.connection_manager import ConnectionManager
 from app.clients import notify_mention
+from livekit import api
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("chat-service")
@@ -192,6 +196,33 @@ def online_count():
     return {"online": manager.count()}
 
 
+@app.post("/chat/call/token")
+def global_call_token(current=Depends(get_current_user)):
+    """Everyone gets a token to the SAME room - the Global call is one
+    shared space, not a call-per-session, matching "tap to join whoever's
+    already talking" rather than a scheduling/session concept."""
+    if not LIVEKIT_API_KEY or not LIVEKIT_API_SECRET or not LIVEKIT_URL:
+        raise HTTPException(
+            status_code=503,
+            detail="Les appels ne sont pas configurés sur ce serveur (LIVEKIT_* manquant).",
+        )
+    token = (
+        api.AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET)
+        .with_identity(current["id"])
+        .with_name(current.get("full_name") or "Utilisateur")
+        .with_grants(api.VideoGrants(
+            room_join=True,
+            room=GLOBAL_CALL_ROOM,
+            can_publish=True,
+            can_subscribe=True,
+            can_publish_data=True,
+        ))
+        .with_ttl(timedelta(hours=2))
+        .to_jwt()
+    )
+    return {"url": LIVEKIT_URL, "token": token, "room": GLOBAL_CALL_ROOM}
+
+
 _DELETE_EDIT_ERRORS = {
     "not_found": (404, "Message introuvable"),
     "forbidden": (403, "Vous ne pouvez modifier que vos propres messages"),
@@ -320,6 +351,16 @@ async def websocket_chat(websocket: WebSocket, token: str = Query(...)):
             if msg_type == "typing":
                 await manager.broadcast(json.dumps({
                     "type": "typing",
+                    "user_id": user["id"],
+                    "user_name": user["full_name"],
+                }))
+                continue
+
+            # ── Global call presence (not the call media itself - that's
+            # LiveKit, this is just "hey, someone's in the call room") ──
+            if msg_type in ("call_start", "call_end"):
+                await manager.broadcast(json.dumps({
+                    "type": msg_type,
                     "user_id": user["id"],
                     "user_name": user["full_name"],
                 }))

@@ -18,6 +18,9 @@ services:
     environment:
       SECRET_KEY: ${SECRET_KEY:-globetrotter-phase2-secret-change-me}
       GOOGLE_CLIENT_IDS: ${GOOGLE_CLIENT_IDS:-}
+      LIVEKIT_URL: ${LIVEKIT_URL:-}
+      LIVEKIT_API_KEY: ${LIVEKIT_API_KEY:-}
+      LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET:-}
     volumes:
       - ./user-service/data:/app/data
     restart: unless-stopped
@@ -67,6 +70,9 @@ services:
     environment:
       SECRET_KEY: ${SECRET_KEY:-globetrotter-phase2-secret-change-me}
       USER_SERVICE_URL: http://user-service:8001
+      LIVEKIT_URL: ${LIVEKIT_URL:-}
+      LIVEKIT_API_KEY: ${LIVEKIT_API_KEY:-}
+      LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET:-}
     depends_on:
       - user-service
     volumes:

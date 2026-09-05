@@ -18,6 +18,18 @@ ALGORITHM = "HS256"
 # Global chat - see app/clients.py.
 USER_SERVICE_URL = os.getenv("USER_SERVICE_URL", "http://user-service:8001")
 
+# LiveKit Cloud project, for the Global-chat audio/video call. Empty by
+# default: /chat/call/token returns 503 until these are actually set,
+# rather than crashing chat-service on startup for something optional.
+LIVEKIT_URL = os.getenv("LIVEKIT_URL", "")
+LIVEKIT_API_KEY = os.getenv("LIVEKIT_API_KEY", "")
+LIVEKIT_API_SECRET = os.getenv("LIVEKIT_API_SECRET", "")
+
+# Fixed room name: the Global call is one shared room for everyone, not
+# one-per-session - simplest model matching "join whoever's already
+# talking" rather than needing to track/list separate call sessions.
+GLOBAL_CALL_ROOM = "globetrotter-global-call"
+
 # 50 MB max per upload
 MAX_UPLOAD_BYTES = 50 * 1024 * 1024
 

@@ -9,4 +9,5 @@ python-multipart==0.0.20
 google-auth==2.35.0
 httpx==0.28.1
 requests==2.32.3
+livekit-api==1.2.0
 pytest==8.3.4

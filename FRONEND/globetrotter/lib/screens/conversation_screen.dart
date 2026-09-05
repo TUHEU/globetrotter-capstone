@@ -1,9 +1,12 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../core/api_client.dart';
 import '../providers/auth_provider.dart';
 import '../providers/messages_provider.dart';
 import '../providers/settings_provider.dart';
+import 'call_screen.dart';
 
 class ConversationScreen extends StatefulWidget {
   final String partnerId;
@@ -19,6 +22,33 @@ class _ConversationScreenState extends State<ConversationScreen> {
   final _controller = TextEditingController();
   final _scrollController = ScrollController();
   bool _sending = false;
+  bool _startingCall = false;
+
+  Future<void> _startCall({required bool video}) async {
+    setState(() => _startingCall = true);
+    try {
+      final res = await ApiClient.instance.dio
+          .post('/calls/dm-token', data: {'other_user_id': widget.partnerId});
+      if (!mounted) return;
+      await Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => CallScreen(
+          url: res.data['url'],
+          token: res.data['token'],
+          roomName: res.data['room'],
+          title: widget.partnerName,
+          startWithVideo: video,
+        ),
+      ));
+    } on DioException catch (e) {
+      if (mounted) {
+        final detail = e.response?.data is Map ? e.response?.data['detail'] : null;
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(detail?.toString() ?? 'Impossible de démarrer l\'appel.')));
+      }
+    } finally {
+      if (mounted) setState(() => _startingCall = false);
+    }
+  }
 
   @override
   void initState() {
@@ -74,7 +104,21 @@ class _ConversationScreenState extends State<ConversationScreen> {
     final loading = p.isLoadingConversation(widget.partnerId) && messages.isEmpty;
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.partnerName)),
+      appBar: AppBar(
+        title: Text(widget.partnerName),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.call_outlined),
+            tooltip: 'Appel audio',
+            onPressed: _startingCall ? null : () => _startCall(video: false),
+          ),
+          IconButton(
+            icon: const Icon(Icons.videocam_outlined),
+            tooltip: 'Appel vidéo',
+            onPressed: _startingCall ? null : () => _startCall(video: true),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Expanded(
