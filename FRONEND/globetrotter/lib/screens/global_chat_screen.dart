@@ -21,6 +21,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../core/api_client.dart';
 import '../core/avatars.dart';
 import '../core/constants.dart';
+import '../models/friend.dart';
 import '../providers/auth_provider.dart';
 import '../providers/settings_provider.dart';
 import '../services/notification_service.dart';
@@ -118,6 +119,13 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
   // input bar until sent or cancelled.
   _ChatMsg? _replyTarget;
 
+  // @-mention: userId -> displayName for everyone tagged in the message
+  // currently being composed, plus the live search results shown while
+  // typing "@something".
+  final Map<String, String> _mentionedUsers = {};
+  List<Friend> _mentionSuggestions = [];
+  Timer? _mentionDebounce;
+
   // Audio
   final _recorder = AudioRecorder();
   final _player = AudioPlayer();
@@ -147,6 +155,7 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
   }
 
   void _onTextChanged() {
+    _checkMentionTrigger();
     if (_textCtrl.text.trim().isEmpty) return;
     final now = DateTime.now();
     // Throttle to at most one "typing" event every 2.5s so a burst of
@@ -158,6 +167,69 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
     _ws({'type': 'typing'});
   }
 
+  /// Looks for an unfinished "@query" right before the cursor (e.g. typing
+  /// "hey @jo" shows suggestions for "jo"; a space or the start of the
+  /// message ends the query). Debounces the actual search call.
+  void _checkMentionTrigger() {
+    final text = _textCtrl.text;
+    final cursor = _textCtrl.selection.baseOffset;
+    if (cursor < 0) {
+      setState(() => _mentionSuggestions = []);
+      return;
+    }
+    final upToCursor = text.substring(0, cursor);
+    final at = upToCursor.lastIndexOf('@');
+    if (at == -1) {
+      if (_mentionSuggestions.isNotEmpty) setState(() => _mentionSuggestions = []);
+      return;
+    }
+    // Only a valid trigger if the "@" starts the message or follows
+    // whitespace - "email@domain" shouldn't pop up suggestions.
+    final validStart = at == 0 || RegExp(r'\s').hasMatch(upToCursor[at - 1]);
+    if (!validStart) {
+      if (_mentionSuggestions.isNotEmpty) setState(() => _mentionSuggestions = []);
+      return;
+    }
+    final query = upToCursor.substring(at + 1);
+    if (query.contains(' ') || query.contains('\n')) {
+      if (_mentionSuggestions.isNotEmpty) setState(() => _mentionSuggestions = []);
+      return;
+    }
+    _mentionDebounce?.cancel();
+    _mentionDebounce = Timer(const Duration(milliseconds: 250), () async {
+      try {
+        final res = await ApiClient.instance.dio.get('/users/search', queryParameters: {'q': query});
+        if (!mounted) return;
+        final results = (res.data['results'] as List? ?? [])
+            .map((j) => Friend.fromJson(j as Map<String, dynamic>))
+            .where((f) => f.id != _myId)
+            .take(5)
+            .toList();
+        setState(() => _mentionSuggestions = results);
+      } catch (_) {
+        // Silent: mention autocomplete is a nice-to-have, not worth a
+        // snackbar every time a search hiccups.
+      }
+    });
+  }
+
+  void _pickMention(Friend f) {
+    final text = _textCtrl.text;
+    final cursor = _textCtrl.selection.baseOffset;
+    final upToCursor = text.substring(0, cursor < 0 ? text.length : cursor);
+    final at = upToCursor.lastIndexOf('@');
+    if (at == -1) return;
+    final before = text.substring(0, at);
+    final after = text.substring(cursor < 0 ? text.length : cursor);
+    final insertion = '@${f.fullName} ';
+    _textCtrl.value = TextEditingValue(
+      text: before + insertion + after,
+      selection: TextSelection.collapsed(offset: (before + insertion).length),
+    );
+    _mentionedUsers[f.id] = f.fullName;
+    setState(() => _mentionSuggestions = []);
+  }
+
   @override
   void dispose() {
     _reconnectTimer?.cancel();
@@ -166,6 +238,7 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
     _channel?.sink.close();
     _textCtrl.removeListener(_onTextChanged);
     _textCtrl.dispose();
+    _mentionDebounce?.cancel();
     _scroll.dispose();
     _recorder.dispose();
     _player.dispose();
@@ -373,9 +446,18 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
     if (t.isEmpty) return;
     final payload = <String, dynamic>{'type': 'text', 'text': t};
     if (_replyTarget != null) payload['reply_to'] = _replyTarget!.id;
+    // Only keep mentions whose "@Name" text is still actually present -
+    // if the user backspaced over a tag after inserting it, don't notify
+    // that person for a mention that no longer appears in the message.
+    final mentions = _mentionedUsers.entries
+        .where((e) => t.contains('@${e.value}'))
+        .map((e) => e.key)
+        .toList();
+    if (mentions.isNotEmpty) payload['mentions'] = mentions;
     _ws(payload);
     _textCtrl.clear();
-    setState(() { _showEmoji = false; _replyTarget = null; });
+    _mentionedUsers.clear();
+    setState(() { _showEmoji = false; _replyTarget = null; _mentionSuggestions = []; });
   }
 
   Future<void> _pickImage() async {
@@ -673,6 +755,27 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
                   itemBuilder: (_, i) => _bubble(_msgs[i], theme, isDark),
                 ),
         ),
+        if (_mentionSuggestions.isNotEmpty)
+          Container(
+            constraints: const BoxConstraints(maxHeight: 180),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF0F2418) : Colors.white,
+              border: Border(top: BorderSide(color: theme.dividerColor, width: 0.5)),
+            ),
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: _mentionSuggestions.length,
+              itemBuilder: (_, i) {
+                final f = _mentionSuggestions[i];
+                return ListTile(
+                  dense: true,
+                  leading: UserAvatar(name: f.fullName, avatar: f.avatar, color: theme.colorScheme.primary, radius: 16),
+                  title: Text(f.fullName),
+                  onTap: () => _pickMention(f),
+                );
+              },
+            ),
+          ),
         if (_typingUsers.isNotEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),

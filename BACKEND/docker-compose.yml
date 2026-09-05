@@ -66,6 +66,9 @@ services:
     build: ./chat-service
     environment:
       SECRET_KEY: ${SECRET_KEY:-globetrotter-phase2-secret-change-me}
+      USER_SERVICE_URL: http://user-service:8001
+    depends_on:
+      - user-service
     volumes:
       - ./chat-service/data:/app/data
       - ./chat-service/static:/app/static  # photos/vidéos/audios envoyés dans le chat, sinon perdues à chaque redeploy (voir user-service/static plus bas pour le même souci)

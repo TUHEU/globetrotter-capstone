@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../core/api_client.dart';
+import '../core/avatars.dart';
 import '../models/destination_review.dart';
+import '../models/friend.dart';
 import '../providers/settings_provider.dart';
 
 /// Avis publics sur UNE destination — indépendant des avis sur
@@ -31,18 +35,95 @@ class _DestinationReviewsSectionState extends State<DestinationReviewsSection> {
   final _replyController = TextEditingController();
   bool _submittingReply = false;
 
+  // @-mention (partagé entre le champ "avis" et le champ "réponse") :
+  // userId -> nom affiché, plus les résultats de recherche en cours et
+  // pour quel champ ils s'appliquent.
+  final Map<String, String> _commentMentions = {};
+  final Map<String, String> _replyMentions = {};
+  List<Friend> _mentionSuggestions = [];
+  TextEditingController? _activeMentionController;
+  Timer? _mentionDebounce;
+
   @override
   void initState() {
     super.initState();
     _load();
+    _commentController.addListener(() => _checkMentionTrigger(_commentController));
+    _replyController.addListener(() => _checkMentionTrigger(_replyController));
   }
 
   @override
   void dispose() {
     _commentController.dispose();
     _replyController.dispose();
+    _mentionDebounce?.cancel();
     super.dispose();
   }
+
+  /// Same trigger rule as the Global chat's mention picker: an unfinished
+  /// "@query" right after a space (or at the very start) shows suggestions.
+  void _checkMentionTrigger(TextEditingController ctrl) {
+    final text = ctrl.text;
+    final cursor = ctrl.selection.baseOffset;
+    if (cursor < 0) {
+      if (_activeMentionController == ctrl) setState(() => _mentionSuggestions = []);
+      return;
+    }
+    final upToCursor = text.substring(0, cursor);
+    final at = upToCursor.lastIndexOf('@');
+    if (at == -1 || !(at == 0 || RegExp(r'\s').hasMatch(upToCursor[at - 1]))) {
+      if (_activeMentionController == ctrl && _mentionSuggestions.isNotEmpty) {
+        setState(() => _mentionSuggestions = []);
+      }
+      return;
+    }
+    final query = upToCursor.substring(at + 1);
+    if (query.contains(' ') || query.contains('\n')) {
+      if (_activeMentionController == ctrl && _mentionSuggestions.isNotEmpty) {
+        setState(() => _mentionSuggestions = []);
+      }
+      return;
+    }
+    _activeMentionController = ctrl;
+    _mentionDebounce?.cancel();
+    _mentionDebounce = Timer(const Duration(milliseconds: 250), () async {
+      try {
+        final res = await ApiClient.instance.dio.get('/users/search', queryParameters: {'q': query});
+        if (!mounted || _activeMentionController != ctrl) return;
+        final results = (res.data['results'] as List? ?? [])
+            .map((j) => Friend.fromJson(j as Map<String, dynamic>))
+            .take(5)
+            .toList();
+        setState(() => _mentionSuggestions = results);
+      } catch (_) {
+        // Silent - mention autocomplete is a nice-to-have.
+      }
+    });
+  }
+
+  void _pickMention(Friend f) {
+    final ctrl = _activeMentionController;
+    if (ctrl == null) return;
+    final text = ctrl.text;
+    final cursor = ctrl.selection.baseOffset;
+    final upToCursor = text.substring(0, cursor < 0 ? text.length : cursor);
+    final at = upToCursor.lastIndexOf('@');
+    if (at == -1) return;
+    final before = text.substring(0, at);
+    final after = text.substring(cursor < 0 ? text.length : cursor);
+    final insertion = '@${f.fullName} ';
+    ctrl.value = TextEditingValue(
+      text: before + insertion + after,
+      selection: TextSelection.collapsed(offset: (before + insertion).length),
+    );
+    (ctrl == _commentController ? _commentMentions : _replyMentions)[f.id] = f.fullName;
+    setState(() => _mentionSuggestions = []);
+  }
+
+  /// Mentions whose "@Name" text is still actually present in the given
+  /// text (in case the user backspaced over a tag after inserting it).
+  List<String> _resolveMentions(Map<String, String> tagged, String text) =>
+      tagged.entries.where((e) => text.contains('@${e.value}')).map((e) => e.key).toList();
 
   Future<void> _load() async {
     setState(() => _loading = true);
@@ -74,11 +155,17 @@ class _DestinationReviewsSectionState extends State<DestinationReviewsSection> {
     }
     setState(() => _submitting = true);
     try {
+      final comment = _commentController.text.trim();
       await ApiClient.instance.dio.post(
         '/destinations/${widget.destinationId}/reviews',
-        data: {'rating': _myRating, 'comment': _commentController.text.trim()},
+        data: {
+          'rating': _myRating,
+          'comment': comment,
+          'mentions': _resolveMentions(_commentMentions, comment),
+        },
       );
       _commentController.clear();
+      _commentMentions.clear();
       setState(() => _myRating = 0);
       await _load();
       if (mounted) {
@@ -103,9 +190,10 @@ class _DestinationReviewsSectionState extends State<DestinationReviewsSection> {
     try {
       await ApiClient.instance.dio.post(
         '/destinations/${widget.destinationId}/reviews/$reviewId/replies',
-        data: {'text': text},
+        data: {'text': text, 'mentions': _resolveMentions(_replyMentions, text)},
       );
       _replyController.clear();
+      _replyMentions.clear();
       setState(() => _replyingToId = null);
       await _load();
     } catch (e) {
@@ -117,6 +205,30 @@ class _DestinationReviewsSectionState extends State<DestinationReviewsSection> {
     } finally {
       if (mounted) setState(() => _submittingReply = false);
     }
+  }
+
+  Widget _mentionSuggestionsList(ThemeData theme) {
+    return Container(
+      constraints: const BoxConstraints(maxHeight: 160),
+      margin: const EdgeInsets.only(top: 4),
+      decoration: BoxDecoration(
+        border: Border.all(color: theme.dividerColor),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: _mentionSuggestions.length,
+        itemBuilder: (_, i) {
+          final f = _mentionSuggestions[i];
+          return ListTile(
+            dense: true,
+            leading: UserAvatar(name: f.fullName, avatar: f.avatar, color: theme.colorScheme.primary, radius: 14),
+            title: Text(f.fullName, style: const TextStyle(fontSize: 13)),
+            onTap: () => _pickMention(f),
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -168,6 +280,8 @@ class _DestinationReviewsSectionState extends State<DestinationReviewsSection> {
           maxLength: 500,
           decoration: const InputDecoration(hintText: 'Votre avis sur ce lieu (optionnel)'),
         ),
+        if (_activeMentionController == _commentController && _mentionSuggestions.isNotEmpty)
+          _mentionSuggestionsList(theme),
         Align(
           alignment: Alignment.centerRight,
           child: FilledButton(
@@ -238,17 +352,25 @@ class _DestinationReviewsSectionState extends State<DestinationReviewsSection> {
                           ? Row(
                               children: [
                                 Expanded(
-                                  child: TextField(
-                                    controller: _replyController,
-                                    autofocus: true,
-                                    maxLength: 300,
-                                    style: theme.textTheme.bodySmall,
-                                    decoration: const InputDecoration(
-                                      isDense: true,
-                                      hintText: 'Votre réponse…',
-                                      counterText: '',
-                                    ),
-                                    onSubmitted: (_) => _submitReply(r.id),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      TextField(
+                                        controller: _replyController,
+                                        autofocus: true,
+                                        maxLength: 300,
+                                        style: theme.textTheme.bodySmall,
+                                        decoration: const InputDecoration(
+                                          isDense: true,
+                                          hintText: 'Votre réponse…',
+                                          counterText: '',
+                                        ),
+                                        onSubmitted: (_) => _submitReply(r.id),
+                                      ),
+                                      if (_activeMentionController == _replyController &&
+                                          _mentionSuggestions.isNotEmpty)
+                                        _mentionSuggestionsList(theme),
+                                    ],
                                   ),
                                 ),
                                 _submittingReply

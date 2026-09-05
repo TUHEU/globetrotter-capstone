@@ -8,9 +8,9 @@ from typing import Optional
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from pydantic import BaseModel, Field
 
-from .. import storage
+from .. import storage, clients
 from ..config import BASE_DIR
-from ..security import get_current_user
+from ..security import get_current_user, get_raw_token
 
 router = APIRouter(tags=["Destinations"])
 
@@ -23,10 +23,12 @@ ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp"}
 class DestinationReviewRequest(BaseModel):
     rating: int = Field(ge=1, le=5)
     comment: str = Field(default="", max_length=500)
+    mentions: list[str] = Field(default_factory=list, max_length=20)
 
 
 class ReviewReplyRequest(BaseModel):
     text: str = Field(min_length=1, max_length=300)
+    mentions: list[str] = Field(default_factory=list, max_length=20)
 
 
 @router.get("/categories")
@@ -146,8 +148,10 @@ def submit_destination_review(
     dest_id: str,
     body: DestinationReviewRequest,
     current=Depends(get_current_user),
+    token: str = Depends(get_raw_token),
 ):
-    if not storage.find_destination(dest_id):
+    dest = storage.find_destination(dest_id)
+    if not dest:
         raise HTTPException(status_code=404, detail="Destination not found")
     review = storage.add_destination_review({
         "destination_id": dest_id,
@@ -157,6 +161,9 @@ def submit_destination_review(
         "comment": body.comment.strip(),
         "created_at": datetime.now(timezone.utc).isoformat(),
     })
+    for mentioned_id in dict.fromkeys(body.mentions):  # de-dupe, keep order
+        if mentioned_id != current["id"]:
+            clients.notify_mention(token, mentioned_id, dest["name"], body.comment.strip()[:120])
     return review
 
 
@@ -166,11 +173,13 @@ def reply_to_review(
     review_id: str,
     body: ReviewReplyRequest,
     current=Depends(get_current_user),
+    token: str = Depends(get_raw_token),
 ):
     """Répondre à l'avis d'un autre utilisateur (fil de discussion sous
     chaque avis) - jusqu'ici les avis étaient une simple liste plate,
     personne ne pouvait réagir à ce que quelqu'un d'autre avait écrit."""
-    if not storage.find_destination(dest_id):
+    dest = storage.find_destination(dest_id)
+    if not dest:
         raise HTTPException(status_code=404, detail="Destination not found")
     reply = {
         "id": storage.new_reply_id(),
@@ -182,6 +191,9 @@ def reply_to_review(
     review = storage.add_reply_to_review(dest_id, review_id, reply)
     if review is None:
         raise HTTPException(status_code=404, detail="Review not found")
+    for mentioned_id in dict.fromkeys(body.mentions):
+        if mentioned_id != current["id"]:
+            clients.notify_mention(token, mentioned_id, dest["name"], body.text.strip()[:120])
     return review
 
 

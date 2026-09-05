@@ -11,6 +11,7 @@ Public group chat room where every registered user can:
   • Edit or delete their own text messages within 5 minutes of sending
   • See a "user is typing…" indicator
   • Reply to a specific earlier message (quoted preview)
+  • @-mention another user (they get a notification via User Service)
 
 Transport: WebSocket (/ws/chat?token=<JWT>) — types: text/image/audio/video/
            location/delete/edit/react/typing (send, text/image/audio/video
@@ -24,6 +25,7 @@ REST:       POST   /chat/upload            → media upload → returns URL
 
 Run: uvicorn main:app --reload --host 0.0.0.0 --port 8005
 """
+import asyncio
 import json
 import logging
 import mimetypes
@@ -57,6 +59,7 @@ from app.storage import (
     find_message,
 )
 from app.connection_manager import ConnectionManager
+from app.clients import notify_mention
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("chat-service")
@@ -355,6 +358,13 @@ async def websocket_chat(websocket: WebSocket, token: str = Query(...)):
                         "text": original.get("text", ""),
                     }
 
+            # Client sends the exact user ids it tagged via the @-mention
+            # picker (see chat_hub_screen mention autocomplete) rather than
+            # us trying to regex-parse "@Full Name" back out of free text,
+            # which is ambiguous the moment two people's names overlap or a
+            # name contains spaces.
+            mentions = [m for m in (payload.get("mentions") or []) if isinstance(m, str)][:20]
+
             message = {
                 "id": uuid.uuid4().hex,
                 "user_id": user["id"],
@@ -366,6 +376,7 @@ async def websocket_chat(websocket: WebSocket, token: str = Query(...)):
                 "media_content_type": payload.get("media_content_type"),
                 "location": payload.get("location"),           # {lat, lng, label?}
                 "reply_to": reply_preview,
+                "mentions": mentions,
                 "reactions": {},
                 "ts": _now(),
             }
@@ -374,6 +385,14 @@ async def websocket_chat(websocket: WebSocket, token: str = Query(...)):
 
             envelope = {"type": "message", "message": message}
             await manager.broadcast(json.dumps(envelope))
+
+            if mentions:
+                preview = message["text"][:120] or "vous a mentionné dans le chat"
+                for mentioned_id in mentions:
+                    if mentioned_id != user["id"]:
+                        asyncio.create_task(
+                            asyncio.to_thread(notify_mention, token, mentioned_id, preview)
+                        )
 
     except WebSocketDisconnect:
         manager.disconnect(websocket)

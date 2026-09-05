@@ -53,3 +53,19 @@ def get_user_itineraries(token: str) -> List[Dict[str, Any]]:
     except httpx.RequestError:
         pass
     return []
+
+
+def notify_mention(token: str, user_id: str, context: str, preview: str) -> None:
+    """Tell User Service to create a "you were mentioned" notification -
+    called when someone @-mentions another user in a destination review or
+    reply. Same token-propagation pattern as the two functions above."""
+    try:
+        httpx.post(
+            f"{USER_SERVICE_URL}/notifications/mention",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"user_id": user_id, "context": context, "preview": preview},
+            timeout=5.0,
+        )
+    except httpx.RequestError:
+        # Non-critical: the review/reply itself already saved successfully.
+        pass

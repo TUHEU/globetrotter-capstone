@@ -14,6 +14,10 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 SECRET_KEY = os.getenv("SECRET_KEY", "globetrotter-phase2-secret-change-me")
 ALGORITHM = "HS256"
 
+# Used to notify User Service when someone @-mentions another user in the
+# Global chat - see app/clients.py.
+USER_SERVICE_URL = os.getenv("USER_SERVICE_URL", "http://user-service:8001")
+
 # 50 MB max per upload
 MAX_UPLOAD_BYTES = 50 * 1024 * 1024
 
