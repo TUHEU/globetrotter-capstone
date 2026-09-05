@@ -18,12 +18,14 @@ class NotificationServiceImpl {
       appUserModelId: 'com.globetrotter.app',
       guid: 'a2b6c9e0-6b7a-4b2c-9c1d-7f0f9b3a1234',
     );
-    await _plugin.initialize(const InitializationSettings(
-      android: android,
-      iOS: ios,
-      macOS: ios,
-      windows: windows,
-    ));
+    await _plugin.initialize(
+      settings: const InitializationSettings(
+        android: android,
+        iOS: ios,
+        macOS: ios,
+        windows: windows,
+      ),
+    );
     // Android 13+ requires this explicit runtime request or notifications
     // never show, even with the manifest permission declared.
     await _plugin
@@ -45,6 +47,11 @@ class NotificationServiceImpl {
       iOS: DarwinNotificationDetails(),
       macOS: DarwinNotificationDetails(),
     );
-    await _plugin.show(_nextId++, title, body, details);
+    await _plugin.show(
+      id: _nextId++,
+      title: title,
+      body: body,
+      notificationDetails: details,
+    );
   }
 }

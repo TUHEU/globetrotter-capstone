@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../core/api_client.dart';
+import '../core/constants.dart';
 import '../models/destination.dart';
 import '../services/location_service.dart';
 import '../services/weather_service.dart';

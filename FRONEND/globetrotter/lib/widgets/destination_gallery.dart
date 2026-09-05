@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../core/api_client.dart';
+import '../core/constants.dart';
 import 'network_image_safe.dart';
 
 /// Photo gallery for a destination: swipeable like any normal carousel,
