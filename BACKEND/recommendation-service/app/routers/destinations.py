@@ -247,6 +247,41 @@ def distance_from_user(dest_id: str, lat: float = Query(...), lng: float = Query
         raise HTTPException(status_code=404, detail="Destination not found")
     return {"distance_km": round(_haversine_km(lat, lng, d["lat"], d["lng"]), 2)}
 
+@router.post("/destinations/{dest_id}/photos", status_code=201)
+async def add_destination_photo(
+    dest_id: str,
+    photo: UploadFile = File(...),
+    current=Depends(get_current_user),
+):
+    """Lets any user contribute an extra photo to a destination's gallery
+    (up to 4, on top of the original cover photo) - same crowdsourced,
+    no-moderation-queue spirit as /destinations/submit."""
+    dest = storage.find_destination(dest_id)
+    if not dest:
+        raise HTTPException(status_code=404, detail="Destination not found")
+    if photo.content_type not in ALLOWED_CONTENT_TYPES:
+        raise HTTPException(
+            status_code=400,
+            detail="Format d'image non supporté (JPEG, PNG ou WebP uniquement).",
+        )
+    contents = await photo.read()
+    if len(contents) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=400, detail="Image trop volumineuse (5 Mo maximum).")
+
+    extension = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp"}[photo.content_type]
+    filename = f"g_{uuid.uuid4().hex[:12]}.{extension}"
+    images_dir = BASE_DIR / "static" / "images"
+    images_dir.mkdir(parents=True, exist_ok=True)
+    (images_dir / filename).write_bytes(contents)
+
+    updated = storage.add_destination_photo(dest_id, f"/static/images/{filename}")
+    if updated is None:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cette destination a déjà {storage.MAX_EXTRA_PHOTOS} photos supplémentaires (maximum).",
+        )
+    return updated
+
 
 # ---------------------------------------------------------------------
 # Ajout d'un lieu par un utilisateur, photo comprise - visible par tout

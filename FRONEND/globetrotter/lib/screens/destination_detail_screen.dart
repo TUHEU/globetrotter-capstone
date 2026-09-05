@@ -1,15 +1,17 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../core/constants.dart';
+import '../core/api_client.dart';
 import '../models/destination.dart';
 import '../services/location_service.dart';
 import '../services/weather_service.dart';
 import '../widgets/destination_activity_section.dart';
+import '../widgets/destination_gallery.dart';
 import '../widgets/destination_reviews_section.dart';
 import '../widgets/map3d_view.dart';
 import '../widgets/nearby_places_section.dart';
-import '../widgets/network_image_safe.dart';
 import 'create_itinerary_screen.dart';
 import 'directions_screen.dart';
 
@@ -27,9 +29,18 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
   double? _distanceKm;
   LatLng? _myPosition;
 
+  // Tracked locally so a newly-added photo shows up immediately without
+  // re-fetching the whole destination from the server.
+  late List<String> _extraPhotos;
+  bool _uploadingPhoto = false;
+
+  List<String> get _galleryPhotos =>
+      {widget.destination.image, ..._extraPhotos}.where((u) => u.isNotEmpty).toList();
+
   @override
   void initState() {
     super.initState();
+    _extraPhotos = List<String>.from(widget.destination.images);
     WeatherService.fetchCurrent(widget.destination.lat, widget.destination.lng).then((w) {
       if (!mounted) return;
       setState(() {
@@ -51,6 +62,35 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
     });
   }
 
+  Future<void> _addPhoto() async {
+    if (_extraPhotos.length >= 4) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Cette destination a déjà 4 photos supplémentaires (maximum).')));
+      return;
+    }
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 85);
+    if (picked == null) return;
+    setState(() => _uploadingPhoto = true);
+    try {
+      final bytes = await picked.readAsBytes();
+      final formData = FormData.fromMap({
+        'photo': MultipartFile.fromBytes(bytes, filename: picked.name),
+      });
+      final res = await ApiClient.instance.dio
+          .post('/destinations/${widget.destination.id}/photos', data: formData);
+      final updatedImages = List<String>.from(res.data['images'] ?? []);
+      if (mounted) setState(() => _extraPhotos = updatedImages);
+    } on DioException catch (e) {
+      if (mounted) {
+        final detail = e.response?.data is Map ? e.response?.data['detail'] : null;
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(detail?.toString() ?? 'Échec de l\'envoi de la photo.')));
+      }
+    } finally {
+      if (mounted) setState(() => _uploadingPhoto = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -66,10 +106,31 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
               title: Text(destination.name,
                   style: const TextStyle(
                       shadows: [Shadow(blurRadius: 8, color: Colors.black54)])),
-              background: NetworkImageSafe(
-                url: ApiConstants.resolveImageUrl(destination.image),
-                fit: BoxFit.cover,
-                placeholder: (_) => Container(color: theme.colorScheme.primaryContainer),
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  DestinationGallery(
+                    photoUrls: _galleryPhotos,
+                    placeholderBuilder: (_) => Container(color: theme.colorScheme.primaryContainer),
+                  ),
+                  Positioned(
+                    right: 12,
+                    top: 12,
+                    child: Material(
+                      color: Colors.black45,
+                      shape: const CircleBorder(),
+                      child: IconButton(
+                        tooltip: 'Ajouter une photo',
+                        icon: _uploadingPhoto
+                            ? const SizedBox(
+                                width: 18, height: 18,
+                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                            : const Icon(Icons.add_a_photo_outlined, color: Colors.white, size: 20),
+                        onPressed: _uploadingPhoto ? null : _addPhoto,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

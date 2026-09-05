@@ -6,6 +6,7 @@ class Destination {
   final String description;
   final List<String> tags;
   final String image;
+  final List<String> images; // up to 4 extra community-contributed photos
   final int avgPriceFcfa;
   final String bestTime;
   final int popularity;
@@ -25,6 +26,7 @@ class Destination {
     required this.description,
     required this.tags,
     required this.image,
+    this.images = const [],
     required this.avgPriceFcfa,
     required this.bestTime,
     required this.popularity,
@@ -45,6 +47,7 @@ class Destination {
         description: j['description'] ?? '',
         tags: List<String>.from(j['tags'] ?? []),
         image: j['image'] ?? '',
+        images: List<String>.from(j['images'] ?? []),
         avgPriceFcfa: (j['avg_price_fcfa'] ?? 0).toInt(),
         bestTime: j['best_time'] ?? '',
         popularity: (j['popularity'] ?? 0).toInt(),
@@ -56,4 +59,10 @@ class Destination {
         history: j['history'],
         mapsUrl: j['maps_url'],
       );
+
+  /// All photos in display order: cover photo first, then the extras -
+  /// deduped and with blanks dropped, so callers never need to worry
+  /// about an empty `image` or a stray empty string in `images`.
+  List<String> get allPhotos =>
+      {image, ...images}.where((u) => u.isNotEmpty).toList();
 }

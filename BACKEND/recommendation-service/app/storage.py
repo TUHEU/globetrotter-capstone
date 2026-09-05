@@ -48,9 +48,34 @@ def add_user_submitted_destination(entry: Dict[str, Any]) -> Dict[str, Any]:
     with _lock:
         dests = _read(DESTINATIONS_FILE)
         entry["id"] = f"u_{uuid.uuid4().hex[:10]}"
+        entry.setdefault("images", [])
         dests.append(entry)
         _write(DESTINATIONS_FILE, dests)
         return entry
+
+
+MAX_EXTRA_PHOTOS = 4
+
+
+def add_destination_photo(dest_id: str, url: str) -> Optional[Dict[str, Any]]:
+    """Appends a community-contributed photo to a destination's gallery
+    (capped at MAX_EXTRA_PHOTOS, on top of the main `image`). Any
+    authenticated user can contribute one, same crowdsourced spirit as
+    add_user_submitted_destination itself - there's no per-destination
+    "owner" concept to restrict this to. Returns the updated destination,
+    or None if it doesn't exist or the gallery is already full.
+    """
+    with _lock:
+        dests = _read(DESTINATIONS_FILE)
+        for d in dests:
+            if d["id"] == dest_id:
+                images = d.setdefault("images", [])
+                if len(images) >= MAX_EXTRA_PHOTOS:
+                    return None
+                images.append(url)
+                _write(DESTINATIONS_FILE, dests)
+                return d
+        return None
 
 
 def _read_popularity_overrides() -> Dict[str, int]:
