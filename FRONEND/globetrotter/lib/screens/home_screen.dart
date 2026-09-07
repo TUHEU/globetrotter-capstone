@@ -18,7 +18,8 @@ import '../providers/settings_provider.dart';
 import '../services/deep_link_service.dart';
 import '../services/share_service.dart';
 import '../widgets/achievement_badges.dart';
-import '../widgets/draggable_assistant_button.dart';
+import '../widgets/app_logo_badge.dart';
+import '../widgets/draggable_app_menu_button.dart';
 import '../widgets/travel_stats_card.dart';
 import '../widgets/destination_card.dart';
 import '../widgets/like_comment_bar.dart';
@@ -172,12 +173,8 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(child: pages[_index]),
           ]),
 
-          // ── Floating AI bubble (draggable, like the language button) ───
-          DraggableAssistantButton(
-            hidden: _hideBubble,
-            onTap: () => Navigator.of(context)
-                .push(MaterialPageRoute(builder: (_) => const AssistantScreen())),
-          ),
+          // ── Floating app menu (draggable): AI, Calls, Language, Add place ─
+          DraggableAppMenuButton(hidden: _hideBubble),
         ]),
       ),
       // Mobile bottom nav
@@ -1779,11 +1776,7 @@ class _TripIoDrawer extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(28, 28, 20, 20),
             child: Row(children: [
-              Container(
-                width: 42, height: 42,
-                decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, shape: BoxShape.circle),
-                child: const Icon(Icons.public_rounded, color: Colors.white),
-              ),
+              const AppLogoBadge(size: 42),
               const SizedBox(width: 12),
               const Text('GlobeTrotter', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
             ]),

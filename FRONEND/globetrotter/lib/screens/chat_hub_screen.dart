@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../core/api_client.dart';
 import '../core/avatars.dart';
+import '../widgets/app_logo_badge.dart';
 import '../models/friend.dart';
 import '../providers/friends_provider.dart';
 import '../providers/messages_provider.dart';
@@ -148,19 +149,7 @@ class _GlobalChatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = context.watch<SettingsProvider>().s;
     return ListTile(
-      leading: Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF1B7A3D), Color(0xFF0F5229)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const Icon(Icons.public, color: Colors.white),
-      ),
+      leading: const AppLogoBadge(size: 44),
       title: Text(s.isFr ? 'Chat Global 🌍' : 'Global Chat 🌍',
           style: const TextStyle(fontWeight: FontWeight.w700)),
       subtitle: Text(

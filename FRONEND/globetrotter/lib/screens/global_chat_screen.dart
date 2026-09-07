@@ -26,6 +26,7 @@ import '../models/friend.dart';
 import '../providers/auth_provider.dart';
 import '../providers/settings_provider.dart';
 import '../services/notification_service.dart';
+import '../widgets/app_logo_badge.dart';
 import 'chat_user_sheet.dart';
 import 'call_screen.dart';
 import 'location_view_screen.dart';
@@ -753,7 +754,7 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
         elevation: 0,
         backgroundColor: isDark ? const Color(0xFF0F2418) : Colors.white,
         title: Row(children: [
-          const Icon(Icons.public_rounded, size: 22),
+          const AppLogoBadge(size: 22),
           const SizedBox(width: 8),
           const Expanded(child: Text('Global Chat', overflow: TextOverflow.ellipsis)),
           Container(
