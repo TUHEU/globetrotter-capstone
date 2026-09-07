@@ -7,6 +7,29 @@ import 'package:maplibre_gl/maplibre_gl.dart';
 /// des tuiles vectorielles OSM en libre accès, usage illimité, sans compte.
 const String kMapStyleUrl = 'https://tiles.openfreemap.org/styles/liberty';
 
+/// Satellite imagery, free and keyless (Esri's public World Imagery
+/// service - the same base layer countless free map apps use for exactly
+/// this reason). Built as an inline raster style rather than a hosted
+/// style.json since it's just one tile source with no vector layers.
+const String kSatelliteStyleJson = '''
+{
+  "version": 8,
+  "sources": {
+    "satellite": {
+      "type": "raster",
+      "tiles": [
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+      ],
+      "tileSize": 256,
+      "attribution": "Esri, Maxar, Earthstar Geographics"
+    }
+  },
+  "layers": [
+    {"id": "satellite", "type": "raster", "source": "satellite"}
+  ]
+}
+''';
+
 /// Un point à afficher sur la carte 3D (arrêt d'itinéraire, destination...).
 class Map3DStop {
   final LatLng point;
@@ -56,6 +79,7 @@ class Map3DView extends StatefulWidget {
 class Map3DViewState extends State<Map3DView> {
   MapLibreMapController? _controller;
   late bool _tilted;
+  bool _satellite = false;
 
   @override
   void initState() {
@@ -193,6 +217,17 @@ class Map3DViewState extends State<Map3DView> {
     )));
   }
 
+  /// Bascule entre le style vectoriel (rues, bâtiments 3D) et l'imagerie
+  /// satellite. setStyleString() recharge tout le style - annotations et
+  /// tracé compris - donc onStyleLoadedCallback (déjà branché sur
+  /// _onStyleLoaded) se redéclenche naturellement et redessine tout, sans
+  /// logique supplémentaire ici.
+  void toggleSatellite() {
+    if (_controller == null) return;
+    setState(() => _satellite = !_satellite);
+    _controller!.setStyleString(_satellite ? kSatelliteStyleJson : kMapStyleUrl);
+  }
+
   @override
   Widget build(BuildContext context) {
     final initial = widget.stops.isNotEmpty
@@ -201,7 +236,7 @@ class Map3DViewState extends State<Map3DView> {
     return Stack(
       children: [
         MapLibreMap(
-          styleString: kMapStyleUrl,
+          styleString: _satellite ? kSatelliteStyleJson : kMapStyleUrl,
           // On dessine nous-mêmes le point "vous êtes ici" via _drawAnnotations
           // (cohérent avec les marqueurs des arrêts, et fonctionne pareil sur
           // Web où le point bleu natif de MapLibre n'est pas disponible).
@@ -215,6 +250,16 @@ class Map3DViewState extends State<Map3DView> {
               : (point, coords) => widget.onMapTap!(coords),
           compassEnabled: true,
           trackCameraPosition: true,
+        ),
+        Positioned(
+          right: 12,
+          bottom: 66,
+          child: FloatingActionButton.small(
+            heroTag: null,
+            tooltip: _satellite ? 'Plan' : 'Satellite',
+            onPressed: toggleSatellite,
+            child: Icon(_satellite ? Icons.map_outlined : Icons.satellite_alt_outlined),
+          ),
         ),
         Positioned(
           right: 12,
