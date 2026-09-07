@@ -5,6 +5,17 @@ import 'constants.dart';
 
 /// Single Dio client for the whole app. Attaches the JWT automatically.
 class ApiClient {
+  /// Same-origin WebSocket used by the working chat/call backend.
+  static String resolveChatWsUrl(String token) {
+    final base = Uri.parse(ApiConstants.baseUrl);
+    final scheme = base.scheme == 'https' ? 'wss' : 'ws';
+    return base.replace(
+      scheme: scheme,
+      path: '/chat/ws',
+      queryParameters: {'token': token},
+    ).toString();
+  }
+
   ApiClient._();
   static final ApiClient instance = ApiClient._();
 

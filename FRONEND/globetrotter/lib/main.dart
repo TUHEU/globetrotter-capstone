@@ -17,6 +17,8 @@ import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'services/notification_service.dart';
 import 'widgets/globe_car_loader.dart';
+import 'services/call_controller.dart';
+import 'screens/persistent_call_screen.dart';
 
 void main() {
   // Fire-and-forget: permission may not resolve until a later user gesture
@@ -25,13 +27,33 @@ void main() {
   runApp(const GlobeTrotterApp());
 }
 
-class GlobeTrotterApp extends StatelessWidget {
+class GlobeTrotterApp extends StatefulWidget {
   const GlobeTrotterApp({super.key});
+
+  @override
+  State<GlobeTrotterApp> createState() => _GlobeTrotterAppState();
+}
+
+class _GlobeTrotterAppState extends State<GlobeTrotterApp> {
+  late final CallController _callController;
+
+  @override
+  void initState() {
+    super.initState();
+    _callController = CallController();
+  }
+
+  @override
+  void dispose() {
+    _callController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: _callController),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => DestinationProvider()),
         ChangeNotifierProvider(create: (_) => ItineraryProvider()),
