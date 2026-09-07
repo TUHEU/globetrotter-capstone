@@ -218,14 +218,14 @@ class Map3DViewState extends State<Map3DView> {
   }
 
   /// Bascule entre le style vectoriel (rues, bâtiments 3D) et l'imagerie
-  /// satellite. setStyleString() recharge tout le style - annotations et
+  /// satellite. setStyle() recharge tout le style - annotations et
   /// tracé compris - donc onStyleLoadedCallback (déjà branché sur
   /// _onStyleLoaded) se redéclenche naturellement et redessine tout, sans
   /// logique supplémentaire ici.
   void toggleSatellite() {
     if (_controller == null) return;
     setState(() => _satellite = !_satellite);
-    _controller!.setStyleString(_satellite ? kSatelliteStyleJson : kMapStyleUrl);
+    _controller!.setStyle(_satellite ? kSatelliteStyleJson : kMapStyleUrl);
   }
 
   @override
