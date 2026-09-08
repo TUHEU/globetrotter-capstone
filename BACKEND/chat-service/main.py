@@ -1,450 +1,269 @@
 """
-GlobeTrotter – Global Chat Service
-===================================
-Public group chat room where every registered user can:
-  • Send text + emoji messages
-  • Share images (JPEG/PNG/WEBP/GIF)
-  • Share audio recordings (MP3/OGG/M4A/WAV)
-  • Share video clips (MP4/MOV/WEBM)
-  • Share their GPS location (lat/lng)
-  • React with emoji to any message
-  • Edit or delete their own text messages within 5 minutes of sending
-  • See a "user is typing…" indicator
-  • Reply to a specific earlier message (quoted preview)
-  • @-mention another user (they get a notification via User Service)
-
-Transport: WebSocket (/ws/chat?token=<JWT>) — types: text/image/audio/video/
-           location/delete/edit/react/typing (send, text/image/audio/video
-           also accept an optional reply_to=<message_id>) — message/delete/
-           edit/reaction/typing/system/online/error (receive)
-REST:       POST   /chat/upload            → media upload → returns URL
-            GET    /chat/history           → last N messages (auth required)
-            GET    /chat/online            → count of live connections
-            DELETE /chat/messages/{id}     → delete own message (≤5 min)
-            PATCH  /chat/messages/{id}     → edit own text message (≤5 min)
-
-Run: uvicorn main:app --reload --host 0.0.0.0 --port 8005
+Chat Service with WebRTC P2P Signalling (replaces LiveKit)
 """
-import asyncio
+
+import os
 import json
-import logging
-import mimetypes
-import uuid
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
-from typing import Optional
-
-from fastapi import (
-    Depends,
-    FastAPI,
-    File,
-    HTTPException,
-    Query,
-    UploadFile,
-    WebSocket,
-    WebSocketDisconnect,
-)
+from datetime import datetime
+from typing import Dict, Set
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
-from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
-
-from app.config import (
-    SECRET_KEY, ALGORITHM, DATA_DIR, UPLOAD_DIR, MAX_UPLOAD_BYTES,
-    LIVEKIT_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET, GLOBAL_CALL_ROOM,
-)
-from app.storage import (
-    load_messages,
-    append_message,
-    delete_message,
-    edit_message,
-    add_reaction,
-    find_message,
-)
-from app.connection_manager import ConnectionManager
-from app.clients import notify_mention
-from livekit import api
+from contextlib import asynccontextmanager
+import socketio
+import logging
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("chat-service")
+logger = logging.getLogger(__name__)
 
-app = FastAPI(
-    title="GlobeTrotter – Global Chat",
-    version="1.0.0",
-    description="Real-time public group chat for GlobeTrotter Yaoundé",
+CHAT_SERVICE_URL = os.getenv('CHAT_SERVICE_URL', 'http://localhost:8002')
+USER_SERVICE_URL = os.getenv('USER_SERVICE_URL', 'http://localhost:8001')
+
+sio = socketio.AsyncServer(
+    async_mode='asgi',
+    cors_allowed_origins=['*'],
+    ping_timeout=60,
+    ping_interval=30,
+    max_http_buffer_size=1e6,
 )
+
+call_rooms: Dict[str, Set[str]] = {}
+user_sockets: Dict[str, str] = {}
+call_timers: Dict[str, dict] = {}
+
+
+@sio.event
+async def connect(sid, environ):
+    logger.info(f"[WebRTC] Client connected: {sid}")
+
+
+@sio.event
+async def disconnect(sid):
+    user_id = next((uid for uid, session in user_sockets.items() if session == sid), None)
+    if user_id:
+        del user_sockets[user_id]
+        logger.info(f"[WebRTC] User disconnected: {user_id}")
+    
+    rooms_to_check = list(call_rooms.keys())
+    for room_id in rooms_to_check:
+        if sid in call_rooms.get(room_id, set()):
+            call_rooms[room_id].discard(sid)
+            
+            await sio.emit('call:participant_left', {
+                'userId': user_id or 'unknown',
+                'roomId': room_id,
+            }, to=room_id)
+            
+            if not call_rooms[room_id]:
+                del call_rooms[room_id]
+                if room_id in call_timers:
+                    del call_timers[room_id]
+
+
+@sio.event
+async def call_join(sid, data):
+    try:
+        room_id = data.get('roomId')
+        user_id = data.get('userId')
+        user_name = data.get('userName')
+        
+        if not room_id or not user_id:
+            await sio.emit('error', {'message': 'Missing roomId or userId'}, to=sid)
+            return
+        
+        user_sockets[user_id] = sid
+        sio.enter_room(sid, room_id)
+        
+        if room_id not in call_rooms:
+            call_rooms[room_id] = set()
+            call_timers[room_id] = {
+                'start': datetime.now().isoformat(),
+                'participants': [user_id],
+            }
+        else:
+            call_timers[room_id]['participants'].append(user_id)
+        
+        call_rooms[room_id].add(sid)
+        
+        logger.info(f"[WebRTC] User {user_id} ({user_name}) joined room {room_id}")
+        
+        participants = list(call_timers[room_id]['participants'])
+        participants.remove(user_id)
+        
+        await sio.emit('call:participants_list', {
+            'participants': participants,
+            'roomId': room_id,
+        }, to=sid)
+        
+        await sio.emit('call:participant_joined', {
+            'userId': user_id,
+            'userName': user_name,
+            'roomId': room_id,
+        }, to=room_id, skip_sid=sid)
+        
+    except Exception as e:
+        logger.error(f"[WebRTC] Error in call_join: {str(e)}")
+        await sio.emit('error', {'message': f'Failed to join room: {str(e)}'}, to=sid)
+
+
+@sio.event
+async def call_signal(sid, data):
+    try:
+        signal_type = data.get('type')
+        from_user_id = data.get('from')
+        to_user_id = data.get('to')
+        
+        if not signal_type or not from_user_id:
+            logger.warning(f"[WebRTC] Invalid signal message: {data}")
+            return
+        
+        if to_user_id and to_user_id in user_sockets:
+            recipient_sid = user_sockets[to_user_id]
+            
+            message = {
+                'type': signal_type,
+                'from': from_user_id,
+                'fromSid': sid,
+            }
+            
+            if signal_type == 'offer':
+                message['offer'] = data.get('offer')
+            elif signal_type == 'answer':
+                message['answer'] = data.get('answer')
+            elif signal_type == 'ice':
+                message['candidate'] = data.get('candidate')
+            
+            await sio.emit('call:signal', message, to=recipient_sid)
+            logger.info(f"[WebRTC] Relayed {signal_type} from {from_user_id} to {to_user_id}")
+        
+        room_id = data.get('roomId')
+        if room_id:
+            await sio.emit('call:signal', {
+                'type': signal_type,
+                'from': from_user_id,
+                ('offer' if signal_type == 'offer' else 
+                 'answer' if signal_type == 'answer' else 
+                 'candidate'): data.get(signal_type),
+            }, to=room_id, skip_sid=sid)
+            
+    except Exception as e:
+        logger.error(f"[WebRTC] Error in call_signal: {str(e)}")
+
+
+@sio.event
+async def call_hang_up(sid, data):
+    try:
+        room_id = data.get('roomId')
+        user_id = data.get('userId')
+        
+        if room_id and room_id in call_rooms:
+            await sio.emit('call:participant_left', {
+                'userId': user_id,
+                'roomId': room_id,
+            }, to=room_id, skip_sid=sid)
+            
+            sio.leave_room(sid, room_id)
+            if sid in call_rooms[room_id]:
+                call_rooms[room_id].discard(sid)
+            
+            if not call_rooms[room_id]:
+                del call_rooms[room_id]
+                if room_id in call_timers:
+                    del call_timers[room_id]
+            else:
+                if room_id in call_timers:
+                    call_timers[room_id]['participants'].remove(user_id)
+            
+            logger.info(f"[WebRTC] User {user_id} hung up from room {room_id}")
+        
+    except Exception as e:
+        logger.error(f"[WebRTC] Error in call_hang_up: {str(e)}")
+
+
+@sio.event
+async def chat_send_message(sid, data):
+    try:
+        room_id = data.get('roomId')
+        
+        if not room_id:
+            await sio.emit('error', {'message': 'Missing roomId'}, to=sid)
+            return
+        
+        message_data = {
+            'userId': data.get('userId'),
+            'userName': data.get('userName'),
+            'message': data.get('message'),
+            'timestamp': data.get('timestamp', datetime.now().isoformat()),
+            'type': 'text'
+        }
+        
+        await sio.emit('chat:message_received', message_data, to=room_id)
+        
+        logger.info(f"[Chat] Message from {data.get('userId')} in room {room_id}")
+        
+    except Exception as e:
+        logger.error(f"[Chat] Error sending message: {str(e)}")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("[Chat Service] Starting with WebRTC support...")
+    yield
+    logger.info("[Chat Service] Shutting down...")
+    
+
+app = FastAPI(title="Chat Service with WebRTC", lifespan=lifespan)
+
+app.mount('/socket.io', socketio.ASGIApp(sio, static_files={
+    '/': {'filename': 'index.html'}
+}))
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=['*'],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=['*'],
+    allow_headers=['*'],
 )
-
-manager = ConnectionManager()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login", auto_error=False)
-
-# ──────────────────────────────────────────────────────────────────────────────
-# Auth helpers
-# ──────────────────────────────────────────────────────────────────────────────
-
-def _decode_token(token: str) -> Optional[dict]:
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload.get("sub")
-        full_name = payload.get("full_name", "Explorateur")
-        avatar = payload.get("avatar")
-        if not user_id:
-            return None
-        return {"id": user_id, "full_name": full_name, "avatar": avatar}
-    except JWTError:
-        return None
-
-
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    user = _decode_token(token)
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
-    return user
-
-
-# ──────────────────────────────────────────────────────────────────────────────
-# Static media files
-# ──────────────────────────────────────────────────────────────────────────────
-
-@app.get("/static/chat_uploads/{filename}")
-def serve_upload(filename: str):
-    if "/" in filename or ".." in filename:
-        raise HTTPException(status_code=400, detail="Invalid filename")
-    path = UPLOAD_DIR / filename
-    if not path.is_file():
-        raise HTTPException(status_code=404, detail="File not found")
-    media_type, _ = mimetypes.guess_type(str(path))
-    return FileResponse(path, media_type=media_type or "application/octet-stream")
-
-
-# ──────────────────────────────────────────────────────────────────────────────
-# REST endpoints
-# ──────────────────────────────────────────────────────────────────────────────
-
-ALLOWED_MIME = {
-    # Images
-    "image/jpeg", "image/png", "image/webp", "image/gif",
-    # Audio
-    "audio/mpeg", "audio/ogg", "audio/mp4", "audio/wav",
-    "audio/x-m4a", "audio/aac", "audio/webm",
-    # Video
-    "video/mp4", "video/quicktime", "video/webm", "video/x-matroska",
-}
-
-MIME_TO_KIND = {
-    **{m: "image" for m in ("image/jpeg", "image/png", "image/webp", "image/gif")},
-    **{m: "audio" for m in ("audio/mpeg", "audio/ogg", "audio/mp4", "audio/wav",
-                             "audio/x-m4a", "audio/aac", "audio/webm")},
-    **{m: "video" for m in ("video/mp4", "video/quicktime", "video/webm",
-                              "video/x-matroska")},
-}
-
-
-@app.post("/chat/upload")
-async def upload_media(
-    file: UploadFile = File(...),
-    current=Depends(get_current_user),
-):
-    """Upload image / audio / video. Returns the public URL to embed in a message."""
-    content_type = file.content_type or ""
-    if content_type not in ALLOWED_MIME:
-        raise HTTPException(
-            status_code=415,
-            detail=f"Unsupported media type: {content_type}. "
-                   f"Allowed: {', '.join(sorted(ALLOWED_MIME))}",
-        )
-
-    data = await file.read()
-    if len(data) > MAX_UPLOAD_BYTES:
-        mb = MAX_UPLOAD_BYTES // (1024 * 1024)
-        raise HTTPException(status_code=413, detail=f"File too large (max {mb} MB)")
-
-    ext = Path(file.filename or "upload").suffix or mimetypes.guess_extension(content_type) or ""
-    filename = f"{uuid.uuid4().hex}{ext}"
-    dest = UPLOAD_DIR / filename
-    dest.write_bytes(data)
-
-    kind = MIME_TO_KIND.get(content_type, "image")
-    return {
-        "url": f"/static/chat_uploads/{filename}",
-        "kind": kind,
-        "content_type": content_type,
-        "size": len(data),
-    }
-
-
-@app.get("/chat/history")
-def chat_history(
-    limit: int = Query(default=80, ge=1, le=300),
-    current=Depends(get_current_user),
-):
-    msgs = load_messages()
-    return {"messages": msgs[-limit:], "total": len(msgs)}
-
-
-@app.get("/chat/online")
-def online_count():
-    return {"online": manager.count()}
-
-
-@app.post("/chat/call/token")
-def global_call_token(current=Depends(get_current_user)):
-    """Everyone gets a token to the SAME room - the Global call is one
-    shared space, not a call-per-session, matching "tap to join whoever's
-    already talking" rather than a scheduling/session concept."""
-    if not LIVEKIT_API_KEY or not LIVEKIT_API_SECRET or not LIVEKIT_URL:
-        raise HTTPException(
-            status_code=503,
-            detail="Les appels ne sont pas configurés sur ce serveur (LIVEKIT_* manquant).",
-        )
-    token = (
-        api.AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET)
-        .with_identity(current["id"])
-        .with_name(current.get("full_name") or "Utilisateur")
-        .with_grants(api.VideoGrants(
-            room_join=True,
-            room=GLOBAL_CALL_ROOM,
-            can_publish=True,
-            can_subscribe=True,
-            can_publish_data=True,
-        ))
-        .with_ttl(timedelta(hours=2))
-        .to_jwt()
-    )
-    return {"url": LIVEKIT_URL, "token": token, "room": GLOBAL_CALL_ROOM}
-
-
-_DELETE_EDIT_ERRORS = {
-    "not_found": (404, "Message introuvable"),
-    "forbidden": (403, "Vous ne pouvez modifier que vos propres messages"),
-    "expired": (403, "Le délai de 5 minutes est dépassé"),
-    "not_editable": (400, "Ce type de message ne peut pas être modifié"),
-}
-
-
-@app.delete("/chat/messages/{message_id}")
-def remove_message(message_id: str, current=Depends(get_current_user)):
-    status = delete_message(message_id, current["id"])
-    if status != "ok":
-        code, detail = _DELETE_EDIT_ERRORS[status]
-        raise HTTPException(status_code=code, detail=detail)
-    # Broadcast deletion
-    import asyncio
-    asyncio.create_task(
-        manager.broadcast(json.dumps({"type": "delete", "message_id": message_id}))
-    )
-    return {"deleted": True}
-
-
-@app.patch("/chat/messages/{message_id}")
-async def edit_message_rest(
-    message_id: str,
-    text: str = Query(..., min_length=1, max_length=4000),
-    current=Depends(get_current_user),
-):
-    status, updated = edit_message(message_id, current["id"], text.strip())
-    if status != "ok":
-        code, detail = _DELETE_EDIT_ERRORS[status]
-        raise HTTPException(status_code=code, detail=detail)
-    await manager.broadcast(json.dumps({"type": "edit", "message": updated}))
-    return {"message": updated}
-
-
-@app.post("/chat/messages/{message_id}/react")
-async def react(
-    message_id: str,
-    emoji: str = Query(..., min_length=1, max_length=8),
-    current=Depends(get_current_user),
-):
-    updated = add_reaction(message_id, current["id"], emoji)
-    if updated is None:
-        raise HTTPException(status_code=404, detail="Message not found")
-    await manager.broadcast(
-        json.dumps({"type": "reaction", "message_id": message_id, "reactions": updated})
-    )
-    return {"reactions": updated}
 
 
 @app.get("/health")
-def health():
-    return {"service": "chat-service", "status": "ok", "online": manager.count()}
+async def health_check():
+    return {
+        "status": "ok",
+        "service": "chat-service",
+        "features": ["websocket", "webrtc-signalling", "chat-messaging"],
+        "active_rooms": len(call_rooms),
+        "connected_users": len(user_sockets)
+    }
 
 
-# ──────────────────────────────────────────────────────────────────────────────
-# WebSocket endpoint
-# ──────────────────────────────────────────────────────────────────────────────
-
-@app.websocket("/ws/chat")
-async def websocket_chat(websocket: WebSocket, token: str = Query(...)):
-    user = _decode_token(token)
-    if not user:
-        await websocket.close(code=4001, reason="Unauthorized")
-        return
-
-    await manager.connect(websocket, user)
-
-    # Announce join
-    join_event = json.dumps({
-        "type": "system",
-        "text": f"🌍 {user['full_name']} a rejoint le chat",
-        "ts": _now(),
-    })
-    await manager.broadcast(join_event)
-    # Send online count to all
-    await manager.broadcast(json.dumps({"type": "online", "count": manager.count()}))
-
-    try:
-        while True:
-            raw = await websocket.receive_text()
-            try:
-                payload = json.loads(raw)
-            except json.JSONDecodeError:
-                continue
-
-            msg_type = payload.get("type", "text")
-
-            # ── Delete own message (within the edit/delete window) ───────
-            if msg_type == "delete":
-                mid = payload.get("message_id", "")
-                status = delete_message(mid, user["id"])
-                if status == "ok":
-                    await manager.broadcast(
-                        json.dumps({"type": "delete", "message_id": mid})
-                    )
-                else:
-                    _, detail = _DELETE_EDIT_ERRORS[status]
-                    await websocket.send_text(json.dumps({
-                        "type": "error", "action": "delete",
-                        "message_id": mid, "detail": detail,
-                    }))
-                continue
-
-            # ── Edit own text message (within the edit/delete window) ────
-            if msg_type == "edit":
-                mid = payload.get("message_id", "")
-                new_text = (payload.get("text") or "").strip()
-                if not mid or not new_text:
-                    continue
-                status, updated = edit_message(mid, user["id"], new_text)
-                if status == "ok":
-                    await manager.broadcast(
-                        json.dumps({"type": "edit", "message": updated})
-                    )
-                else:
-                    _, detail = _DELETE_EDIT_ERRORS[status]
-                    await websocket.send_text(json.dumps({
-                        "type": "error", "action": "edit",
-                        "message_id": mid, "detail": detail,
-                    }))
-                continue
-
-            # ── Typing indicator (ephemeral, not stored) ─────────────────
-            if msg_type == "typing":
-                await manager.broadcast(json.dumps({
-                    "type": "typing",
-                    "user_id": user["id"],
-                    "user_name": user["full_name"],
-                }))
-                continue
-
-            # ── Global call presence (not the call media itself - that's
-            # LiveKit, this is just "hey, someone's in the call room") ──
-            if msg_type in ("call_start", "call_end"):
-                await manager.broadcast(json.dumps({
-                    "type": msg_type,
-                    "user_id": user["id"],
-                    "user_name": user["full_name"],
-                }))
-                continue
-
-            # ── Emoji reaction ──────────────────────────────────────────
-            if msg_type == "react":
-                mid = payload.get("message_id", "")
-                emoji = payload.get("emoji", "")
-                if mid and emoji:
-                    updated = add_reaction(mid, user["id"], emoji)
-                    if updated is not None:
-                        await manager.broadcast(json.dumps({
-                            "type": "reaction",
-                            "message_id": mid,
-                            "reactions": updated,
-                        }))
-                continue
-
-            # ── Regular message (text / image / audio / video / location) ─
-            allowed_kinds = {"text", "image", "audio", "video", "location"}
-            if msg_type not in allowed_kinds:
-                continue
-
-            reply_preview = None
-            reply_to_id = payload.get("reply_to")
-            if reply_to_id:
-                original = find_message(reply_to_id)
-                if original is not None:
-                    # Snapshot at send-time so the quote still makes sense
-                    # even if the original is edited/deleted afterwards.
-                    reply_preview = {
-                        "id": original["id"],
-                        "user_name": original["user_name"],
-                        "type": original["type"],
-                        "text": original.get("text", ""),
-                    }
-
-            # Client sends the exact user ids it tagged via the @-mention
-            # picker (see chat_hub_screen mention autocomplete) rather than
-            # us trying to regex-parse "@Full Name" back out of free text,
-            # which is ambiguous the moment two people's names overlap or a
-            # name contains spaces.
-            mentions = [m for m in (payload.get("mentions") or []) if isinstance(m, str)][:20]
-
-            message = {
-                "id": uuid.uuid4().hex,
-                "user_id": user["id"],
-                "user_name": user["full_name"],
-                "avatar": user.get("avatar"),
-                "type": msg_type,
-                "text": payload.get("text", ""),
-                "media_url": payload.get("media_url"),         # image/audio/video
-                "media_content_type": payload.get("media_content_type"),
-                "location": payload.get("location"),           # {lat, lng, label?}
-                "reply_to": reply_preview,
-                "mentions": mentions,
-                "reactions": {},
-                "ts": _now(),
+@app.get("/stats")
+async def get_stats():
+    return {
+        "active_call_rooms": len(call_rooms),
+        "connected_users": len(user_sockets),
+        "rooms": {
+            room_id: {
+                'participants': list(call_timers.get(room_id, {}).get('participants', [])),
+                'started': call_timers.get(room_id, {}).get('start'),
             }
-
-            append_message(message)
-
-            envelope = {"type": "message", "message": message}
-            await manager.broadcast(json.dumps(envelope))
-
-            if mentions:
-                preview = message["text"][:120] or "vous a mentionné dans le chat"
-                for mentioned_id in mentions:
-                    if mentioned_id != user["id"]:
-                        asyncio.create_task(
-                            asyncio.to_thread(notify_mention, token, mentioned_id, preview)
-                        )
-
-    except WebSocketDisconnect:
-        manager.disconnect(websocket)
-        leave_event = json.dumps({
-            "type": "system",
-            "text": f"👋 {user['full_name']} a quitté le chat",
-            "ts": _now(),
-        })
-        await manager.broadcast(leave_event)
-        await manager.broadcast(json.dumps({"type": "online", "count": manager.count()}))
+            for room_id in call_rooms.keys()
+        }
+    }
 
 
-def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+@app.get("/call/token")
+async def get_call_token(room_id: str, user_id: str):
+    return {
+        "token": "",
+        "url": "",
+        "room": room_id,
+        "protocol": "webrtc-p2p",
+        "message": "Use Socket.IO signalling for WebRTC calls"
+    }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.getenv('CHAT_SERVICE_PORT', '8002'))
+    uvicorn.run(app, host="0.0.0.0", port=port, workers=1)
