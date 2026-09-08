@@ -30,7 +30,7 @@
       "culture",
       "art"
     ],
-    "image": "/static/images/y002.jpg",
+    "image": "/static/images/y072.png",
     "avg_price_fcfa": 1500,
     "best_time": "Mar - Dim, journée",
     "popularity": 75,
@@ -50,7 +50,7 @@
       "history",
       "photo"
     ],
-    "image": "/static/images/y003.jpg",
+    "image": "/static/images/y073.png",
     "avg_price_fcfa": 0,
     "best_time": "Matin",
     "popularity": 70,
@@ -69,7 +69,7 @@
       "culture",
       "history"
     ],
-    "image": "/static/images/y004.jpg",
+    "image": "/static/images/y052.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Journée",
     "popularity": 65,
@@ -90,7 +90,7 @@
       "hiking",
       "romance"
     ],
-    "image": "/static/images/y005.jpg",
+    "image": "/static/images/y053.png",
     "avg_price_fcfa": 1000,
     "best_time": "16h - 18h30",
     "popularity": 86,
@@ -110,7 +110,7 @@
       "wildlife",
       "family"
     ],
-    "image": "/static/images/y006.jpg",
+    "image": "/static/images/y054.png",
     "avg_price_fcfa": 2000,
     "best_time": "Matin",
     "popularity": 68,
@@ -131,7 +131,7 @@
       "adventure",
       "family"
     ],
-    "image": "/static/images/y007.jpg",
+    "image": "/static/images/y055.jpg",
     "avg_price_fcfa": 7500,
     "best_time": "Matin, sur réservation",
     "popularity": 72,
@@ -151,7 +151,7 @@
       "family",
       "relax"
     ],
-    "image": "/static/images/y008.jpg",
+    "image": "/static/images/y056.jpg",
     "avg_price_fcfa": 1000,
     "best_time": "Après-midi",
     "popularity": 60,
@@ -172,7 +172,7 @@
       "relax",
       "romance"
     ],
-    "image": "/static/images/y009.jpg",
+    "image": "/static/images/y057.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Fin d'après-midi",
     "popularity": 55,
@@ -192,7 +192,7 @@
       "culture",
       "food"
     ],
-    "image": "/static/images/y010.jpg",
+    "image": "/static/images/y058.png",
     "avg_price_fcfa": 5000,
     "best_time": "Matin en semaine",
     "popularity": 78,
@@ -211,7 +211,7 @@
       "shopping",
       "culture"
     ],
-    "image": "/static/images/y011.jpg",
+    "image": "/static/images/y059.jpg",
     "avg_price_fcfa": 5000,
     "best_time": "Matin",
     "popularity": 70,
@@ -231,7 +231,7 @@
       "art",
       "culture"
     ],
-    "image": "/static/images/y012.jpg",
+    "image": "/static/images/y060.jpg",
     "avg_price_fcfa": 10000,
     "best_time": "Journée",
     "popularity": 62,
@@ -251,7 +251,7 @@
       "culture",
       "history"
     ],
-    "image": "/static/images/y013.jpg",
+    "image": "/static/images/y061.png",
     "avg_price_fcfa": 2000,
     "best_time": "Sur rendez-vous",
     "popularity": 50,
@@ -290,7 +290,7 @@
       "culture",
       "events"
     ],
-    "image": "/static/images/y015.jpg",
+    "image": "/static/images/y062.png",
     "avg_price_fcfa": 0,
     "best_time": "Selon événements",
     "popularity": 45,
@@ -311,7 +311,7 @@
       "sport",
       "events"
     ],
-    "image": "/static/images/y016.jpg",
+    "image": "/static/images/y063.jpg",
     "avg_price_fcfa": 3000,
     "best_time": "Jours de match",
     "popularity": 66,
@@ -351,7 +351,7 @@
       "food",
       "relax"
     ],
-    "image": "/static/images/y018.jpg",
+    "image": "/static/images/y064.jpg",
     "avg_price_fcfa": 120000,
     "best_time": "Toute l'année",
     "popularity": 80,
@@ -374,7 +374,7 @@
       "relax",
       "romance"
     ],
-    "image": "/static/images/y019.jpg",
+    "image": "/static/images/y065.jpg",
     "avg_price_fcfa": 90000,
     "best_time": "Toute l'année",
     "popularity": 74,
@@ -430,7 +430,7 @@
     "tags": [
       "food"
     ],
-    "image": "/static/images/y022.jpg",
+    "image": "/static/images/y066.jpg",
     "avg_price_fcfa": 12000,
     "best_time": "Déjeuner & dîner",
     "popularity": 58,
@@ -915,7 +915,7 @@
       "culture",
       "religion"
     ],
-    "image": "/static/images/y047.jpg",
+    "image": "/static/images/y068.jpg",
     "avg_price_fcfa": 0,
     "best_time": "Journée",
     "popularity": 19,
@@ -933,7 +933,7 @@
     "tags": [
       "culture"
     ],
-    "image": "/static/images/y048.jpg",
+    "image": "/static/images/y067.jpg",
     "avg_price_fcfa": 1000,
     "best_time": "Soirée",
     "popularity": 23,
@@ -991,7 +991,7 @@
       "stade",
       "evenement"
     ],
-    "image": "/static/images/y051.jpg",
+    "image": "/static/images/y071.jpg",
     "avg_price_fcfa": 2000,
     "best_time": "Jour de match",
     "popularity": 70,
@@ -1389,11 +1389,11 @@
       "shopping",
       "food"
     ],
-    "image": "https://source.unsplash.com/800x600/?market,cameroon",
+    "image": "/static/images/y069.jpg",
     "avg_price_fcfa": 2000,
     "best_time": "Matin",
     "popularity": 26,
-    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.917,
     "lng": 11.522,
     "maps_url": "https://maps.google.com/?q=3.917,11.522"
@@ -1538,11 +1538,11 @@
       "photo",
       "nature"
     ],
-    "image": "https://source.unsplash.com/800x600/?market,cameroon",
+    "image": "/static/images/y070.jpg",
     "avg_price_fcfa": 1000,
     "best_time": "Matin",
     "popularity": 18,
-    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
     "lat": 3.857,
     "lng": 11.527,
     "maps_url": "https://maps.google.com/?q=3.857,11.527"
@@ -1621,5 +1621,1471 @@
     "submitted_by_name": "Via Gateway",
     "submitted_at": "2026-08-27T20:24:33.864844+00:00",
     "id": "u_9026155b13"
+  },
+  {
+    "id": "y074",
+    "name": "1ère Mosquée de la Briqueterie (1936)",
+    "quartier": "Briqueterie",
+    "category": "attraction",
+    "description": "La toute première mosquée construite dans le quartier de la Briqueterie, un repère historique et spirituel du Yaoundé musulman.",
+    "tags": [
+      "history",
+      "culture"
+    ],
+    "image": "/static/images/y074.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.873,
+    "lng": 11.51,
+    "maps_url": "https://maps.google.com/?q=3.873,11.51"
+  },
+  {
+    "id": "y075",
+    "name": "Kaelo Café",
+    "quartier": "Bastos",
+    "category": "cafe",
+    "description": "Café cosy prisé pour le café local, les pâtisseries et une ambiance calme, idéal pour travailler ou se retrouver entre amis.",
+    "tags": [
+      "coffee",
+      "chill"
+    ],
+    "image": "/static/images/y075.jpg",
+    "images": [],
+    "avg_price_fcfa": 3000,
+    "best_time": "Matin - Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y076",
+    "name": "NK Hôtel",
+    "quartier": "Bastos",
+    "category": "hotel",
+    "description": "Hôtel confortable au cœur de Bastos, apprécié pour son bon rapport qualité-prix et sa proximité avec les ambassades.",
+    "tags": [
+      "hotel",
+      "business"
+    ],
+    "image": "/static/images/y076.jpg",
+    "images": [],
+    "avg_price_fcfa": 35000,
+    "best_time": "Toute l'année",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y077",
+    "name": "Résidence La Perle",
+    "quartier": "Bastos",
+    "category": "hotel",
+    "description": "Résidence meublée haut de gamme pour séjours courts ou longs, avec services hôteliers.",
+    "tags": [
+      "hotel",
+      "business"
+    ],
+    "image": "/static/images/y077.jpg",
+    "images": [],
+    "avg_price_fcfa": 40000,
+    "best_time": "Toute l'année",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y078",
+    "name": "The Famous",
+    "quartier": "Bastos",
+    "category": "bar",
+    "description": "Bar-restaurant branché de Bastos, ambiance conviviale, souvent animé en soirée.",
+    "tags": [
+      "nightlife",
+      "food"
+    ],
+    "image": "/static/images/y078.jpg",
+    "images": [],
+    "avg_price_fcfa": 5000,
+    "best_time": "Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y079",
+    "name": "Albatros Premium Hôtel",
+    "quartier": "Centre-ville",
+    "category": "hotel",
+    "description": "Hôtel premium au centre-ville offrant confort moderne et accès facile aux administrations et commerces.",
+    "tags": [
+      "hotel",
+      "business"
+    ],
+    "image": "/static/images/y079.jpg",
+    "images": [],
+    "avg_price_fcfa": 45000,
+    "best_time": "Toute l'année",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y080",
+    "name": "Bar Panoramique",
+    "quartier": "Mont Fébé",
+    "category": "bar",
+    "description": "Bar avec vue panoramique sur Yaoundé, parfait pour un verre au coucher du soleil.",
+    "tags": [
+      "nightlife",
+      "photo"
+    ],
+    "image": "/static/images/y080.jpg",
+    "images": [],
+    "avg_price_fcfa": 4000,
+    "best_time": "Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.902,
+    "lng": 11.528,
+    "maps_url": "https://maps.google.com/?q=3.902,11.528"
+  },
+  {
+    "id": "y081",
+    "name": "Black & White Sportsbar",
+    "quartier": "Bastos",
+    "category": "bar",
+    "description": "Sportsbar populaire pour regarder les matchs en groupe, ambiance animée et grands écrans.",
+    "tags": [
+      "nightlife",
+      "sports"
+    ],
+    "image": "/static/images/y081.jpg",
+    "images": [],
+    "avg_price_fcfa": 5000,
+    "best_time": "Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y082",
+    "name": "Bois d'Ébène",
+    "quartier": "Melen",
+    "category": "nature",
+    "description": "Petite forêt urbaine préservée offrant une pause verdoyante loin de l'agitation de la ville.",
+    "tags": [
+      "nature",
+      "walk"
+    ],
+    "image": "/static/images/y082.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Matin",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.856,
+    "lng": 11.487,
+    "maps_url": "https://maps.google.com/?q=3.856,11.487"
+  },
+  {
+    "id": "y083",
+    "name": "Briqueterie Soya",
+    "quartier": "Briqueterie",
+    "category": "restaurant",
+    "description": "Étals de soya (brochettes grillées) réputés de la Briqueterie, une expérience street-food incontournable la nuit.",
+    "tags": [
+      "food",
+      "nightlife"
+    ],
+    "image": "/static/images/y083.jpg",
+    "images": [],
+    "avg_price_fcfa": 1500,
+    "best_time": "Soir - Nuit",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.873,
+    "lng": 11.51,
+    "maps_url": "https://maps.google.com/?q=3.873,11.51"
+  },
+  {
+    "id": "y084",
+    "name": "Carrino Pizzeria",
+    "quartier": "Bastos",
+    "category": "restaurant",
+    "description": "Pizzeria appréciée pour ses pizzas au feu de bois et son ambiance familiale.",
+    "tags": [
+      "food",
+      "family"
+    ],
+    "image": "/static/images/y084.jpg",
+    "images": [],
+    "avg_price_fcfa": 6000,
+    "best_time": "Midi - Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y085",
+    "name": "Cez Fitness Club",
+    "quartier": "Bastos",
+    "category": "sports",
+    "description": "Salle de sport moderne équipée, cours collectifs et coachs personnels.",
+    "tags": [
+      "sports",
+      "fitness"
+    ],
+    "image": "/static/images/y085.jpg",
+    "images": [],
+    "avg_price_fcfa": 10000,
+    "best_time": "Toute la journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y086",
+    "name": "Chef Marcello Restaurant",
+    "quartier": "Bastos",
+    "category": "restaurant",
+    "description": "Restaurant gastronomique réputé pour sa cuisine raffinée et son service soigné.",
+    "tags": [
+      "food",
+      "romantic"
+    ],
+    "image": "/static/images/y086.jpg",
+    "images": [],
+    "avg_price_fcfa": 12000,
+    "best_time": "Midi - Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y087",
+    "name": "Chez Kali",
+    "quartier": "Centre-ville",
+    "category": "restaurant",
+    "description": "Adresse populaire pour la cuisine camerounaise traditionnelle à prix accessible.",
+    "tags": [
+      "food",
+      "local"
+    ],
+    "image": "/static/images/y087.jpg",
+    "images": [],
+    "avg_price_fcfa": 2500,
+    "best_time": "Midi - Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y088",
+    "name": "Club de Golf de Yaoundé",
+    "quartier": "Mont Fébé",
+    "category": "sports",
+    "description": "Parcours de golf 18 trous nichés dans la verdure du Mont Fébé, ouvert aux membres et visiteurs.",
+    "tags": [
+      "sports",
+      "nature"
+    ],
+    "image": "/static/images/y088.jpg",
+    "images": [],
+    "avg_price_fcfa": 20000,
+    "best_time": "Matin",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.902,
+    "lng": 11.528,
+    "maps_url": "https://maps.google.com/?q=3.902,11.528"
+  },
+  {
+    "id": "y089",
+    "name": "Cosy Pool",
+    "quartier": "Bastos",
+    "category": "entertainment",
+    "description": "Piscine et espace détente prisé le week-end pour se rafraîchir en famille ou entre amis.",
+    "tags": [
+      "family",
+      "chill"
+    ],
+    "image": "/static/images/y089.jpg",
+    "images": [],
+    "avg_price_fcfa": 5000,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y090",
+    "name": "Eco Park",
+    "quartier": "Ngousso",
+    "category": "nature",
+    "description": "Espace vert aménagé pour la détente, le sport léger et les sorties en famille.",
+    "tags": [
+      "nature",
+      "family"
+    ],
+    "image": "/static/images/y090.jpg",
+    "images": [],
+    "avg_price_fcfa": 500,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.885,
+    "lng": 11.535,
+    "maps_url": "https://maps.google.com/?q=3.885,11.535"
+  },
+  {
+    "id": "y091",
+    "name": "Espace Commercial du Mfoundi",
+    "quartier": "Centre-ville",
+    "category": "market",
+    "description": "Complexe commercial central regroupant boutiques et services variés.",
+    "tags": [
+      "shopping"
+    ],
+    "image": "/static/images/y091.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y092",
+    "name": "Forêt Urbaine N3",
+    "quartier": "Nkolbisson",
+    "category": "nature",
+    "description": "Zone boisée urbaine préservée, agréable pour une marche au calme.",
+    "tags": [
+      "nature",
+      "walk"
+    ],
+    "image": "/static/images/y092.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Matin",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.85,
+    "lng": 11.44,
+    "maps_url": "https://maps.google.com/?q=3.85,11.44"
+  },
+  {
+    "id": "y093",
+    "name": "Grand Marché de Biyem-Assi",
+    "quartier": "Biyem-Assi",
+    "category": "market",
+    "description": "Marché de quartier animé, produits frais et articles du quotidien à prix locaux.",
+    "tags": [
+      "shopping",
+      "local"
+    ],
+    "image": "/static/images/y093.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.838,
+    "lng": 11.488,
+    "maps_url": "https://maps.google.com/?q=3.838,11.488"
+  },
+  {
+    "id": "y094",
+    "name": "Hôtel La Falaise",
+    "quartier": "Mont Fébé",
+    "category": "hotel",
+    "description": "Hôtel perché offrant une vue dégagée sur la ville, cadre calme et reposant.",
+    "tags": [
+      "hotel",
+      "photo"
+    ],
+    "image": "/static/images/y094.jpg",
+    "images": [],
+    "avg_price_fcfa": 38000,
+    "best_time": "Toute l'année",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.902,
+    "lng": 11.528,
+    "maps_url": "https://maps.google.com/?q=3.902,11.528"
+  },
+  {
+    "id": "y095",
+    "name": "Jardin Botanique de Yaoundé",
+    "quartier": "Centre-ville",
+    "category": "nature",
+    "description": "Espace vert historique en plein centre-ville, idéal pour une pause nature.",
+    "tags": [
+      "nature",
+      "walk"
+    ],
+    "image": "/static/images/y095.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Matin - Après-midi",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y096",
+    "name": "Jardin Public",
+    "quartier": "Centre-ville",
+    "category": "nature",
+    "description": "Petit jardin public fréquenté pour la détente en journée.",
+    "tags": [
+      "nature",
+      "chill"
+    ],
+    "image": "/static/images/y096.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y097",
+    "name": "Kbou Fitness Club",
+    "quartier": "Essos",
+    "category": "sports",
+    "description": "Salle de sport de quartier avec équipements complets et cours collectifs.",
+    "tags": [
+      "sports",
+      "fitness"
+    ],
+    "image": "/static/images/y097.jpg",
+    "images": [],
+    "avg_price_fcfa": 8000,
+    "best_time": "Toute la journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.87,
+    "lng": 11.525,
+    "maps_url": "https://maps.google.com/?q=3.87,11.525"
+  },
+  {
+    "id": "y098",
+    "name": "L'Hybride Restaurant",
+    "quartier": "Bastos",
+    "category": "restaurant",
+    "description": "Restaurant moderne au concept fusion, cadre design et carte variée.",
+    "tags": [
+      "food"
+    ],
+    "image": "/static/images/y098.jpg",
+    "images": [],
+    "avg_price_fcfa": 8000,
+    "best_time": "Midi - Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y099",
+    "name": "La Bacchus Plus",
+    "quartier": "Bastos",
+    "category": "bar",
+    "description": "Cave à vin et bar convivial pour les amateurs de bonnes bouteilles.",
+    "tags": [
+      "nightlife"
+    ],
+    "image": "/static/images/y099.jpg",
+    "images": [],
+    "avg_price_fcfa": 6000,
+    "best_time": "Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y100",
+    "name": "La Cantine",
+    "quartier": "Centre-ville",
+    "category": "restaurant",
+    "description": "Cantine populaire pour un déjeuner rapide et savoureux en centre-ville.",
+    "tags": [
+      "food",
+      "local"
+    ],
+    "image": "/static/images/y100.jpg",
+    "images": [],
+    "avg_price_fcfa": 2000,
+    "best_time": "Midi",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y101",
+    "name": "La Maison du Café",
+    "quartier": "Bastos",
+    "category": "cafe",
+    "description": "Torréfacteur et café local, spécialisé dans le café camerounais de qualité.",
+    "tags": [
+      "coffee"
+    ],
+    "image": "/static/images/y101.jpg",
+    "images": [],
+    "avg_price_fcfa": 2500,
+    "best_time": "Matin - Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y102",
+    "name": "La Pizzeria Yaoundé",
+    "quartier": "Bastos",
+    "category": "restaurant",
+    "description": "Pizzeria conviviale au cœur de Bastos, pizzas généreuses et ambiance décontractée.",
+    "tags": [
+      "food",
+      "family"
+    ],
+    "image": "/static/images/y102.jpg",
+    "images": [],
+    "avg_price_fcfa": 6500,
+    "best_time": "Midi - Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y103",
+    "name": "La Villa des Lys",
+    "quartier": "Bastos",
+    "category": "restaurant",
+    "description": "Restaurant élégant dans un cadre de villa, idéal pour les dîners d'affaires ou en couple.",
+    "tags": [
+      "food",
+      "romantic"
+    ],
+    "image": "/static/images/y103.jpg",
+    "images": [],
+    "avg_price_fcfa": 15000,
+    "best_time": "Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y104",
+    "name": "Le Safoutier",
+    "quartier": "Bastos",
+    "category": "restaurant",
+    "description": "Restaurant apprécié pour sa cuisine camerounaise revisitée et son cadre agréable.",
+    "tags": [
+      "food",
+      "local"
+    ],
+    "image": "/static/images/y104.jpg",
+    "images": [],
+    "avg_price_fcfa": 7000,
+    "best_time": "Midi - Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y105",
+    "name": "Macadam Bikers",
+    "quartier": "Centre-ville",
+    "category": "sports",
+    "description": "Club et point de rassemblement pour les passionnés de moto et de deux-roues.",
+    "tags": [
+      "sports",
+      "community"
+    ],
+    "image": "/static/images/y105.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Week-end",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y106",
+    "name": "Maison Blanche",
+    "quartier": "Bastos",
+    "category": "restaurant",
+    "description": "Restaurant réputé dans un cadre élégant, cuisine internationale et camerounaise.",
+    "tags": [
+      "food"
+    ],
+    "image": "/static/images/y106.jpg",
+    "images": [],
+    "avg_price_fcfa": 10000,
+    "best_time": "Midi - Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y107",
+    "name": "Majestic Cinéma",
+    "quartier": "Centre-ville",
+    "category": "entertainment",
+    "description": "Salle de cinéma populaire du centre-ville pour les sorties film en famille ou entre amis.",
+    "tags": [
+      "entertainment",
+      "family"
+    ],
+    "image": "/static/images/y107.jpg",
+    "images": [],
+    "avg_price_fcfa": 3000,
+    "best_time": "Après-midi - Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y108",
+    "name": "Marché aux Bestiaux",
+    "quartier": "Nkolbisson",
+    "category": "market",
+    "description": "Marché traditionnel dédié à la vente de bétail, une immersion dans le commerce local.",
+    "tags": [
+      "local",
+      "culture"
+    ],
+    "image": "/static/images/y108.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Matin",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.85,
+    "lng": 11.44,
+    "maps_url": "https://maps.google.com/?q=3.85,11.44"
+  },
+  {
+    "id": "y109",
+    "name": "Marché aux Fruits et Légumes",
+    "quartier": "Mvog-Mbi",
+    "category": "market",
+    "description": "Marché de produits frais réputé pour la qualité et la variété des fruits et légumes.",
+    "tags": [
+      "food",
+      "local"
+    ],
+    "image": "/static/images/y109.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Matin",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y110",
+    "name": "Marché de Bois",
+    "quartier": "Nkolbisson",
+    "category": "market",
+    "description": "Marché spécialisé dans le bois de construction et l'ameublement artisanal.",
+    "tags": [
+      "local"
+    ],
+    "image": "/static/images/y110.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.85,
+    "lng": 11.44,
+    "maps_url": "https://maps.google.com/?q=3.85,11.44"
+  },
+  {
+    "id": "y111",
+    "name": "Marché de Melen",
+    "quartier": "Melen",
+    "category": "market",
+    "description": "Marché de quartier animé, produits du quotidien à prix abordables.",
+    "tags": [
+      "local",
+      "shopping"
+    ],
+    "image": "/static/images/y111.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.856,
+    "lng": 11.487,
+    "maps_url": "https://maps.google.com/?q=3.856,11.487"
+  },
+  {
+    "id": "y112",
+    "name": "Marché de Nkolbisson",
+    "quartier": "Nkolbisson",
+    "category": "market",
+    "description": "Grand marché de quartier, référence pour les habitants de la zone ouest de Yaoundé.",
+    "tags": [
+      "local",
+      "shopping"
+    ],
+    "image": "/static/images/y112.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.85,
+    "lng": 11.44,
+    "maps_url": "https://maps.google.com/?q=3.85,11.44"
+  },
+  {
+    "id": "y113",
+    "name": "Marché des Vivres du Parcours Vita",
+    "quartier": "Centre-ville",
+    "category": "market",
+    "description": "Marché de vivres frais situé près du Parcours Vita, pratique et bien approvisionné.",
+    "tags": [
+      "food",
+      "local"
+    ],
+    "image": "/static/images/y113.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Matin",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y114",
+    "name": "Marché Madagascar",
+    "quartier": "Nlongkak",
+    "category": "market",
+    "description": "Marché populaire de Nlongkak connu localement sous le nom de Madagascar.",
+    "tags": [
+      "local",
+      "shopping"
+    ],
+    "image": "/static/images/y114.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.876,
+    "lng": 11.51,
+    "maps_url": "https://maps.google.com/?q=3.876,11.51"
+  },
+  {
+    "id": "y115",
+    "name": "Marché Nsam",
+    "quartier": "Nsam",
+    "category": "market",
+    "description": "Marché de quartier vivant, produits frais et articles variés.",
+    "tags": [
+      "local",
+      "shopping"
+    ],
+    "image": "/static/images/y115.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.855,
+    "lng": 11.515,
+    "maps_url": "https://maps.google.com/?q=3.855,11.515"
+  },
+  {
+    "id": "y116",
+    "name": "Mont Akok Ndoe",
+    "quartier": "Nkolbisson",
+    "category": "nature",
+    "description": "Colline offrant une randonnée accessible et une vue dégagée sur les environs de Yaoundé.",
+    "tags": [
+      "nature",
+      "hiking"
+    ],
+    "image": "/static/images/y116.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Matin",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.85,
+    "lng": 11.44,
+    "maps_url": "https://maps.google.com/?q=3.85,11.44"
+  },
+  {
+    "id": "y117",
+    "name": "Mont Éloumden",
+    "quartier": "Nkolbisson",
+    "category": "nature",
+    "description": "Sommet apprécié des randonneurs locaux pour sa vue et son calme.",
+    "tags": [
+      "nature",
+      "hiking"
+    ],
+    "image": "/static/images/y117.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Matin",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.85,
+    "lng": 11.44,
+    "maps_url": "https://maps.google.com/?q=3.85,11.44"
+  },
+  {
+    "id": "y118",
+    "name": "Mont Mbankolo",
+    "quartier": "Nkolbisson",
+    "category": "nature",
+    "description": "Colline verdoyante prisée pour la randonnée en périphérie de Yaoundé.",
+    "tags": [
+      "nature",
+      "hiking"
+    ],
+    "image": "/static/images/y118.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Matin",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.85,
+    "lng": 11.44,
+    "maps_url": "https://maps.google.com/?q=3.85,11.44"
+  },
+  {
+    "id": "y119",
+    "name": "Mont Messa",
+    "quartier": "Nkolbisson",
+    "category": "nature",
+    "description": "Point de randonnée local offrant une belle vue panoramique.",
+    "tags": [
+      "nature",
+      "hiking"
+    ],
+    "image": "/static/images/y119.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Matin",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.85,
+    "lng": 11.44,
+    "maps_url": "https://maps.google.com/?q=3.85,11.44"
+  },
+  {
+    "id": "y120",
+    "name": "Mont Minloua",
+    "quartier": "Nkolbisson",
+    "category": "nature",
+    "description": "Colline accessible pour une randonnée matinale loin de l'agitation urbaine.",
+    "tags": [
+      "nature",
+      "hiking"
+    ],
+    "image": "/static/images/y120.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Matin",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.85,
+    "lng": 11.44,
+    "maps_url": "https://maps.google.com/?q=3.85,11.44"
+  },
+  {
+    "id": "y121",
+    "name": "Mont Ngoya",
+    "quartier": "Nkolbisson",
+    "category": "nature",
+    "description": "Sommet local apprécié pour la randonnée et l'air pur.",
+    "tags": [
+      "nature",
+      "hiking"
+    ],
+    "image": "/static/images/y121.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Matin",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.85,
+    "lng": 11.44,
+    "maps_url": "https://maps.google.com/?q=3.85,11.44"
+  },
+  {
+    "id": "y122",
+    "name": "Mont Nkolondom",
+    "quartier": "Nkolondom",
+    "category": "nature",
+    "description": "Colline de Nkolondom, destination de randonnée avec vue sur la périphérie nord de Yaoundé.",
+    "tags": [
+      "nature",
+      "hiking"
+    ],
+    "image": "/static/images/y122.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Matin",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.935,
+    "lng": 11.515,
+    "maps_url": "https://maps.google.com/?q=3.935,11.515"
+  },
+  {
+    "id": "y123",
+    "name": "Mont Zokye",
+    "quartier": "Nkolbisson",
+    "category": "nature",
+    "description": "Colline tranquille pour les amateurs de randonnée en périphérie de Yaoundé.",
+    "tags": [
+      "nature",
+      "hiking"
+    ],
+    "image": "/static/images/y123.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Matin",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.85,
+    "lng": 11.44,
+    "maps_url": "https://maps.google.com/?q=3.85,11.44"
+  },
+  {
+    "id": "y124",
+    "name": "Monument aux Morts",
+    "quartier": "Centre-ville",
+    "category": "attraction",
+    "description": "Monument commémoratif en hommage aux victimes des guerres, lieu de mémoire du centre-ville.",
+    "tags": [
+      "history",
+      "culture"
+    ],
+    "image": "/static/images/y124.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y125",
+    "name": "Monument du Docteur Eugène Jamot",
+    "quartier": "Centre-ville",
+    "category": "attraction",
+    "description": "Monument dédié au médecin qui lutta contre la maladie du sommeil au Cameroun.",
+    "tags": [
+      "history",
+      "culture"
+    ],
+    "image": "/static/images/y125.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y126",
+    "name": "Monument Leclerc-Éboué",
+    "quartier": "Centre-ville",
+    "category": "attraction",
+    "description": "Monument historique du centre-ville rendant hommage à la période coloniale et à la Résistance.",
+    "tags": [
+      "history"
+    ],
+    "image": "/static/images/y126.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y127",
+    "name": "Musée des Animaux Empaillés",
+    "quartier": "Centre-ville",
+    "category": "museum",
+    "description": "Petit musée de taxidermie présentant la faune camerounaise, curiosité éducative.",
+    "tags": [
+      "culture",
+      "family"
+    ],
+    "image": "/static/images/y127.jpg",
+    "images": [],
+    "avg_price_fcfa": 1000,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y128",
+    "name": "Musée Ethnographique d'Afrique Centrale",
+    "quartier": "Centre-ville",
+    "category": "museum",
+    "description": "Musée dédié à l'histoire et aux traditions des peuples de la forêt d'Afrique centrale.",
+    "tags": [
+      "culture",
+      "history"
+    ],
+    "image": "/static/images/y128.jpg",
+    "images": [],
+    "avg_price_fcfa": 1500,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y129",
+    "name": "Ô Paletuvier",
+    "quartier": "Bastos",
+    "category": "restaurant",
+    "description": "Restaurant au cadre végétal apaisant, spécialités locales et internationales.",
+    "tags": [
+      "food"
+    ],
+    "image": "/static/images/y129.jpg",
+    "images": [],
+    "avg_price_fcfa": 8000,
+    "best_time": "Midi - Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y130",
+    "name": "Ô Vive Restaurant",
+    "quartier": "Bastos",
+    "category": "restaurant",
+    "description": "Restaurant convivial avec une carte variée, apprécié pour ses plats généreux.",
+    "tags": [
+      "food"
+    ],
+    "image": "/static/images/y130.jpg",
+    "images": [],
+    "avg_price_fcfa": 7500,
+    "best_time": "Midi - Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y131",
+    "name": "Palais de l'Unité",
+    "quartier": "Etoudi",
+    "category": "attraction",
+    "description": "Palais présidentiel du Cameroun, visible depuis l'extérieur, symbole du pouvoir national.",
+    "tags": [
+      "history",
+      "photo"
+    ],
+    "image": "/static/images/y131.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.905,
+    "lng": 11.502,
+    "maps_url": "https://maps.google.com/?q=3.905,11.502"
+  },
+  {
+    "id": "y132",
+    "name": "Palais des Sports de Yaoundé",
+    "quartier": "Centre-ville",
+    "category": "sports",
+    "description": "Salle omnisports accueillant compétitions et évènements sportifs majeurs.",
+    "tags": [
+      "sports"
+    ],
+    "image": "/static/images/y132.jpg",
+    "images": [],
+    "avg_price_fcfa": 2000,
+    "best_time": "Selon évènement",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y133",
+    "name": "Parcours Vita",
+    "quartier": "Centre-ville",
+    "category": "sports",
+    "description": "Piste de jogging aménagée très fréquentée par les sportifs de Yaoundé, surtout le matin.",
+    "tags": [
+      "sports",
+      "outdoor"
+    ],
+    "image": "/static/images/y133.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Matin - Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y134",
+    "name": "Pizzeria Glacier Grill Dolcezza",
+    "quartier": "Bastos",
+    "category": "restaurant",
+    "description": "Pizzeria-glacier familiale, idéale pour un repas décontracté suivi d'une glace.",
+    "tags": [
+      "food",
+      "family"
+    ],
+    "image": "/static/images/y134.jpg",
+    "images": [],
+    "avg_price_fcfa": 6000,
+    "best_time": "Midi - Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y135",
+    "name": "Place du 20 Mai",
+    "quartier": "Centre-ville",
+    "category": "attraction",
+    "description": "Place emblématique du centre-ville, lieu des grandes cérémonies et défilés nationaux.",
+    "tags": [
+      "history",
+      "culture",
+      "photo"
+    ],
+    "image": "/static/images/y135.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y136",
+    "name": "Playce Yaoundé",
+    "quartier": "Centre-ville",
+    "category": "market",
+    "description": "Centre commercial moderne regroupant boutiques, restaurants et loisirs.",
+    "tags": [
+      "shopping",
+      "entertainment"
+    ],
+    "image": "/static/images/y136.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y137",
+    "name": "Prodiges Hôtel",
+    "quartier": "Centre-ville",
+    "category": "hotel",
+    "description": "Hôtel de bon standing au centre-ville, pratique pour les voyages d'affaires.",
+    "tags": [
+      "hotel",
+      "business"
+    ],
+    "image": "/static/images/y137.jpg",
+    "images": [],
+    "avg_price_fcfa": 30000,
+    "best_time": "Toute l'année",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y138",
+    "name": "Résidence Massou",
+    "quartier": "Bastos",
+    "category": "hotel",
+    "description": "Résidence meublée confortable pour séjours de courte ou moyenne durée.",
+    "tags": [
+      "hotel"
+    ],
+    "image": "/static/images/y138.jpg",
+    "images": [],
+    "avg_price_fcfa": 32000,
+    "best_time": "Toute l'année",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y139",
+    "name": "Roof Top",
+    "quartier": "Bastos",
+    "category": "bar",
+    "description": "Bar en terrasse avec vue dégagée, ambiance lounge en soirée.",
+    "tags": [
+      "nightlife",
+      "photo"
+    ],
+    "image": "/static/images/y139.png",
+    "images": [],
+    "avg_price_fcfa": 6000,
+    "best_time": "Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y140",
+    "name": "Safyad Hôtel",
+    "quartier": "Centre-ville",
+    "category": "hotel",
+    "description": "Hôtel central pratique, bon rapport qualité-prix pour un séjour en ville.",
+    "tags": [
+      "hotel"
+    ],
+    "image": "/static/images/y140.jpg",
+    "images": [],
+    "avg_price_fcfa": 28000,
+    "best_time": "Toute l'année",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y141",
+    "name": "Sindz Palace Hôtel",
+    "quartier": "Bastos",
+    "category": "hotel",
+    "description": "Hôtel élégant offrant un service soigné dans le quartier prisé de Bastos.",
+    "tags": [
+      "hotel",
+      "business"
+    ],
+    "image": "/static/images/y141.jpg",
+    "images": [],
+    "avg_price_fcfa": 42000,
+    "best_time": "Toute l'année",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y142",
+    "name": "Star Mall",
+    "quartier": "Centre-ville",
+    "category": "market",
+    "description": "Centre commercial fréquenté pour le shopping et la restauration rapide.",
+    "tags": [
+      "shopping"
+    ],
+    "image": "/static/images/y142.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y143",
+    "name": "Starland Hôtel",
+    "quartier": "Centre-ville",
+    "category": "hotel",
+    "description": "Hôtel accessible en plein centre-ville, pratique pour les courts séjours.",
+    "tags": [
+      "hotel"
+    ],
+    "image": "/static/images/y143.jpg",
+    "images": [],
+    "avg_price_fcfa": 25000,
+    "best_time": "Toute l'année",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y144",
+    "name": "Statue de Charles Atangana",
+    "quartier": "Centre-ville",
+    "category": "attraction",
+    "description": "Statue rendant hommage à Charles Atangana, figure historique de l'administration locale coloniale.",
+    "tags": [
+      "history",
+      "culture"
+    ],
+    "image": "/static/images/y144.jpg",
+    "images": [],
+    "avg_price_fcfa": 0,
+    "best_time": "Journée",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
+  },
+  {
+    "id": "y145",
+    "name": "The Fifty Five",
+    "quartier": "Bastos",
+    "category": "bar",
+    "description": "Lounge-bar tendance, cadre soigné pour les soirées entre amis.",
+    "tags": [
+      "nightlife"
+    ],
+    "image": "/static/images/y145.png",
+    "images": [],
+    "avg_price_fcfa": 7000,
+    "best_time": "Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y146",
+    "name": "V Gaming",
+    "quartier": "Bastos",
+    "category": "entertainment",
+    "description": "Salle de jeux vidéo et e-sport, populaire auprès des jeunes gamers.",
+    "tags": [
+      "entertainment",
+      "gaming"
+    ],
+    "image": "/static/images/y146.png",
+    "images": [],
+    "avg_price_fcfa": 2000,
+    "best_time": "Après-midi - Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.888,
+    "lng": 11.518,
+    "maps_url": "https://maps.google.com/?q=3.888,11.518"
+  },
+  {
+    "id": "y147",
+    "name": "Village Madiba",
+    "quartier": "Centre-ville",
+    "category": "restaurant",
+    "description": "Restaurant-bar à thème convivial, cuisine locale dans une ambiance chaleureuse.",
+    "tags": [
+      "food",
+      "nightlife"
+    ],
+    "image": "/static/images/y147.jpg",
+    "images": [],
+    "avg_price_fcfa": 6000,
+    "best_time": "Soir",
+    "popularity": 40,
+    "image_source": "Photo réelle (fournie par l'utilisateur)",
+    "lat": 3.8666,
+    "lng": 11.5165,
+    "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
   }
 ]
