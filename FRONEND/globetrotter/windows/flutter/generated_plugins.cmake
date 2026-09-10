@@ -10,6 +10,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   flutter_webrtc
   geolocator_windows
   livekit_client
+  printing
   record_windows
   share_plus
   url_launcher_windows

@@ -6,14 +6,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title data-fr="GlobeTrotter Yaoundé — Découvrez Yaoundé autrement" data-en="GlobeTrotter Yaoundé — Discover Yaoundé like never before">GlobeTrotter Yaoundé — Découvrez Yaoundé autrement</title>
-<meta name="description" id="metaDesc" data-fr="L'assistant de voyage intelligent pour Yaoundé : recommandations personnalisées, itinéraires de sorties, prix en FCFA. Disponible sur Android, Web et Windows." data-en="The smart travel assistant for Yaoundé: personalized recommendations, outing itineraries, prices in FCFA. Available on Android, Web and Windows." content="L'assistant de voyage intelligent pour Yaoundé : recommandations personnalisées, itinéraires de sorties, prix en FCFA. Disponible sur Android, Web et Windows.">
+<meta name="description" id="metaDesc" data-fr="L'assistant de voyage intelligent pour Yaoundé : recommandations personnalisées, itinéraires de sorties, prix en FCFA. Accessible via votre navigateur sur tous les appareils." data-en="The smart travel assistant for Yaoundé: personalized recommendations, outing itineraries, prices in FCFA. Accessible via your browser on all devices." content="L'assistant de voyage intelligent pour Yaoundé : recommandations personnalisées, itinéraires de sorties, prix en FCFA. Accessible via votre navigateur sur tous les appareils.">
 <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16.png">
 <link rel="icon" href="./assets/favicon.ico">
 <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
 <meta name="theme-color" content="#0B1B12">
 <meta property="og:title" id="ogTitle" data-fr="GlobeTrotter Yaoundé — Découvrez Yaoundé autrement" data-en="GlobeTrotter Yaoundé — Discover Yaoundé like never before" content="GlobeTrotter Yaoundé — Découvrez Yaoundé autrement">
-<meta property="og:description" id="ogDesc" data-fr="Recommandations personnalisées, sorties planifiées, prix en FCFA. Sur Android, Web et Windows." data-en="Personalized recommendations, planned outings, prices in FCFA. On Android, Web and Windows." content="Recommandations personnalisées, sorties planifiées, prix en FCFA. Sur Android, Web et Windows.">
+<meta property="og:description" id="ogDesc" data-fr="Recommandations personnalisées, sorties planifiées, prix en FCFA. Sur le Web, accessible partout." data-en="Personalized recommendations, planned outings, prices in FCFA. On the Web, accessible everywhere." content="Recommandations personnalisées, sorties planifiées, prix en FCFA. Sur le Web, accessible partout.">
 <meta property="og:image" content="./assets/icon-512.png">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -96,7 +96,8 @@ nav{
   color:#fff;
   box-shadow:0 10px 28px rgba(249,115,22,.35);
 }
-.btn-orange:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(249,115,22,.45)}
+.btn-orange:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(249,115,22,.5)}
+.btn-orange:active{transform:translateY(-1px)}
 .btn-ghost{
   background:rgba(47,163,92,.12);
   color:var(--craie);
@@ -148,10 +149,11 @@ nav{
 .eyebrow::before{content:"";width:26px;height:2px;background:var(--mandarine)}
 h1{
   font-family:'Unbounded';
-  font-size:clamp(30px,4.6vw,54px);
-  font-weight:900;line-height:1.12;
-  letter-spacing:-.5px;
-  margin-bottom:22px;
+  font-size:clamp(32px,4.8vw,56px);
+  font-weight:900;line-height:1.1;
+  letter-spacing:-.6px;
+  margin-bottom:24px;
+  text-shadow:0 2px 8px rgba(0,0,0,.3);
 }
 h1 .accent{color:var(--mandarine)}
 h1 .ville{
@@ -246,11 +248,13 @@ h1 .ville{
 section{max-width:1240px;margin:0 auto;padding:clamp(56px,9vh,100px) clamp(20px,5vw,64px)}
 .sec-eyebrow{composes:eyebrow}
 h2{
-  font-family:'Unbounded';font-size:clamp(23px,3vw,34px);
-  font-weight:700;letter-spacing:-.4px;line-height:1.2;
-  margin-bottom:14px;max-width:640px;
+  font-family:'Unbounded';font-size:clamp(26px,3.2vw,38px);
+  font-weight:800;letter-spacing:-.5px;line-height:1.15;
+  margin-bottom:18px;max-width:640px;
+  background:linear-gradient(100deg,var(--craie),rgba(252,209,22,.6));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
 }
-.sec-sub{color:var(--brume);max-width:560px;margin-bottom:46px;font-weight:300;font-size:16px}
+.sec-sub{color:var(--brume);max-width:580px;margin-bottom:48px;font-weight:300;font-size:16.5px;line-height:1.7}
 
 /* ---------- DOWNLOAD HUB ---------- */
 #telecharger{position:relative}
@@ -280,17 +284,18 @@ h2{
   padding:8px 14px;border-radius:20px;margin-bottom:34px;
 }
 .detect-note b{color:var(--mandarine)}
-.dl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:22px;min-width:0}
+.dl-grid{display:grid;grid-template-columns:1fr;gap:22px;min-width:0;max-width:520px;margin:0 auto}
 .dl-card{
   background:linear-gradient(165deg,var(--encre),var(--panneau));
-  border:1px solid var(--ligne);
+  border:2px solid rgba(47,163,92,.4);
   border-radius:var(--r-lg);
-  padding:30px 28px;
-  display:flex;flex-direction:column;gap:16px;
+  padding:40px 36px;
+  display:flex;flex-direction:column;gap:18px;
   position:relative;
   transition:transform .22s,border-color .22s,box-shadow .22s;
+  box-shadow:0 12px 40px rgba(31,184,93,.15);
 }
-.dl-card:hover{transform:translateY(-6px);border-color:rgba(249,115,22,.4)}
+.dl-card:hover{transform:translateY(-6px);border-color:rgba(47,163,92,.6);box-shadow:0 18px 50px rgba(31,184,93,.25)}
 .dl-card.reco{
   border-color:var(--mandarine);
   box-shadow:0 18px 50px rgba(249,115,22,.22);
@@ -304,11 +309,13 @@ h2{
 }
 .dl-card.reco .reco-badge{display:inline-block}
 .dl-icon{
-  width:54px;height:54px;border-radius:16px;
+  width:64px;height:64px;border-radius:18px;
   display:grid;place-items:center;
-  background:rgba(47,163,92,.14);border:1px solid var(--ligne);
+  background:linear-gradient(135deg,rgba(47,163,92,.2),rgba(31,184,93,.12));
+  border:1.5px solid rgba(47,163,92,.35);
+  transition:transform .22s;
 }
-.dl-icon svg{width:26px;height:26px}
+.dl-icon svg{width:32px;height:32px}
 .dl-card h3{font-family:'Unbounded';font-size:17.5px;font-weight:700}
 .dl-card p{color:var(--brume);font-size:14px;font-weight:300;flex-grow:1}
 .dl-file{
@@ -321,21 +328,25 @@ h2{
 #fonctionnalites{border-top:1px solid var(--ligne)}
 .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
 .feat{
-  background:rgba(21,48,31,.5);
-  border:1px solid var(--ligne);
+  background:linear-gradient(140deg,rgba(27,122,61,.08),rgba(21,48,31,.4));
+  border:1px solid rgba(47,163,92,.25);
   border-radius:var(--r-md);
-  padding:24px 22px;
-  transition:background .2s,transform .2s;
+  padding:28px 26px;
+  transition:background .22s,transform .22s,border-color .22s,box-shadow .22s;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
 }
-.feat:hover{background:rgba(21,48,31,.85);transform:translateY(-4px)}
+.feat:hover{background:linear-gradient(140deg,rgba(27,122,61,.12),rgba(21,48,31,.55));transform:translateY(-5px);border-color:rgba(47,163,92,.4);box-shadow:0 12px 28px rgba(47,163,92,.15)}
 .feat-ic{
-  width:42px;height:42px;border-radius:12px;
-  display:grid;place-items:center;margin-bottom:15px;
-  background:rgba(249,115,22,.13);
+  width:48px;height:48px;border-radius:14px;
+  display:grid;place-items:center;margin-bottom:18px;
+  background:linear-gradient(135deg,rgba(249,115,22,.18),rgba(249,115,22,.08));
+  border:1px solid rgba(249,115,22,.2);
+  transition:transform .22s;
 }
-.feat-ic svg{width:21px;height:21px}
-.feat h3{font-size:16px;font-weight:700;margin-bottom:7px;font-family:'Outfit'}
-.feat p{color:var(--brume);font-size:13.5px;font-weight:300}
+.feat:hover .feat-ic{transform:scale(1.1)}
+.feat-ic svg{width:24px;height:24px}
+.feat h3{font-size:17px;font-weight:700;margin-bottom:10px;font-family:'Outfit';color:var(--craie)}
+.feat p{color:var(--brume);font-size:14px;font-weight:300;line-height:1.6}
 
 /* ---------- COMMUNITY ---------- */
 #communaute .comm-box{
@@ -445,7 +456,7 @@ footer .mono{font-family:'JetBrains Mono';font-size:11.5px}
   <div>
     <span class="eyebrow reveal" data-fr="Assistant de voyage · Cameroun 🇨🇲" data-en="Travel assistant · Cameroon 🇨🇲">Assistant de voyage · Cameroun 🇨🇲</span>
     <h1 class="reveal" data-fr='Découvrez <span class="ville">Yaoundé</span> comme jamais <span class="accent">auparavant.</span>' data-en='Discover <span class="ville">Yaoundé</span> like never <span class="accent">before.</span>'>Découvrez <span class="ville">Yaoundé</span> comme jamais <span class="accent">auparavant.</span></h1>
-    <p class="hero-sub reveal" data-fr="Recommandations personnalisées, sorties planifiées entre amis, prix en FCFA et pépites cachées de la ville aux sept collines. <strong>Sur votre téléphone, votre navigateur et votre PC.</strong>" data-en="Personalized recommendations, outings planned with friends, prices in FCFA, and hidden gems of the city of seven hills. <strong>On your phone, your browser, and your PC.</strong>">Recommandations personnalisées, sorties planifiées entre amis, prix en FCFA et pépites cachées de la ville aux sept collines. <strong>Sur votre téléphone, votre navigateur et votre PC.</strong></p>
+    <p class="hero-sub reveal" data-fr="Recommandations personnalisées, sorties planifiées entre amis, prix en FCFA et pépites cachées de la ville aux sept collines. <strong>Accessible sur tous vos appareils, sans installation.</strong>" data-en="Personalized recommendations, outings planned with friends, prices in FCFA, and hidden gems of the city of seven hills. <strong>Accessible on all your devices, no installation.</strong>">Recommandations personnalisées, sorties planifiées entre amis, prix en FCFA et pépites cachées de la ville aux sept collines. <strong>Accessible sur tous vos appareils, sans installation.</strong></p>
     <div class="hero-ctas reveal">
       <a class="btn btn-orange" href="#telecharger">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 19h16" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -534,30 +545,13 @@ footer .mono{font-family:'JetBrains Mono';font-size:11.5px}
 
 <section id="telecharger">
   <span class="eyebrow reveal" data-fr="Téléchargements" data-en="Downloads">Téléchargements</span>
-  <h2 class="reveal" data-fr="Une app. Trois façons de l'emporter." data-en="One app. Three ways to take it with you.">Une app. Trois façons de l'emporter.</h2>
-  <p class="sec-sub reveal" data-fr="Le même GlobeTrotter Yaoundé partout : installez-le sur Android, gardez-le sur votre PC, ou utilisez-le directement dans le navigateur sans rien installer." data-en="The same GlobeTrotter Yaoundé everywhere: install it on Android, keep it on your PC, or use it straight from the browser with nothing to install.">Le même GlobeTrotter Yaoundé partout : installez-le sur Android, gardez-le sur votre PC, ou utilisez-le directement dans le navigateur sans rien installer.</p>
-  <div class="detect-note reveal" id="detectNote" hidden>
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 8v5m0 3.5v.01M12 21a9 9 0 1 1 0-18 9 9 0 0 1 0 18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-    <span id="detectPrefix" data-fr="Appareil détecté :" data-en="Device detected:">Appareil détecté :</span> <b id="detectOS"></b> — <span id="detectSuffix" data-fr="nous avons mis en avant la version qu'il vous faut." data-en="we've highlighted the version you need.">nous avons mis en avant la version qu'il vous faut.</span>
-  </div>
+  <h2 class="reveal" data-fr="Une app Web accessible partout." data-en="One web app accessible everywhere.">Une app Web accessible partout.</h2>
+  <p class="sec-sub reveal" data-fr="Zéro installation requise. Accédez à GlobeTrotter Yaoundé depuis n'importe quel navigateur sur votre téléphone, tablette ou ordinateur. Vos données vous suivent partout." data-en="Zero installation required. Access GlobeTrotter Yaoundé from any browser on your phone, tablet, or computer. Your data follows you everywhere.">Zéro installation requise. Accédez à GlobeTrotter Yaoundé depuis n'importe quel navigateur sur votre téléphone, tablette ou ordinateur. Vos données vous suivent partout.</p>
+
 
   <div class="dl-grid">
-    <!-- ANDROID -->
-    <article class="dl-card reveal" id="card-android">
-      <span class="reco-badge" data-fr="Recommandé pour votre appareil" data-en="Recommended for your device">Recommandé pour votre appareil</span>
-      <div class="dl-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M7 9h10v9a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9Z" stroke="#2FA35C" stroke-width="1.8"/><path d="M8 6.5 6.5 4M16 6.5 17.5 4M7 9a5 5 0 0 1 10 0" stroke="#2FA35C" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="7.4" r=".9" fill="#2FA35C"/><circle cx="14" cy="7.4" r=".9" fill="#2FA35C"/></svg></div>
-      <h3>Android</h3>
-      <p data-fr="Installez l'APK directement — parfait pour la beta WhatsApp. Autorisez « Sources inconnues » lors de l'installation." data-en="Install the APK directly — perfect for the WhatsApp beta. Allow &quot;Unknown sources&quot; during installation.">Installez l'APK directement — parfait pour la beta WhatsApp. Autorisez « Sources inconnues » lors de l'installation.</p>
-      <span class="dl-file"><i></i>globetrotter-yaounde.apk · Android 6.0+</span>
-      <a class="btn btn-orange" href="./downloads/globetrotter-yaounde.apk" download>
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 19h16" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span data-fr="Télécharger l'APK" data-en="Download the APK">Télécharger l'APK</span>
-      </a>
-    </article>
-
     <!-- WEB -->
     <article class="dl-card reveal" id="card-web">
-      <span class="reco-badge" data-fr="Recommandé pour votre appareil" data-en="Recommended for your device">Recommandé pour votre appareil</span>
       <div class="dl-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2FA35C" stroke-width="1.8"/><path d="M3 12h18M12 3c2.7 2.4 4 5.4 4 9s-1.3 6.6-4 9c-2.7-2.4-4-5.4-4-9s1.3-6.6 4-9Z" stroke="#2FA35C" stroke-width="1.6"/></svg></div>
       <h3>Web</h3>
       <p data-fr="Zéro installation : l'application complète tourne dans votre navigateur, sur téléphone comme sur ordinateur." data-en="Zero installation: the full app runs right in your browser, on phone or computer.">Zéro installation : l'application complète tourne dans votre navigateur, sur téléphone comme sur ordinateur.</p>
@@ -568,26 +562,15 @@ footer .mono{font-family:'JetBrains Mono';font-size:11.5px}
       </a>
     </article>
 
-    <!-- WINDOWS -->
-    <article class="dl-card reveal" id="card-windows">
-      <span class="reco-badge" data-fr="Recommandé pour votre appareil" data-en="Recommended for your device">Recommandé pour votre appareil</span>
-      <div class="dl-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 5.5 11 4v7.5H4V5.5ZM12.5 3.8 20 2.5v9h-7.5V3.8ZM4 12.5h7V20l-7-1.5v-6ZM12.5 12.5H20v9l-7.5-1.3v-7.7Z" stroke="#2FA35C" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
-      <h3>Windows</h3>
-      <p data-fr="La version bureau : décompressez le dossier et lancez globetrotter.exe. Aucune installation requise." data-en="The desktop version: unzip the folder and launch globetrotter.exe. No installation required.">La version bureau : décompressez le dossier et lancez globetrotter.exe. Aucune installation requise.</p>
-      <span class="dl-file"><i></i>globetrotter-yaounde-windows.zip · Win 10/11</span>
-      <a class="btn btn-orange" href="./downloads/globetrotter-yaounde-windows.zip" download>
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 19h16" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span data-fr="Télécharger pour Windows" data-en="Download for Windows">Télécharger pour Windows</span>
-      </a>
-    </article>
+
   </div>
 </section>
 
 <!-- ================= FEATURES ================= -->
 <section id="fonctionnalites">
   <span class="eyebrow reveal" data-fr="Fonctionnalités" data-en="Features">Fonctionnalités</span>
-  <h2 class="reveal" data-fr="Tout ce que fait l'app — sur les trois plateformes." data-en="Everything the app does — on all three platforms.">Tout ce que fait l'app — sur les trois plateformes.</h2>
-  <p class="sec-sub reveal" data-fr="Un seul compte, les mêmes données partout : commencez une sortie sur votre téléphone, terminez-la sur votre PC." data-en="One account, the same data everywhere: start planning an outing on your phone, finish it on your PC.">Un seul compte, les mêmes données partout : commencez une sortie sur votre téléphone, terminez-la sur votre PC.</p>
+  <h2 class="reveal" data-fr="Tout ce que fait l'app Web." data-en="Everything the web app can do.">Tout ce que fait l'app Web.</h2>
+  <p class="sec-sub reveal" data-fr="Accessible sur tous les appareils et navigateurs. Aucune installation requise, juste une connexion Internet et c'est parti !" data-en="Accessible on all devices and browsers. No installation required, just an internet connection and you're ready to go!">Accessible sur tous les appareils et navigateurs. Aucune installation requise, juste une connexion Internet et c'est parti !</p>
   <div class="feat-grid">
     <div class="feat reveal">
       <div class="feat-ic"><svg viewBox="0 0 24 24" fill="none"><path d="m12 3 2.6 5.6L20 9.4l-4 4 1 6-5-3-5 3 1-6-4-4 5.4-.8L12 3Z" stroke="#F97316" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
@@ -616,8 +599,8 @@ footer .mono{font-family:'JetBrains Mono';font-size:11.5px}
     </div>
     <div class="feat reveal">
       <div class="feat-ic"><svg viewBox="0 0 24 24" fill="none"><rect x="7" y="2.5" width="10" height="19" rx="2.5" stroke="#F97316" stroke-width="1.8"/><rect x="2.5" y="6" width="8" height="13" rx="2" stroke="#F97316" stroke-width="1.8" fill="#0B1B12"/><path d="M14 21.5h4a3 3 0 0 0 3-3V9" stroke="#F97316" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-      <h3>Mobile · Web · Desktop</h3>
-      <p data-fr="Un seul code, trois plateformes : votre compte et vos sorties vous suivent partout." data-en="One codebase, three platforms: your account and outings follow you everywhere.">Un seul code, trois plateformes : votre compte et vos sorties vous suivent partout.</p>
+      <h3 data-fr="Accès universel" data-en="Universal Access">Accès universel</h3>
+      <p data-fr="Une seule web app : votre compte et vos sorties accessible depuis n'importe quel appareil avec un navigateur." data-en="One web app: your account and outings accessible from any device with a browser.">Une seule web app : votre compte et vos sorties accessible depuis n'importe quel appareil avec un navigateur.</p>
     </div>
   </div>
 </section>
@@ -646,7 +629,7 @@ footer .mono{font-family:'JetBrains Mono';font-size:11.5px}
 
 <footer>
   <p><strong style="color:var(--craie)">GlobeTrotter Yaoundé</strong> — <span data-fr="projet capstone CS 4122, Distributed Systems · The ICT University" data-en="CS 4122 capstone project, Distributed Systems · The ICT University">projet capstone CS 4122, Distributed Systems · The ICT University</span></p>
-  <p class="mono" data-fr="Phase 1 · Monolith v1.0 · Fait avec ❤️ à Yaoundé 🇨🇲" data-en="Phase 1 · Monolith v1.0 · Made with ❤️ in Yaoundé 🇨🇲">Phase 1 · Monolith v1.0 · Fait avec ❤️ à Yaoundé 🇨🇲</p>
+  <p class="mono" data-fr="Phase 2 · Microservices v2.0 · Fait avec ❤️ à Yaoundé 🇨🇲" data-en="Phase 2 · Microservices v2.0 · Made with ❤️ in Yaoundé 🇨🇲">Phase 2 · Microservices v2.0 · Fait avec ❤️ à Yaoundé 🇨🇲</p>
 </footer>
 
 <!-- Chart.js pour les graphiques d'activité - CDN, aucune étape de build

@@ -10,6 +10,7 @@ import '../services/location_service.dart';
 import '../services/weather_service.dart';
 import '../widgets/destination_activity_section.dart';
 import '../widgets/destination_gallery.dart';
+import '../widgets/destination_qr_dialog.dart';
 import '../widgets/destination_reviews_section.dart';
 import '../widgets/map3d_view.dart';
 import '../widgets/nearby_places_section.dart';
@@ -103,6 +104,13 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
           SliverAppBar(
             expandedHeight: 260,
             pinned: true,
+            actions: [
+              IconButton(
+                tooltip: 'Code QR',
+                icon: const Icon(Icons.qr_code),
+                onPressed: () => showDestinationQrDialog(context, destination),
+              ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               title: Text(destination.name,
                   style: const TextStyle(

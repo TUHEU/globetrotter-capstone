@@ -30,11 +30,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
       final res = await ApiClient.instance.dio
           .post('/calls/dm-token', data: {'other_user_id': widget.partnerId});
       if (!mounted) return;
+      final me = context.read<AuthProvider>().user;
       await Navigator.of(context).push(MaterialPageRoute(
         builder: (_) => CallScreen(
-          url: res.data['url'],
-          token: res.data['token'],
-          roomName: res.data['room'],
+          callRoomId: res.data['room'].toString(),
+          userId: me?.id ?? '',
+          userName: me?.fullName ?? '',
           title: widget.partnerName,
           startWithVideo: video,
         ),

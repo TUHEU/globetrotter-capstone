@@ -8,6 +8,7 @@ import '../providers/destination_provider.dart';
 import '../providers/itinerary_provider.dart';
 import '../providers/settings_provider.dart';
 import '../services/location_service.dart';
+import '../widgets/rating_prompt_dialog.dart';
 
 class CreateItineraryScreen extends StatefulWidget {
   final Destination? preselected;
@@ -193,6 +194,8 @@ class _CreateItineraryScreenState extends State<CreateItineraryScreen> {
     final s = context.read<SettingsProvider>().s;
     setState(() => _saving = false);
     if (err == null) {
+      await RatingPromptDialog.maybeShow(context);
+      if (!mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(s.isFr ? 'Sortie créée !' : 'Trip created!')));

@@ -15,10 +15,9 @@ import 'providers/messages_provider.dart';
 import 'providers/notifications_provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
+import 'screens/onboarding_screen.dart';
 import 'services/notification_service.dart';
 import 'widgets/globe_car_loader.dart';
-import 'services/call_controller.dart';
-import 'screens/persistent_call_screen.dart';
 
 void main() {
   // Fire-and-forget: permission may not resolve until a later user gesture
@@ -27,33 +26,13 @@ void main() {
   runApp(const GlobeTrotterApp());
 }
 
-class GlobeTrotterApp extends StatefulWidget {
+class GlobeTrotterApp extends StatelessWidget {
   const GlobeTrotterApp({super.key});
-
-  @override
-  State<GlobeTrotterApp> createState() => _GlobeTrotterAppState();
-}
-
-class _GlobeTrotterAppState extends State<GlobeTrotterApp> {
-  late final CallController _callController;
-
-  @override
-  void initState() {
-    super.initState();
-    _callController = CallController();
-  }
-
-  @override
-  void dispose() {
-    _callController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(value: _callController),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => DestinationProvider()),
         ChangeNotifierProvider(create: (_) => ItineraryProvider()),
@@ -91,7 +70,8 @@ class _Bootstrap extends StatefulWidget {
 }
 
 class _BootstrapState extends State<_Bootstrap> {
-  late final Future<bool> _future;
+  late final Future<_BootstrapResult> _future;
+  bool _onboardingDone = false;
 
   @override
   void initState() {
@@ -99,7 +79,7 @@ class _BootstrapState extends State<_Bootstrap> {
     _future = _init();
   }
 
-  Future<bool> _init() async {
+  Future<_BootstrapResult> _init() async {
     // The globe/car loading animation is otherwise so quick to finish (auto-
     // login is usually near-instant) that it just flickers by unseen. Keep
     // it on screen for at least 5s regardless of how fast the real work
@@ -111,9 +91,9 @@ class _BootstrapState extends State<_Bootstrap> {
     return result;
   }
 
-  Future<bool> _doInit() async {
+  Future<_BootstrapResult> _doInit() async {
     await context.read<SettingsProvider>().load();
-    if (!mounted) return false;
+    if (!mounted) return _BootstrapResult(loggedIn: false, showOnboarding: false);
     final auth = context.read<AuthProvider>();
     // Lance l'initialisation du SDK Google tôt, sans bloquer le démarrage
     // dessus (le formulaire email/mot de passe doit rester utilisable même
@@ -123,12 +103,16 @@ class _BootstrapState extends State<_Bootstrap> {
     if (auth.isGoogleSignInAvailable) {
       unawaited(auth.ensureGoogleReady());
     }
-    return auth.tryAutoLogin();
+    final loggedIn = await auth.tryAutoLogin();
+    // Un utilisateur déjà connecté a forcément déjà utilisé l'app avant -
+    // l'onboarding ne sert qu'au tout premier lancement, jamais connecté.
+    final seen = loggedIn || await OnboardingScreen.hasBeenSeen();
+    return _BootstrapResult(loggedIn: loggedIn, showOnboarding: !seen);
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
+    return FutureBuilder<_BootstrapResult>(
       future: _future,
       builder: (context, snap) {
         if (snap.connectionState != ConnectionState.done) {
@@ -141,8 +125,18 @@ class _BootstrapState extends State<_Bootstrap> {
             ),
           );
         }
-        return snap.data == true ? const HomeScreen() : const LoginScreen();
+        final result = snap.data!;
+        if (result.showOnboarding && !_onboardingDone) {
+          return OnboardingScreen(onDone: () => setState(() => _onboardingDone = true));
+        }
+        return result.loggedIn ? const HomeScreen() : const LoginScreen();
       },
     );
   }
+}
+
+class _BootstrapResult {
+  final bool loggedIn;
+  final bool showOnboarding;
+  _BootstrapResult({required this.loggedIn, required this.showOnboarding});
 }

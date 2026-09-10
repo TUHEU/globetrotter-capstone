@@ -11,9 +11,12 @@ import '../providers/settings_provider.dart';
 import '../providers/itinerary_provider.dart';
 import '../services/directions_service.dart';
 import '../services/location_service.dart';
+import '../services/pdf_export_service.dart';
 import '../services/route_optimizer.dart';
+import '../services/trip_reminder_service.dart';
 import '../services/weather_service.dart';
 import '../widgets/budget_summary_card.dart';
+import '../widgets/cost_split_sheet.dart';
 import '../widgets/map3d_view.dart';
 import 'directions_screen.dart';
 
@@ -216,6 +219,47 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
     }
   }
 
+  Future<void> _exportPdf() async {
+    final stops = [
+      for (final p in _points) MapEntry(p.stop, p.destination),
+    ];
+    try {
+      await PdfExportService.exportAndShare(itinerary: widget.itinerary, stops: stops);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Échec de l'export PDF : $e")));
+    }
+  }
+
+  Future<void> _scheduleReminder() async {
+    final raw = widget.itinerary.startDate;
+    final startDate = raw != null ? DateTime.tryParse(raw) : null;
+    if (startDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Cette sortie n'a pas de date de début définie.")),
+      );
+      return;
+    }
+    try {
+      final scheduled = await TripReminderService.instance.scheduleReminder(
+        itineraryId: widget.itinerary.id,
+        title: widget.itinerary.title,
+        startDate: startDate,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(scheduled
+            ? 'Rappel programmé pour la veille à 9h.'
+            : "Trop tard pour programmer un rappel (la sortie commence dans moins de 24h)."),
+      ));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Échec de la programmation du rappel : $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -257,6 +301,54 @@ class _ItineraryMapScreenState extends State<ItineraryMapScreen> {
               tooltip: 'Optimiser le trajet',
               icon: const Icon(Icons.route_outlined),
               onPressed: _optimizeRoute,
+            ),
+          if (_points.isNotEmpty)
+            PopupMenuButton<String>(
+              tooltip: 'Plus d\'options',
+              onSelected: (value) {
+                switch (value) {
+                  case 'pdf':
+                    _exportPdf();
+                    break;
+                  case 'split':
+                    showCostSplitSheet(
+                      context,
+                      tripTitle: widget.itinerary.title,
+                      totalFcfa: _points.fold<int>(0, (sum, p) => sum + p.destination.avgPriceFcfa),
+                    );
+                    break;
+                  case 'remind':
+                    _scheduleReminder();
+                    break;
+                }
+              },
+              itemBuilder: (_) => [
+                const PopupMenuItem(
+                  value: 'pdf',
+                  child: ListTile(
+                    leading: Icon(Icons.picture_as_pdf_outlined),
+                    title: Text('Exporter en PDF'),
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: 'split',
+                  child: ListTile(
+                    leading: Icon(Icons.call_split),
+                    title: Text('Partager le coût'),
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+                if (widget.itinerary.startDate != null)
+                  const PopupMenuItem(
+                    value: 'remind',
+                    child: ListTile(
+                      leading: Icon(Icons.notifications_active_outlined),
+                      title: Text('Me le rappeler'),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+              ],
             ),
         ],
       ),

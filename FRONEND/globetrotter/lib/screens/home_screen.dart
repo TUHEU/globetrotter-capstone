@@ -23,10 +23,12 @@ import '../widgets/draggable_app_menu_button.dart';
 import '../widgets/travel_stats_card.dart';
 import '../widgets/destination_card.dart';
 import '../widgets/like_comment_bar.dart';
+import '../widgets/search_filters_sheet.dart';
 import 'create_itinerary_screen.dart';
 import 'assistant_screen.dart';
 import 'destination_detail_screen.dart';
 import 'explore_map_screen.dart';
+import 'qr_scan_screen.dart';
 import 'submit_place_screen.dart';
 import 'favorites_screen.dart';
 import 'friends_feed_screen.dart';
@@ -472,8 +474,16 @@ class _ExploreTabState extends State<_ExploreTab> {
             _ToolButton(
               icon: Icons.tune,
               tooltip: s.priceFilter,
-              active: p.minPrice != null || p.maxPrice != null,
-              onTap: () => _showPriceFilterSheet(context, p, s),
+              active: p.minPrice != null || p.maxPrice != null || p.maxDistanceKm != null || p.clientOpenNowFilter,
+              onTap: () => showSearchFiltersSheet(context),
+            ),
+            const SizedBox(width: 6),
+            // QR scan button
+            _ToolButton(
+              icon: Icons.qr_code_scanner,
+              tooltip: s.isFr ? 'Scanner un lieu' : 'Scan a place',
+              onTap: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const QrScanScreen())),
             ),
           ]),
         ),
@@ -509,15 +519,40 @@ class _ExploreTabState extends State<_ExploreTab> {
           ),
         ),
 
+        // ── Offline banner ───────────────────────────────────────────
+        if (p.isOffline)
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: isWide ? 24 : 16, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.errorContainer.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(children: [
+              const Icon(Icons.cloud_off, size: 16),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  p.offlineCacheDate != null
+                      ? (s.isFr
+                          ? 'Mode hors-ligne — données du ${p.offlineCacheDate!.day}/${p.offlineCacheDate!.month}'
+                          : 'Offline mode — data from ${p.offlineCacheDate!.month}/${p.offlineCacheDate!.day}')
+                      : (s.isFr ? 'Mode hors-ligne' : 'Offline mode'),
+                  style: const TextStyle(fontSize: 12.5),
+                ),
+              ),
+            ]),
+          ),
+
         // ── Result count bar (desktop) ────────────────────────────────
-        if (isWide && !p.loading && !p.hasError && p.destinations.isNotEmpty)
+        if (isWide && !p.loading && !p.hasError && p.visibleDestinations.isNotEmpty)
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
             child: Row(children: [
               Text(
                 s.isFr
-                    ? '${p.destinations.length} lieux trouvés'
-                    : '${p.destinations.length} places found',
+                    ? '${p.visibleDestinations.length} lieux trouvés'
+                    : '${p.visibleDestinations.length} places found',
                 style: Theme.of(context)
                     .textTheme
                     .bodySmall
@@ -533,7 +568,7 @@ class _ExploreTabState extends State<_ExploreTab> {
               ? const Center(child: CircularProgressIndicator())
               : p.hasError
                   ? _ErrorView(message: p.errorMessage(s)!, onRetry: () => p.search(q: ''))
-                  : p.destinations.isEmpty
+                  : p.visibleDestinations.isEmpty
                       ? Center(child: Text(s.noResults))
                       : RefreshIndicator(
                           onRefresh: () => p.search(),
@@ -550,12 +585,12 @@ class _ExploreTabState extends State<_ExploreTab> {
                             if (cols == 1) {
                               return ListView.builder(
                                 padding: const EdgeInsets.only(bottom: 96),
-                                itemCount: p.destinations.length,
+                                itemCount: p.visibleDestinations.length,
                                 itemBuilder: (_, i) => DestinationCard(
-                                  destination: p.destinations[i],
+                                  destination: p.visibleDestinations[i],
                                   onTap: () => Navigator.of(context).push(MaterialPageRoute(
                                       builder: (_) =>
-                                          DestinationDetailScreen(destination: p.destinations[i]))),
+                                          DestinationDetailScreen(destination: p.visibleDestinations[i]))),
                                 ),
                               );
                             }
@@ -569,12 +604,12 @@ class _ExploreTabState extends State<_ExploreTab> {
                                 mainAxisSpacing: 14,
                                 childAspectRatio: 0.68,
                               ),
-                              itemCount: p.destinations.length,
+                              itemCount: p.visibleDestinations.length,
                               itemBuilder: (_, i) => _DesktopDestCard(
-                                destination: p.destinations[i],
+                                destination: p.visibleDestinations[i],
                                 onTap: () => Navigator.of(context).push(MaterialPageRoute(
                                     builder: (_) =>
-                                        DestinationDetailScreen(destination: p.destinations[i]))),
+                                        DestinationDetailScreen(destination: p.visibleDestinations[i]))),
                               ),
                             );
                           }),
@@ -584,76 +619,6 @@ class _ExploreTabState extends State<_ExploreTab> {
     );
   }
 
-  void _showPriceFilterSheet(BuildContext context, DestinationProvider p, AppStrings s) {
-    final minCtrl = TextEditingController(text: p.minPrice?.toString() ?? '');
-    final maxCtrl = TextEditingController(text: p.maxPrice?.toString() ?? '');
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (sheetContext) => Padding(
-        padding: EdgeInsets.only(
-          left: 20, right: 20, top: 20,
-          bottom: 20 + MediaQuery.of(sheetContext).viewInsets.bottom,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(s.priceFilter,
-                style: Theme.of(sheetContext)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w700)),
-            const SizedBox(height: 16),
-            Row(children: [
-              Expanded(
-                child: TextField(
-                  controller: minCtrl,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: InputDecoration(labelText: s.priceMin, suffixText: 'FCFA'),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: TextField(
-                  controller: maxCtrl,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: InputDecoration(labelText: s.priceMax, suffixText: 'FCFA'),
-                ),
-              ),
-            ]),
-            const SizedBox(height: 20),
-            Row(children: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(sheetContext).pop();
-                  p.search(q: _search.text, resetPriceFilter: true);
-                },
-                child: Text(s.clearFilter),
-              ),
-              const Spacer(),
-              FilledButton(
-                onPressed: () {
-                  Navigator.of(sheetContext).pop();
-                  p.search(
-                    q: _search.text,
-                    minPrice: minCtrl.text.isEmpty ? null : int.tryParse(minCtrl.text),
-                    maxPrice: maxCtrl.text.isEmpty ? null : int.tryParse(maxCtrl.text),
-                  );
-                },
-                child: Text(s.applyFilter),
-              ),
-            ]),
-          ],
-        ),
-      ),
-    ).whenComplete(() {
-      minCtrl.dispose();
-      maxCtrl.dispose();
-    });
-  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

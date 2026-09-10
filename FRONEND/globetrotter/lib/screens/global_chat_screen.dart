@@ -28,8 +28,7 @@ import '../providers/settings_provider.dart';
 import '../services/notification_service.dart';
 import '../widgets/app_logo_badge.dart';
 import 'chat_user_sheet.dart';
-import 'persistent_call_screen.dart';
-import '../services/call_controller.dart';
+import 'call_screen.dart';
 import 'location_view_screen.dart';
 import 'video_view_screen.dart';
 
@@ -132,6 +131,7 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
 
   // Global call: whether anyone (including us) is currently in the shared
   // call room, and whether we're mid-request fetching our own join token.
+  bool _callActive = false;
   bool _startingCall = false;
 
   // Audio
@@ -365,7 +365,7 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
           });
           break;
         case 'call_start':
-          // CallController receives call:started as the source of truth.
+          _callActive = true;
           final starterName = data['user_name'] as String? ?? '';
           final starterId = data['user_id'] as String? ?? '';
           if (starterId != _myId) {
@@ -379,7 +379,7 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
           // someone sees the icon go grey for a moment while others are
           // still on the call, which is harmless (tapping it still joins
           // the same room either way).
-          // CallController removes ended calls.
+          _callActive = false;
           break;
         case 'system':
           _msgs.add(_ChatMsg(
@@ -467,20 +467,24 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
 
   // ── Call ────────────────────────────────────────────────────────────────
   Future<void> _joinGlobalCall() async {
-    final call = context.read<CallController>();
     setState(() => _startingCall = true);
     try {
-      await call.ensureConnected();
-      final active = call.activeCallsFor(communityRoomId);
-      if (active.isNotEmpty) {
-        await call.requestJoin(active.first.id);
-      } else {
-        await call.startCall(video: true, roomId: communityRoomId);
-      }
+      final res = await ApiClient.instance.dio.post('/chat/call/token');
       if (!mounted) return;
+      final me = context.read<AuthProvider>().user;
+      _ws({'type': 'call_start'});
       await Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => const PersistentCallScreen(),
+        builder: (_) => CallScreen(
+          callRoomId: res.data['room'].toString(),
+          userId: me?.id ?? '',
+          userName: me?.fullName ?? '',
+          title: 'Appel du Chat Global',
+        ),
       ));
+      _ws({'type': 'call_end'});
+    } on DioException catch (e) {
+      final detail = e.response?.data is Map ? e.response?.data['detail'] : null;
+      _snack(detail?.toString() ?? 'Impossible de démarrer l\'appel.');
     } finally {
       if (mounted) setState(() => _startingCall = false);
     }
@@ -776,9 +780,9 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
         ]),
         actions: [
           IconButton(
-            icon: Icon(context.watch<CallController>().activeCallsFor(communityRoomId).isNotEmpty ? Icons.videocam : Icons.videocam_outlined,
-                color: context.watch<CallController>().activeCallsFor(communityRoomId).isNotEmpty ? Colors.greenAccent : null),
-            tooltip: context.watch<CallController>().activeCallsFor(communityRoomId).isNotEmpty ? 'Rejoindre l\'appel en cours' : 'Démarrer un appel',
+            icon: Icon(_callActive ? Icons.videocam : Icons.videocam_outlined,
+                color: _callActive ? Colors.greenAccent : null),
+            tooltip: _callActive ? 'Rejoindre l\'appel en cours' : 'Démarrer un appel',
             onPressed: _startingCall ? null : _joinGlobalCall,
           ),
           Padding(
