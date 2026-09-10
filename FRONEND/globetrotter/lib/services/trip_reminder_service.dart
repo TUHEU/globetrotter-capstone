@@ -37,8 +37,11 @@ class TripReminderService {
       requestBadgePermission: false,
       requestSoundPermission: false,
     );
+    // `initialize` takes `settings` as a required NAMED parameter in the
+    // installed version - passing InitializationSettings(...) positionally
+    // doesn't match.
     await _plugin.initialize(
-      const InitializationSettings(android: androidInit, iOS: iosInit),
+      settings: const InitializationSettings(android: androidInit, iOS: iosInit),
     );
 
     await _plugin
@@ -89,14 +92,17 @@ class TripReminderService {
         iOS: DarwinNotificationDetails(),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+      // uiLocalNotificationDateInterpretation was removed in the installed
+      // version (iOS scheduling no longer needs it) - passing it is now
+      // an unknown named parameter.
     );
     return true;
   }
 
   Future<void> cancelReminder(String itineraryId) async {
     final id = itineraryId.hashCode & 0x7fffffff;
-    await _plugin.cancel(id);
+    // `cancel` also takes `id` as a required named parameter here, not
+    // positional.
+    await _plugin.cancel(id: id);
   }
 }

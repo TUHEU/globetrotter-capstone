@@ -100,11 +100,14 @@ class WebRTCService {
     if (stream != null) {
       final audioTracks = stream.getAudioTracks();
       if (audioTracks.isNotEmpty) {
-        await peerConnection.addTrack(audioTracks.first, [stream.id]);
+        // addTrack's 2nd parameter is a single MediaStream (or omitted),
+        // not a List<String> of stream ids - passing [stream.id] doesn't
+        // type-check against the installed flutter_webrtc version.
+        await peerConnection.addTrack(audioTracks.first, stream);
       }
       final videoTracks = stream.getVideoTracks();
       if (videoTracks.isNotEmpty) {
-        await peerConnection.addTrack(videoTracks.first, [stream.id]);
+        await peerConnection.addTrack(videoTracks.first, stream);
       }
     }
 
@@ -228,7 +231,10 @@ class WebRTCService {
     final audioTracks = stream.getAudioTracks();
     if (audioTracks.isEmpty) return;
     for (var track in audioTracks) {
-      await track.enabled(enabled);
+      // `enabled` is a plain property (getter/setter) on MediaStreamTrack
+      // in the installed flutter_webrtc version, not a method - assigning
+      // to it is synchronous, there's nothing to await.
+      track.enabled = enabled;
     }
   }
 
@@ -238,7 +244,7 @@ class WebRTCService {
     final videoTracks = stream.getVideoTracks();
     if (videoTracks.isEmpty) return;
     for (var track in videoTracks) {
-      await track.enabled(enabled);
+      track.enabled = enabled;
     }
   }
 
