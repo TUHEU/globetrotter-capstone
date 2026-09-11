@@ -80,6 +80,9 @@ def search_destinations(
     limit: int = Query(100, ge=1, le=100),
     min_price: Optional[int] = Query(None, ge=0, description="Minimum avg_price_fcfa (inclusive)"),
     max_price: Optional[int] = Query(None, ge=0, description="Maximum avg_price_fcfa (inclusive)"),
+    user_lat: Optional[float] = Query(None, description="User's current latitude - enables distance filter/sort"),
+    user_lng: Optional[float] = Query(None, description="User's current longitude - enables distance filter/sort"),
+    max_distance_km: Optional[float] = Query(None, gt=0, description="Only used together with user_lat/user_lng"),
 ):
     dests = storage.get_destinations()
     if q:
@@ -101,7 +104,17 @@ def search_destinations(
         dests = [d for d in dests if d.get("avg_price_fcfa", 0) >= min_price]
     if max_price is not None:
         dests = [d for d in dests if d.get("avg_price_fcfa", 0) <= max_price]
-    dests.sort(key=lambda d: d.get("popularity", 0), reverse=True)
+
+    if user_lat is not None and user_lng is not None:
+        # Attach distance_km to every result (handy for the client even
+        # without a max_distance_km cutoff), then optionally filter by it.
+        for d in dests:
+            d["distance_km"] = round(_haversine_km(user_lat, user_lng, d["lat"], d["lng"]), 2)
+        if max_distance_km is not None:
+            dests = [d for d in dests if d["distance_km"] <= max_distance_km]
+        dests.sort(key=lambda d: d["distance_km"])
+    else:
+        dests.sort(key=lambda d: d.get("popularity", 0), reverse=True)
     return {"count": len(dests[:limit]), "results": dests[:limit]}
 
 

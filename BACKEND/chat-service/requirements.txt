@@ -1,10 +1,6 @@
-fastapi>=0.104.0
-uvicorn>=0.24.0
-python-socketio>=5.9.0
-python-engineio>=4.8.0
-pydantic>=2.0.0
-python-multipart>=0.0.6
-httpx>=0.25.0
-aiofiles>=23.2.1
-pytest>=7.4.0
-pytest-asyncio>=0.21.0
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-jose[cryptography]==3.3.0
+python-multipart==0.0.20
+websockets==13.1
+httpx==0.28.1

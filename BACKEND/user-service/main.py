@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
 from app.config import BASE_DIR
-from app.routers import auth, reviews, favorites, social, messages, notifications, calls
+from app.routers import auth, reviews, favorites, social, messages, notifications, calls, feedback
 
 app = FastAPI(
     title="GlobeTrotter - User Service",
@@ -35,6 +35,7 @@ app.include_router(social.router)
 app.include_router(messages.router)
 app.include_router(notifications.router)
 app.include_router(calls.router)
+app.include_router(feedback.router)
 
 
 # Photos envoyées dans les messages (POST /messages/{id}/photo) - même

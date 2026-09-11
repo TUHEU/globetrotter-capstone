@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 
 from .config import (
     USERS_FILE, REVIEWS_FILE, FAVORITES_FILE, FOLLOWS_FILE, MESSAGES_FILE,
-    NOTIFICATIONS_FILE, LOGIN_EVENTS_FILE, DATA_DIR,
+    NOTIFICATIONS_FILE, LOGIN_EVENTS_FILE, DATA_DIR, FEEDBACK_FILE,
 )
 
 _lock = threading.Lock()
@@ -444,3 +444,25 @@ def mark_all_notifications_read(user_id: str):
     if changed:
         _write(NOTIFICATIONS_FILE, items)
     return changed
+
+# ---------------------------------------------------------------------
+# App feedback (in-app rating prompt) - one JSON file, append-only from
+# the user's point of view (no edit/delete endpoint - this is lightweight
+# sentiment collection for the developer, not user-facing content).
+# ---------------------------------------------------------------------
+
+def add_feedback(entry: Dict[str, Any]) -> Dict[str, Any]:
+    with _lock:
+        items = _read(FEEDBACK_FILE)
+        entry = {"id": new_id(), **entry}
+        items.append(entry)
+        _write(FEEDBACK_FILE, items)
+        return entry
+
+
+def get_feedback_summary() -> Dict[str, Any]:
+    items = _read(FEEDBACK_FILE)
+    if not items:
+        return {"count": 0, "average_rating": 0}
+    avg = sum(i.get("rating", 0) for i in items) / len(items)
+    return {"count": len(items), "average_rating": round(avg, 2)}

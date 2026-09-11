@@ -1078,25 +1078,6 @@
     "maps_url": "https://maps.google.com/?q=3.889,11.515"
   },
   {
-    "id": "y056",
-    "name": "Université de Yaoundé I",
-    "quartier": "Ngoa-Ekelle",
-    "category": "education",
-    "description": "La plus ancienne université du Cameroun, fondée en 1962 : sciences, lettres, médecine et plus.",
-    "tags": [
-      "education",
-      "universite"
-    ],
-    "image": "https://source.unsplash.com/800x600/?education,cameroon",
-    "avg_price_fcfa": 0,
-    "best_time": "Jours ouvrés",
-    "popularity": 55,
-    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
-    "lat": 3.86722,
-    "lng": 11.50139,
-    "maps_url": "https://maps.google.com/?q=3.86722,11.50139"
-  },
-  {
     "id": "y057",
     "name": "Université de Yaoundé II (Soa)",
     "quartier": "Soa",
@@ -1418,24 +1399,6 @@
     "maps_url": "https://maps.google.com/?q=3.863,11.524"
   },
   {
-    "id": "y074",
-    "name": "Hôpital Central de Yaoundé",
-    "quartier": "Centre-ville",
-    "category": "health",
-    "description": "Le principal hôpital public de la capitale, référence pour les soins de santé à Yaoundé.",
-    "tags": [
-      "sante"
-    ],
-    "image": "https://source.unsplash.com/800x600/?health,cameroon",
-    "avg_price_fcfa": 0,
-    "best_time": "24h/24",
-    "popularity": 38,
-    "image_source": "Unsplash (placeholder générique - lieu réel, pas encore de vraie photo)",
-    "lat": 3.864,
-    "lng": 11.516,
-    "maps_url": "https://maps.google.com/?q=3.864,11.516"
-  },
-  {
     "id": "y075",
     "name": "Complexe Sportif de Mfandena",
     "quartier": "Mfandena",
@@ -1643,7 +1606,7 @@
     "maps_url": "https://maps.google.com/?q=3.873,11.51"
   },
   {
-    "id": "y075",
+    "id": "y148",
     "name": "Kaelo Café",
     "quartier": "Bastos",
     "category": "cafe",
@@ -1663,7 +1626,7 @@
     "maps_url": "https://maps.google.com/?q=3.888,11.518"
   },
   {
-    "id": "y076",
+    "id": "y149",
     "name": "NK Hôtel",
     "quartier": "Bastos",
     "category": "hotel",
@@ -1683,7 +1646,7 @@
     "maps_url": "https://maps.google.com/?q=3.888,11.518"
   },
   {
-    "id": "y077",
+    "id": "y150",
     "name": "Résidence La Perle",
     "quartier": "Bastos",
     "category": "hotel",
@@ -1703,7 +1666,7 @@
     "maps_url": "https://maps.google.com/?q=3.888,11.518"
   },
   {
-    "id": "y078",
+    "id": "y151",
     "name": "The Famous",
     "quartier": "Bastos",
     "category": "bar",
@@ -1723,7 +1686,7 @@
     "maps_url": "https://maps.google.com/?q=3.888,11.518"
   },
   {
-    "id": "y079",
+    "id": "y152",
     "name": "Albatros Premium Hôtel",
     "quartier": "Centre-ville",
     "category": "hotel",
@@ -1743,7 +1706,7 @@
     "maps_url": "https://maps.google.com/?q=3.8666,11.5165"
   },
   {
-    "id": "y080",
+    "id": "y153",
     "name": "Bar Panoramique",
     "quartier": "Mont Fébé",
     "category": "bar",
@@ -1763,7 +1726,7 @@
     "maps_url": "https://maps.google.com/?q=3.902,11.528"
   },
   {
-    "id": "y081",
+    "id": "y154",
     "name": "Black & White Sportsbar",
     "quartier": "Bastos",
     "category": "bar",

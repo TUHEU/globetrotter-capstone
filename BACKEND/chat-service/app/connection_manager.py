@@ -43,3 +43,21 @@ class ConnectionManager:
                 dead.append(ws)
         for ws in dead:
             self._connections.pop(ws, None)
+
+    async def send_to_user(self, user_id: str, text: str) -> bool:
+        """Send to every live connection belonging to this user_id (usually
+        one, but a user could have the app open on >1 device/tab). Used for
+        WebRTC call signalling, which is point-to-point rather than
+        broadcast. Returns True if at least one connection received it."""
+        sent = False
+        dead = []
+        for ws, u in list(self._connections.items()):
+            if u.get("id") == user_id:
+                try:
+                    await ws.send_text(text)
+                    sent = True
+                except Exception:
+                    dead.append(ws)
+        for ws in dead:
+            self._connections.pop(ws, None)
+        return sent
