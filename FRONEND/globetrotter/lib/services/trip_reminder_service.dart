@@ -76,12 +76,16 @@ class TripReminderService {
     final id = itineraryId.hashCode & 0x7fffffff;
     final scheduled = tz.TZDateTime.from(reminderTime, tz.local);
 
+    // zonedSchedule takes every argument as named in this installed
+    // version (id, title, body included - not just the later ones) -
+    // "0 expected, but 5 found" meant literally none of them can be
+    // positional here.
     await _plugin.zonedSchedule(
-      id,
-      'Sortie demain : $title',
-      "N'oubliez pas votre sortie prévue demain sur GlobeTrotter Yaoundé.",
-      scheduled,
-      const NotificationDetails(
+      id: id,
+      title: 'Sortie demain : $title',
+      body: "N'oubliez pas votre sortie prévue demain sur GlobeTrotter Yaoundé.",
+      scheduledDate: scheduled,
+      notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
           'trip_reminders',
           'Rappels de sortie',
