@@ -6,22 +6,20 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title data-fr="GlobeTrotter Yaoundé — Découvrez Yaoundé autrement" data-en="GlobeTrotter Yaoundé — Discover Yaoundé like never before">GlobeTrotter Yaoundé — Découvrez Yaoundé autrement</title>
-<meta name="description" id="metaDesc" data-fr="L'assistant de voyage intelligent pour Yaoundé : recommandations personnalisées, itinéraires de sorties, prix en FCFA. Accessible via votre navigateur sur tous les appareils." data-en="The smart travel assistant for Yaoundé: personalized recommendations, outing itineraries, prices in FCFA. Accessible via your browser on all devices." content="L'assistant de voyage intelligent pour Yaoundé : recommandations personnalisées, itinéraires de sorties, prix en FCFA. Accessible via votre navigateur sur tous les appareils.">
+<meta name="description" id="metaDesc" data-fr="L'assistant de voyage intelligent pour Yaoundé : recommandations personnalisées, itinéraires de sorties, prix en FCFA. Directement dans votre navigateur, sans rien installer." data-en="The smart travel assistant for Yaoundé: personalized recommendations, outing itineraries, prices in FCFA. Right in your browser, nothing to install." content="L'assistant de voyage intelligent pour Yaoundé : recommandations personnalisées, itinéraires de sorties, prix en FCFA. Directement dans votre navigateur, sans rien installer.">
 <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16.png">
 <link rel="icon" href="./assets/favicon.ico">
 <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
 <meta name="theme-color" content="#0B1B12">
 <meta property="og:title" id="ogTitle" data-fr="GlobeTrotter Yaoundé — Découvrez Yaoundé autrement" data-en="GlobeTrotter Yaoundé — Discover Yaoundé like never before" content="GlobeTrotter Yaoundé — Découvrez Yaoundé autrement">
-<meta property="og:description" id="ogDesc" data-fr="Recommandations personnalisées, sorties planifiées, prix en FCFA. Sur le Web, accessible partout." data-en="Personalized recommendations, planned outings, prices in FCFA. On the Web, accessible everywhere." content="Recommandations personnalisées, sorties planifiées, prix en FCFA. Sur le Web, accessible partout.">
+<meta property="og:description" id="ogDesc" data-fr="Recommandations personnalisées, sorties planifiées, prix en FCFA. Ouvrez l'app directement dans votre navigateur." data-en="Personalized recommendations, planned outings, prices in FCFA. Open the app right in your browser." content="Recommandations personnalisées, sorties planifiées, prix en FCFA. Ouvrez l'app directement dans votre navigateur.">
 <meta property="og:image" content="./assets/icon-512.png">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 /* ============ CONFIGURATION DES LIENS — MODIFIE ICI ============ */
-/* APK      : place ton fichier dans  downloads/globetrotter-yaounde.apk      */
-/* Windows  : place ton zip dans      downloads/globetrotter-yaounde-windows.zip */
 /* Web app  : copie le contenu de flutter build web dans le dossier  app/     */
 /* =============================================================== */
 
@@ -96,8 +94,7 @@ nav{
   color:#fff;
   box-shadow:0 10px 28px rgba(249,115,22,.35);
 }
-.btn-orange:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(249,115,22,.5)}
-.btn-orange:active{transform:translateY(-1px)}
+.btn-orange:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(249,115,22,.45)}
 .btn-ghost{
   background:rgba(47,163,92,.12);
   color:var(--craie);
@@ -149,11 +146,10 @@ nav{
 .eyebrow::before{content:"";width:26px;height:2px;background:var(--mandarine)}
 h1{
   font-family:'Unbounded';
-  font-size:clamp(32px,4.8vw,56px);
-  font-weight:900;line-height:1.1;
-  letter-spacing:-.6px;
-  margin-bottom:24px;
-  text-shadow:0 2px 8px rgba(0,0,0,.3);
+  font-size:clamp(30px,4.6vw,54px);
+  font-weight:900;line-height:1.12;
+  letter-spacing:-.5px;
+  margin-bottom:22px;
 }
 h1 .accent{color:var(--mandarine)}
 h1 .ville{
@@ -248,13 +244,11 @@ h1 .ville{
 section{max-width:1240px;margin:0 auto;padding:clamp(56px,9vh,100px) clamp(20px,5vw,64px)}
 .sec-eyebrow{composes:eyebrow}
 h2{
-  font-family:'Unbounded';font-size:clamp(26px,3.2vw,38px);
-  font-weight:800;letter-spacing:-.5px;line-height:1.15;
-  margin-bottom:18px;max-width:640px;
-  background:linear-gradient(100deg,var(--craie),rgba(252,209,22,.6));
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  font-family:'Unbounded';font-size:clamp(23px,3vw,34px);
+  font-weight:700;letter-spacing:-.4px;line-height:1.2;
+  margin-bottom:14px;max-width:640px;
 }
-.sec-sub{color:var(--brume);max-width:580px;margin-bottom:48px;font-weight:300;font-size:16.5px;line-height:1.7}
+.sec-sub{color:var(--brume);max-width:560px;margin-bottom:46px;font-weight:300;font-size:16px}
 
 /* ---------- DOWNLOAD HUB ---------- */
 #telecharger{position:relative}
@@ -284,18 +278,17 @@ h2{
   padding:8px 14px;border-radius:20px;margin-bottom:34px;
 }
 .detect-note b{color:var(--mandarine)}
-.dl-grid{display:grid;grid-template-columns:1fr;gap:22px;min-width:0;max-width:520px;margin:0 auto}
+.dl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:22px;min-width:0}
 .dl-card{
   background:linear-gradient(165deg,var(--encre),var(--panneau));
-  border:2px solid rgba(47,163,92,.4);
+  border:1px solid var(--ligne);
   border-radius:var(--r-lg);
-  padding:40px 36px;
-  display:flex;flex-direction:column;gap:18px;
+  padding:30px 28px;
+  display:flex;flex-direction:column;gap:16px;
   position:relative;
   transition:transform .22s,border-color .22s,box-shadow .22s;
-  box-shadow:0 12px 40px rgba(31,184,93,.15);
 }
-.dl-card:hover{transform:translateY(-6px);border-color:rgba(47,163,92,.6);box-shadow:0 18px 50px rgba(31,184,93,.25)}
+.dl-card:hover{transform:translateY(-6px);border-color:rgba(249,115,22,.4)}
 .dl-card.reco{
   border-color:var(--mandarine);
   box-shadow:0 18px 50px rgba(249,115,22,.22);
@@ -309,13 +302,11 @@ h2{
 }
 .dl-card.reco .reco-badge{display:inline-block}
 .dl-icon{
-  width:64px;height:64px;border-radius:18px;
+  width:54px;height:54px;border-radius:16px;
   display:grid;place-items:center;
-  background:linear-gradient(135deg,rgba(47,163,92,.2),rgba(31,184,93,.12));
-  border:1.5px solid rgba(47,163,92,.35);
-  transition:transform .22s;
+  background:rgba(47,163,92,.14);border:1px solid var(--ligne);
 }
-.dl-icon svg{width:32px;height:32px}
+.dl-icon svg{width:26px;height:26px}
 .dl-card h3{font-family:'Unbounded';font-size:17.5px;font-weight:700}
 .dl-card p{color:var(--brume);font-size:14px;font-weight:300;flex-grow:1}
 .dl-file{
@@ -324,29 +315,45 @@ h2{
 }
 .dl-file i{width:7px;height:7px;border-radius:50%;background:var(--vertclair);display:inline-block}
 
+.dl-single-wrap{display:flex;justify-content:center}
+.dl-card.dl-single{
+  max-width:640px;width:100%;
+  padding:40px 44px;
+  border-color:var(--mandarine);
+  box-shadow:0 18px 50px rgba(249,115,22,.18);
+  align-items:flex-start;
+}
+.dl-single .dl-icon{width:60px;height:60px}
+.dl-single .dl-icon svg{width:30px;height:30px}
+.dl-single h3{font-size:22px}
+.dl-single p{font-size:15px}
+.dl-perks{list-style:none;display:flex;flex-direction:column;gap:9px;margin:2px 0 4px}
+.dl-perks li{
+  display:flex;align-items:center;gap:9px;
+  font-size:13.5px;color:var(--brume);
+}
+.dl-perks svg{flex:none;width:16px;height:16px}
+.dl-single .btn{align-self:flex-start;margin-top:4px}
+
 /* ---------- FEATURES ---------- */
 #fonctionnalites{border-top:1px solid var(--ligne)}
 .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
 .feat{
-  background:linear-gradient(140deg,rgba(27,122,61,.08),rgba(21,48,31,.4));
-  border:1px solid rgba(47,163,92,.25);
+  background:rgba(21,48,31,.5);
+  border:1px solid var(--ligne);
   border-radius:var(--r-md);
-  padding:28px 26px;
-  transition:background .22s,transform .22s,border-color .22s,box-shadow .22s;
-  box-shadow:0 4px 12px rgba(0,0,0,.15);
+  padding:24px 22px;
+  transition:background .2s,transform .2s;
 }
-.feat:hover{background:linear-gradient(140deg,rgba(27,122,61,.12),rgba(21,48,31,.55));transform:translateY(-5px);border-color:rgba(47,163,92,.4);box-shadow:0 12px 28px rgba(47,163,92,.15)}
+.feat:hover{background:rgba(21,48,31,.85);transform:translateY(-4px)}
 .feat-ic{
-  width:48px;height:48px;border-radius:14px;
-  display:grid;place-items:center;margin-bottom:18px;
-  background:linear-gradient(135deg,rgba(249,115,22,.18),rgba(249,115,22,.08));
-  border:1px solid rgba(249,115,22,.2);
-  transition:transform .22s;
+  width:42px;height:42px;border-radius:12px;
+  display:grid;place-items:center;margin-bottom:15px;
+  background:rgba(249,115,22,.13);
 }
-.feat:hover .feat-ic{transform:scale(1.1)}
-.feat-ic svg{width:24px;height:24px}
-.feat h3{font-size:17px;font-weight:700;margin-bottom:10px;font-family:'Outfit';color:var(--craie)}
-.feat p{color:var(--brume);font-size:14px;font-weight:300;line-height:1.6}
+.feat-ic svg{width:21px;height:21px}
+.feat h3{font-size:16px;font-weight:700;margin-bottom:7px;font-family:'Outfit'}
+.feat p{color:var(--brume);font-size:13.5px;font-weight:300}
 
 /* ---------- COMMUNITY ---------- */
 #communaute .comm-box{
@@ -440,7 +447,7 @@ footer .mono{font-family:'JetBrains Mono';font-size:11.5px}
     <span class="logo-name">Globe<em>Trotter</em> Yaoundé</span>
   </a>
   <div class="nav-links">
-    <a href="#telecharger" data-fr="Télécharger" data-en="Download">Télécharger</a>
+    <a href="#telecharger" data-fr="Accès" data-en="Access">Accès</a>
     <a href="#fonctionnalites" data-fr="Fonctionnalités" data-en="Features">Fonctionnalités</a>
     <a href="#communaute" data-fr="Communauté" data-en="Community">Communauté</a>
     <a class="btn btn-orange btn-sm" href="./app/" data-fr="Ouvrir l'app Web →" data-en="Open Web app →">Ouvrir l'app Web →</a>
@@ -456,18 +463,18 @@ footer .mono{font-family:'JetBrains Mono';font-size:11.5px}
   <div>
     <span class="eyebrow reveal" data-fr="Assistant de voyage · Cameroun 🇨🇲" data-en="Travel assistant · Cameroon 🇨🇲">Assistant de voyage · Cameroun 🇨🇲</span>
     <h1 class="reveal" data-fr='Découvrez <span class="ville">Yaoundé</span> comme jamais <span class="accent">auparavant.</span>' data-en='Discover <span class="ville">Yaoundé</span> like never <span class="accent">before.</span>'>Découvrez <span class="ville">Yaoundé</span> comme jamais <span class="accent">auparavant.</span></h1>
-    <p class="hero-sub reveal" data-fr="Recommandations personnalisées, sorties planifiées entre amis, prix en FCFA et pépites cachées de la ville aux sept collines. <strong>Accessible sur tous vos appareils, sans installation.</strong>" data-en="Personalized recommendations, outings planned with friends, prices in FCFA, and hidden gems of the city of seven hills. <strong>Accessible on all your devices, no installation.</strong>">Recommandations personnalisées, sorties planifiées entre amis, prix en FCFA et pépites cachées de la ville aux sept collines. <strong>Accessible sur tous vos appareils, sans installation.</strong></p>
+    <p class="hero-sub reveal" data-fr="Recommandations personnalisées, sorties planifiées entre amis, prix en FCFA et pépites cachées de la ville aux sept collines. <strong>Directement dans votre navigateur, sans rien installer.</strong>" data-en="Personalized recommendations, outings planned with friends, prices in FCFA, and hidden gems of the city of seven hills. <strong>Right in your browser, nothing to install.</strong>">Recommandations personnalisées, sorties planifiées entre amis, prix en FCFA et pépites cachées de la ville aux sept collines. <strong>Directement dans votre navigateur, sans rien installer.</strong></p>
     <div class="hero-ctas reveal">
-      <a class="btn btn-orange" href="#telecharger">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 19h16" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span data-fr="Télécharger l'app" data-en="Download the app">Télécharger l'app</span>
+      <a class="btn btn-orange" href="./app/">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M13 5h6v6M19 5l-8 8M11 5H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span data-fr="Ouvrir l'app Web" data-en="Open the Web app">Ouvrir l'app Web</span>
       </a>
-      <a class="btn btn-ghost" href="./app/" data-fr="Essayer la version Web" data-en="Try the Web version">Essayer la version Web</a>
+      <a class="btn btn-ghost" href="#fonctionnalites" data-fr="Voir les fonctionnalités" data-en="See the features">Voir les fonctionnalités</a>
     </div>
     <div class="hero-meta reveal">
       <div class="meta-item"><b id="statDestinations">…</b><span data-fr="lieux référencés" data-en="listed places">lieux référencés</span></div>
       <div class="meta-item"><b id="statCategories">…</b><span data-fr="catégories" data-en="categories">catégories</span></div>
-      <div class="meta-item"><b>3</b><span data-fr="plateformes" data-en="platforms">plateformes</span></div>
+      <div class="meta-item"><b>0</b><span data-fr="installation requise" data-en="install required">installation requise</span></div>
       <div class="meta-item" id="statUsersWrap"><b id="statUsers">…</b><span data-fr="explorateurs inscrits" data-en="registered explorers">explorateurs inscrits</span></div>
       <div class="meta-item" id="statLoggedInWrap"><b id="statLoggedIn">0</b><span data-fr="explorateurs ayant ouvert une session" data-en="explorers who logged in">explorateurs ayant ouvert une session</span></div>
       <div class="meta-item" id="statTripsWrap"><b id="statTrips">13+</b><span data-fr="sorties créées" data-en="trips created">sorties créées</span></div>
@@ -544,33 +551,34 @@ footer .mono{font-family:'JetBrains Mono';font-size:11.5px}
 </section>
 
 <section id="telecharger">
-  <span class="eyebrow reveal" data-fr="Téléchargements" data-en="Downloads">Téléchargements</span>
-  <h2 class="reveal" data-fr="Une app Web accessible partout." data-en="One web app accessible everywhere.">Une app Web accessible partout.</h2>
-  <p class="sec-sub reveal" data-fr="Zéro installation requise. Accédez à GlobeTrotter Yaoundé depuis n'importe quel navigateur sur votre téléphone, tablette ou ordinateur. Vos données vous suivent partout." data-en="Zero installation required. Access GlobeTrotter Yaoundé from any browser on your phone, tablet, or computer. Your data follows you everywhere.">Zéro installation requise. Accédez à GlobeTrotter Yaoundé depuis n'importe quel navigateur sur votre téléphone, tablette ou ordinateur. Vos données vous suivent partout.</p>
+  <span class="eyebrow reveal" data-fr="Accès" data-en="Access">Accès</span>
+  <h2 class="reveal" data-fr="Une seule adresse. Aucune installation." data-en="One address. Nothing to install.">Une seule adresse. Aucune installation.</h2>
+  <p class="sec-sub reveal" data-fr="GlobeTrotter Yaoundé tourne entièrement dans votre navigateur — sur téléphone comme sur ordinateur, avec le même compte et les mêmes données partout." data-en="GlobeTrotter Yaoundé runs entirely in your browser — on phone or computer, with the same account and the same data everywhere.">GlobeTrotter Yaoundé tourne entièrement dans votre navigateur — sur téléphone comme sur ordinateur, avec le même compte et les mêmes données partout.</p>
 
-
-  <div class="dl-grid">
-    <!-- WEB -->
-    <article class="dl-card reveal" id="card-web">
+  <div class="dl-single-wrap">
+    <article class="dl-card dl-single reveal">
       <div class="dl-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2FA35C" stroke-width="1.8"/><path d="M3 12h18M12 3c2.7 2.4 4 5.4 4 9s-1.3 6.6-4 9c-2.7-2.4-4-5.4-4-9s1.3-6.6 4-9Z" stroke="#2FA35C" stroke-width="1.6"/></svg></div>
-      <h3>Web</h3>
-      <p data-fr="Zéro installation : l'application complète tourne dans votre navigateur, sur téléphone comme sur ordinateur." data-en="Zero installation: the full app runs right in your browser, on phone or computer.">Zéro installation : l'application complète tourne dans votre navigateur, sur téléphone comme sur ordinateur.</p>
+      <h3 data-fr="Ouvrir l'app Web" data-en="Open the Web app">Ouvrir l'app Web</h3>
+      <p data-fr="Zéro installation, zéro mise à jour à gérer : la version que vous ouvrez est toujours la dernière. Fonctionne sur Chrome, Edge, Firefox et Safari, et peut être ajoutée à l'écran d'accueil de votre téléphone comme une app normale." data-en="Zero install, zero updates to manage: the version you open is always the latest. Works on Chrome, Edge, Firefox and Safari, and can be added to your phone's home screen just like a regular app.">Zéro installation, zéro mise à jour à gérer : la version que vous ouvrez est toujours la dernière. Fonctionne sur Chrome, Edge, Firefox et Safari, et peut être ajoutée à l'écran d'accueil de votre téléphone comme une app normale.</p>
+      <ul class="dl-perks">
+        <li><svg viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4 10-10" stroke="#2FA35C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-fr="Compatible téléphone, tablette et ordinateur" data-en="Works on phone, tablet and computer">Compatible téléphone, tablette et ordinateur</span></li>
+        <li><svg viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4 10-10" stroke="#2FA35C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-fr="Toujours à jour, sans rien télécharger" data-en="Always up to date, nothing to download">Toujours à jour, sans rien télécharger</span></li>
+        <li><svg viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4 10-10" stroke="#2FA35C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-fr="Un seul compte, les mêmes sorties partout" data-en="One account, the same trips everywhere">Un seul compte, les mêmes sorties partout</span></li>
+      </ul>
       <span class="dl-file"><i></i>Chrome, Edge, Firefox, Safari</span>
       <a class="btn btn-orange" href="./app/">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M13 5h6v6M19 5l-8 8M11 5H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span data-fr="Ouvrir l'app Web" data-en="Open the Web app">Ouvrir l'app Web</span>
       </a>
     </article>
-
-
   </div>
 </section>
 
 <!-- ================= FEATURES ================= -->
 <section id="fonctionnalites">
   <span class="eyebrow reveal" data-fr="Fonctionnalités" data-en="Features">Fonctionnalités</span>
-  <h2 class="reveal" data-fr="Tout ce que fait l'app Web." data-en="Everything the web app can do.">Tout ce que fait l'app Web.</h2>
-  <p class="sec-sub reveal" data-fr="Accessible sur tous les appareils et navigateurs. Aucune installation requise, juste une connexion Internet et c'est parti !" data-en="Accessible on all devices and browsers. No installation required, just an internet connection and you're ready to go!">Accessible sur tous les appareils et navigateurs. Aucune installation requise, juste une connexion Internet et c'est parti !</p>
+  <h2 class="reveal" data-fr="Tout ce que fait l'app, directement dans votre navigateur." data-en="Everything the app does, right in your browser.">Tout ce que fait l'app, directement dans votre navigateur.</h2>
+  <p class="sec-sub reveal" data-fr="Un seul compte, les mêmes données partout : commencez une sortie sur votre téléphone, terminez-la sur votre ordinateur." data-en="One account, the same data everywhere: start planning an outing on your phone, finish it on your computer.">Un seul compte, les mêmes données partout : commencez une sortie sur votre téléphone, terminez-la sur votre ordinateur.</p>
   <div class="feat-grid">
     <div class="feat reveal">
       <div class="feat-ic"><svg viewBox="0 0 24 24" fill="none"><path d="m12 3 2.6 5.6L20 9.4l-4 4 1 6-5-3-5 3 1-6-4-4 5.4-.8L12 3Z" stroke="#F97316" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
@@ -599,8 +607,8 @@ footer .mono{font-family:'JetBrains Mono';font-size:11.5px}
     </div>
     <div class="feat reveal">
       <div class="feat-ic"><svg viewBox="0 0 24 24" fill="none"><rect x="7" y="2.5" width="10" height="19" rx="2.5" stroke="#F97316" stroke-width="1.8"/><rect x="2.5" y="6" width="8" height="13" rx="2" stroke="#F97316" stroke-width="1.8" fill="#0B1B12"/><path d="M14 21.5h4a3 3 0 0 0 3-3V9" stroke="#F97316" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-      <h3 data-fr="Accès universel" data-en="Universal Access">Accès universel</h3>
-      <p data-fr="Une seule web app : votre compte et vos sorties accessible depuis n'importe quel appareil avec un navigateur." data-en="One web app: your account and outings accessible from any device with a browser.">Une seule web app : votre compte et vos sorties accessible depuis n'importe quel appareil avec un navigateur.</p>
+      <h3 data-fr="Téléphone · Tablette · Ordinateur" data-en="Phone · Tablet · Computer">Téléphone · Tablette · Ordinateur</h3>
+      <p data-fr="Une seule app Web, tous les écrans : votre compte et vos sorties vous suivent partout, sans rien installer." data-en="One Web app, every screen: your account and outings follow you everywhere, with nothing to install.">Une seule app Web, tous les écrans : votre compte et vos sorties vous suivent partout, sans rien installer.</p>
     </div>
   </div>
 </section>
@@ -636,22 +644,6 @@ footer .mono{font-family:'JetBrains Mono';font-size:11.5px}
      nécessaire, cohérent avec le reste du site (vanilla HTML/JS/CSS). -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
 <script>
-// --- OS detection: highlight the right download card ---
-var detectedOS = { fr: null, en: null };
-(function(){
-  var ua = navigator.userAgent;
-  var cardId = null;
-  if (/Android/i.test(ua)) { detectedOS.fr = "Android"; detectedOS.en = "Android"; cardId = "card-android"; }
-  else if (/Windows/i.test(ua)) { detectedOS.fr = "Windows"; detectedOS.en = "Windows"; cardId = "card-windows"; }
-  else if (/iPhone|iPad|Macintosh|Linux/i.test(ua)) { detectedOS.fr = "votre navigateur"; detectedOS.en = "your browser"; cardId = "card-web"; }
-  if (cardId) {
-    document.getElementById(cardId).classList.add("reco");
-    var note = document.getElementById("detectNote");
-    document.getElementById("detectOS").textContent = detectedOS[currentLang()] || detectedOS.fr;
-    note.hidden = false;
-  }
-})();
-
 // --- Live community stats (fetched from the API, same origin - no CORS needed) ---
 // Chaque compteur est indépendant et dégrade proprement : si un endpoint
 // échoue (ex: /users/stats/public avant que la règle nginx correspondante
@@ -890,10 +882,6 @@ function applyLang(lang){
   if (ogTitle) ogTitle.setAttribute("content", ogTitle.getAttribute("data-" + lang));
   var ogDesc = document.getElementById("ogDesc");
   if (ogDesc) ogDesc.setAttribute("content", ogDesc.getAttribute("data-" + lang));
-  if (detectedOS.fr) {
-    var osEl = document.getElementById("detectOS");
-    if (osEl) osEl.textContent = detectedOS[lang] || detectedOS.fr;
-  }
   document.querySelectorAll("[data-lang-btn]").forEach(function(btn){
     btn.classList.toggle("active", btn.getAttribute("data-lang-btn") === lang);
   });
