@@ -410,6 +410,44 @@ async def websocket_chat(websocket: WebSocket, token: str = Query(...)):
                     await manager.send_to_user(peer["user_id"], joined_event)
                 continue
 
+            # ── Ring: proactively notify a specific user of an incoming call,
+            # even if they haven't opened the call/chat screen at all - this
+            # is what actually makes the phone "ring" instead of a call only
+            # reaching someone who happens to already be on that screen. The
+            # Flutter app now keeps one lightweight /ws/chat connection open
+            # at the app-shell level for as long as the user is logged in,
+            # so this reaches them anywhere in the app.
+            if msg_type == "call_invite":
+                room = (payload.get("room") or "").strip()
+                target_id = payload.get("target_user_id")
+                video = bool(payload.get("video", True))
+                if not room or not target_id:
+                    continue
+                delivered = await manager.send_to_user(target_id, json.dumps({
+                    "type": "call_incoming", "room": room,
+                    "from_user_id": user["id"], "from_user_name": user["full_name"],
+                    "video": video,
+                }))
+                if not delivered:
+                    await websocket.send_text(json.dumps({
+                        "type": "call_invite_failed", "room": room,
+                        "target_user_id": target_id, "detail": "unreachable",
+                    }))
+                continue
+
+            # Decline: tell the caller right away, without the callee ever
+            # having to join the signalling room.
+            if msg_type == "call_decline":
+                room = (payload.get("room") or "").strip()
+                target_id = payload.get("target_user_id")
+                if not room or not target_id:
+                    continue
+                await manager.send_to_user(target_id, json.dumps({
+                    "type": "call_declined", "room": room,
+                    "user_id": user["id"], "user_name": user["full_name"],
+                }))
+                continue
+
             # Relay: forward an SDP offer/answer or ICE candidate to exactly
             # one target peer, untouched, just stamped with who it's from.
             if msg_type == "call_signal":
