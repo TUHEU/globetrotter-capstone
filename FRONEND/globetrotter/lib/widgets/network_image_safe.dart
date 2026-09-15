@@ -93,8 +93,14 @@ enum _LoadState { loading, success, failed }
 
 class _NetworkImageSafeState extends State<NetworkImageSafe> {
   static final Dio _dio = Dio(BaseOptions(
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 15),
+    // Réduits par rapport à avant (10s/15s) : sur un échec réel (mauvaise
+    // URL, image absente du serveur), l'ancien réglage pouvait faire
+    // attendre l'utilisateur jusqu'à ~55s (3 tentatives x jusqu'à 25s)
+    // avant même d'afficher le repli - ce qui, à l'écran, ressemblait à
+    // "l'image ne charge jamais" plutôt qu'à un vrai échec. Toujours assez
+    // généreux pour une connexion lente (1-6 Ko/s), juste pas 55 secondes.
+    connectTimeout: const Duration(seconds: 6),
+    receiveTimeout: const Duration(seconds: 10),
     // Wikimedia (et beaucoup de CDN) répondent parfois 403 à un User-Agent
     // vide/générique — on identifie l'app explicitement pour éviter ça.
     headers: const {
@@ -224,8 +230,16 @@ class _NetworkImageSafeState extends State<NetworkImageSafe> {
       case _LoadState.success:
         return Image.memory(_bytes!, fit: widget.fit, gaplessPlayback: true);
       case _LoadState.loading:
-        return widget.placeholder?.call(context) ??
-            Container(color: Colors.grey.shade200);
+        return Stack(fit: StackFit.expand, children: [
+          widget.placeholder?.call(context) ?? Container(color: Colors.grey.shade200),
+          const Center(
+            child: SizedBox(
+              width: 22,
+              height: 22,
+              child: CircularProgressIndicator(strokeWidth: 2.2),
+            ),
+          ),
+        ]);
       case _LoadState.failed:
         return GestureDetector(
           onTap: () {
@@ -233,7 +247,21 @@ class _NetworkImageSafeState extends State<NetworkImageSafe> {
             setState(() => _state = _LoadState.loading);
             _load();
           },
-          child: widget.placeholder?.call(context) ?? const SizedBox.shrink(),
+          child: Stack(fit: StackFit.expand, children: [
+            widget.placeholder?.call(context) ?? const SizedBox.shrink(),
+            Positioned(
+              right: 8,
+              bottom: 8,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.55),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.refresh, size: 16, color: Colors.white),
+              ),
+            ),
+          ]),
         );
     }
   }

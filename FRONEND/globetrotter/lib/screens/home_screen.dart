@@ -16,6 +16,7 @@ import '../providers/messages_provider.dart';
 import '../providers/notifications_provider.dart';
 import '../providers/settings_provider.dart';
 import '../services/deep_link_service.dart';
+import '../services/global_call_listener.dart';
 import '../services/share_service.dart';
 import '../widgets/achievement_badges.dart';
 import '../widgets/app_logo_badge.dart';
@@ -40,6 +41,7 @@ import 'login_screen.dart';
 import 'reviews_screen.dart';
 import 'settings_screen.dart';
 import 'chat_hub_screen.dart';
+import 'call_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
@@ -72,8 +74,73 @@ class _HomeScreenState extends State<HomeScreen> {
       context.read<FriendsProvider>().loadFollowLists();
       context.read<MessagesProvider>().loadInbox();
       context.read<NotificationsProvider>().load();
+      // Start the app-wide call listener now that we know who's logged in -
+      // keeps one /ws/chat connection open for the whole session so calls
+      // can ring this device from any screen, not just the chat/call ones.
+      final me = context.read<AuthProvider>().user;
+      if (me != null) {
+        context.read<GlobalCallListener>().start(me.id);
+      }
       _handleDeepLink();
     });
+  }
+
+  void _showAppMenu(BuildContext context) {
+    final s = context.read<SettingsProvider>().s;
+    final settings = context.read<SettingsProvider>();
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (sheetCtx) => SafeArea(
+        child: Wrap(children: [
+          ListTile(
+            leading: const Icon(Icons.auto_awesome),
+            title: Text(s.isFr ? 'Assistant IA' : 'AI Assistant'),
+            onTap: () {
+              Navigator.of(sheetCtx).pop();
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const AssistantScreen()));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.call_outlined),
+            title: Text(s.isFr ? 'Appels' : 'Calls'),
+            onTap: () {
+              Navigator.of(sheetCtx).pop();
+              setState(() => _index = 3); // Chat tab (global chat + DMs)
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person_add_alt_1_outlined),
+            title: Text(s.isFr ? 'Inviter des amis' : 'Invite friends'),
+            onTap: () {
+              Navigator.of(sheetCtx).pop();
+              ShareService.shareText(s.isFr
+                  ? 'Rejoins-moi sur GlobeTrotter Yaoundé pour découvrir la ville ! https://fahglobe.duckdns.org/app/'
+                  : 'Join me on GlobeTrotter Yaoundé to explore the city! https://fahglobe.duckdns.org/app/');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.language),
+            title: Text(s.isFr ? 'Changer de langue (FR/EN)' : 'Switch language (FR/EN)'),
+            onTap: () {
+              settings.setLanguage(settings.languageCode == 'fr' ? 'en' : 'fr');
+              Navigator.of(sheetCtx).pop();
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.add_location_alt_outlined),
+            title: Text(s.isFr ? 'Ajouter un lieu' : 'Add a place'),
+            onTap: () {
+              Navigator.of(sheetCtx).pop();
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const SubmitPlaceScreen()));
+            },
+          ),
+        ]),
+      ),
+    );
   }
 
 
@@ -120,13 +187,15 @@ class _HomeScreenState extends State<HomeScreen> {
       const _ProfileTab(),
     ];
 
+    final unreadDms = context.watch<MessagesProvider>().totalUnread;
+
     // Nav items
     final navItems = [
       _NavItem(icon: Icons.explore_outlined, activeIcon: Icons.explore, label: s.navExplore),
       _NavItem(icon: Icons.auto_awesome_outlined, activeIcon: Icons.auto_awesome, label: s.navForYou),
       _NavItem(icon: Icons.map_outlined, activeIcon: Icons.map, label: s.navTrips),
       _NavItem(icon: Icons.forum_outlined, activeIcon: Icons.forum_rounded,
-          label: s.isFr ? 'Chat' : 'Chat'),
+          label: s.isFr ? 'Chat' : 'Chat', badgeCount: unreadDms),
       _NavItem(icon: Icons.person_outline, activeIcon: Icons.person, label: s.navProfile),
     ];
 
@@ -176,7 +245,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ]),
 
           // ── Floating app menu (draggable): AI, Calls, Language, Add place ─
-          DraggableAppMenuButton(hidden: _hideBubble),
+          DraggableAppMenuButton(
+            hidden: _hideBubble,
+            onMenuPressed: () => _showAppMenu(context),
+          ),
+
+          // ── App-wide incoming call ring + global-call banner ────────────
+          _IncomingCallOverlay(onJoinGlobalCall: () => setState(() => _index = 3)),
         ]),
       ),
       // Mobile bottom nav
@@ -200,8 +275,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     }),
                     destinations: navItems
                         .map((e) => NavigationDestination(
-                            icon: Icon(e.icon),
-                            selectedIcon: Icon(e.activeIcon),
+                            icon: e.badgeCount > 0
+                                ? Badge(
+                                    label: Text('${e.badgeCount > 9 ? '9+' : e.badgeCount}'),
+                                    child: Icon(e.icon))
+                                : Icon(e.icon),
+                            selectedIcon: e.badgeCount > 0
+                                ? Badge(
+                                    label: Text('${e.badgeCount > 9 ? '9+' : e.badgeCount}'),
+                                    child: Icon(e.activeIcon))
+                                : Icon(e.activeIcon),
                             label: e.label))
                         .toList(),
                   ),
@@ -240,7 +323,13 @@ class _NavItem {
   final IconData icon;
   final IconData activeIcon;
   final String label;
-  const _NavItem({required this.icon, required this.activeIcon, required this.label});
+  final int badgeCount;
+  const _NavItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.label,
+    this.badgeCount = 0,
+  });
 }
 
 class _DesktopSidebar extends StatelessWidget {
@@ -1849,6 +1938,147 @@ class _ProfileStat extends StatelessWidget {
             style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
         Text(label, style: theme.textTheme.labelSmall),
       ]),
+    );
+  }
+}
+
+/// Lives at the very top of HomeScreen's Stack, so it renders over whatever
+/// tab is currently open. Reacts to [GlobalCallListener], which keeps one
+/// `/ws/chat` connection open for the whole logged-in session - this is
+/// what lets a call actually "ring" the user no matter what screen they're
+/// looking at, instead of only reaching them on the chat/call screens.
+class _IncomingCallOverlay extends StatelessWidget {
+  final VoidCallback onJoinGlobalCall;
+  const _IncomingCallOverlay({required this.onJoinGlobalCall});
+
+  @override
+  Widget build(BuildContext context) {
+    final listener = context.watch<GlobalCallListener>();
+    final s = context.watch<SettingsProvider>().s;
+    final call = listener.incomingCall;
+    final banner = listener.globalBanner;
+
+    if (call == null && banner == null) return const SizedBox.shrink();
+
+    return Positioned.fill(
+      child: IgnorePointer(
+        ignoring: false,
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: call != null
+                  ? _IncomingCallCard(call: call, s: s)
+                  : _GlobalCallBanner(banner: banner!, s: s, onJoin: onJoinGlobalCall),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _IncomingCallCard extends StatelessWidget {
+  final IncomingCall call;
+  final dynamic s;
+  const _IncomingCallCard({required this.call, required this.s});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      elevation: 12,
+      borderRadius: BorderRadius.circular(18),
+      color: theme.colorScheme.primaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(children: [
+          CircleAvatar(
+            radius: 24,
+            child: Icon(call.video ? Icons.videocam : Icons.call),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(call.fromUserName,
+                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+                Text(
+                  call.video
+                      ? (s.isFr ? 'Appel vidéo entrant…' : 'Incoming video call…')
+                      : (s.isFr ? 'Appel entrant…' : 'Incoming call…'),
+                ),
+              ],
+            ),
+          ),
+          IconButton.filled(
+            style: IconButton.styleFrom(backgroundColor: Colors.red),
+            icon: const Icon(Icons.call_end, color: Colors.white),
+            onPressed: () => context.read<GlobalCallListener>().declineIncomingCall(),
+          ),
+          const SizedBox(width: 8),
+          IconButton.filled(
+            style: IconButton.styleFrom(backgroundColor: Colors.green),
+            icon: const Icon(Icons.call, color: Colors.white),
+            onPressed: () {
+              final listener = context.read<GlobalCallListener>();
+              final me = context.read<AuthProvider>().user;
+              listener.consumeIncomingCall();
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => CallScreen(
+                  callRoomId: call.room,
+                  userId: me?.id ?? '',
+                  userName: me?.fullName ?? '',
+                  title: call.fromUserName,
+                  startWithVideo: call.video,
+                ),
+              ));
+            },
+          ),
+        ]),
+      ),
+    );
+  }
+}
+
+class _GlobalCallBanner extends StatelessWidget {
+  final GlobalCallStartBanner banner;
+  final dynamic s;
+  final VoidCallback onJoin;
+  const _GlobalCallBanner({required this.banner, required this.s, required this.onJoin});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      elevation: 8,
+      borderRadius: BorderRadius.circular(14),
+      color: theme.colorScheme.secondaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        child: Row(children: [
+          const Icon(Icons.groups_2_outlined),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(s.isFr
+                ? '${banner.userName} a démarré un appel dans le Chat Global'
+                : '${banner.userName} started a call in Global Chat'),
+          ),
+          TextButton(
+            onPressed: () {
+              context.read<GlobalCallListener>().dismissGlobalBanner();
+              onJoin();
+            },
+            child: Text(s.isFr ? 'Rejoindre' : 'Join'),
+          ),
+          IconButton(
+            icon: const Icon(Icons.close, size: 18),
+            onPressed: () => context.read<GlobalCallListener>().dismissGlobalBanner(),
+          ),
+        ]),
+      ),
     );
   }
 }

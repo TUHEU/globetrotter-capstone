@@ -16,6 +16,7 @@ import 'providers/notifications_provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/onboarding_screen.dart';
+import 'services/global_call_listener.dart';
 import 'services/notification_service.dart';
 import 'widgets/globe_car_loader.dart';
 
@@ -43,6 +44,11 @@ class GlobeTrotterApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => FriendsProvider()),
         ChangeNotifierProvider(create: (_) => MessagesProvider()),
         ChangeNotifierProvider(create: (_) => NotificationsProvider()),
+        // App-wide, kept alive for the whole logged-in session (started in
+        // HomeScreen.initState) so an incoming call can ring the user from
+        // any screen - not just while they're already on the chat/call
+        // screen. See GlobalCallListener's doc comment.
+        ChangeNotifierProvider(create: (_) => GlobalCallListener()),
       ],
       child: Consumer<SettingsProvider>(
         builder: (context, settings, _) {
@@ -81,11 +87,14 @@ class _BootstrapState extends State<_Bootstrap> {
 
   Future<_BootstrapResult> _init() async {
     // The globe/car loading animation is otherwise so quick to finish (auto-
-    // login is usually near-instant) that it just flickers by unseen. Keep
-    // it on screen for at least 5s regardless of how fast the real work
-    // finishes, without ever making startup slower than necessary — the
-    // real work and the timer run in parallel, not one after the other.
-    final minDelay = Future.delayed(const Duration(seconds: 5));
+    // login is usually near-instant) that it could flicker by unseen. Keep
+    // it on screen for a short minimum so it doesn't flash, without making
+    // every single app launch artificially slow - a fixed 5s floor here
+    // was adding a full 5-second wait to EVERY startup regardless of how
+    // fast auto-login actually was, which is most of what made the app
+    // feel slow. The real work and this timer still run in parallel, not
+    // one after the other.
+    final minDelay = Future.delayed(const Duration(milliseconds: 900));
     final result = await _doInit();
     await minDelay;
     return result;

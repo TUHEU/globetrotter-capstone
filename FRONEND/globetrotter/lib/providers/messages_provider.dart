@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../core/api_client.dart';
 import '../models/message.dart';
@@ -59,7 +60,7 @@ class MessagesProvider extends ChangeNotifier {
     }
   }
 
-  Future<Object?> send(String toUserId, String text) async {
+  Future<String?> send(String toUserId, String text) async {
     // Mise à jour optimiste : affiche le message immédiatement, avec un id
     // temporaire remplacé une fois la vraie réponse serveur arrivée.
     final optimistic = Message(
@@ -83,7 +84,14 @@ class MessagesProvider extends ChangeNotifier {
     } catch (e) {
       _conversations[toUserId]?.removeWhere((m) => m.id == optimistic.id);
       notifyListeners();
-      return e;
+      // Surface the server's actual reason (e.g. "you must follow each
+      // other") instead of a generic failure - this is what previously
+      // made DMs look completely broken instead of just permission-gated.
+      if (e is DioException) {
+        final detail = e.response?.data is Map ? e.response?.data['detail'] : null;
+        if (detail is String) return detail;
+      }
+      return null;
     }
   }
 

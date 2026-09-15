@@ -13,7 +13,13 @@ class FriendsProvider extends ChangeNotifier {
   String? followListsError;
 
   Set<String> get followingIds => following.map((f) => f.id).toSet();
+  Set<String> get followerIds => followers.map((f) => f.id).toSet();
   bool isFollowing(String userId) => followingIds.contains(userId);
+  // DMs/calls require a mutual relationship in either direction (see
+  // user-service's _can_message) - being followed by someone is just as
+  // valid as following them yourself for unlocking messaging.
+  bool canMessage(String userId) =>
+      followingIds.contains(userId) || followerIds.contains(userId);
 
   /// Écran "Découvrir" : tout le monde ayant l'app, pas seulement les
   /// résultats d'une recherche tapée - pour parcourir plutôt que chercher.

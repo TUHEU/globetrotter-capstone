@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../core/avatars.dart';
+import '../core/constants.dart';
 import '../models/friend.dart';
 import '../providers/friends_provider.dart';
 import '../providers/settings_provider.dart';
+import '../services/share_service.dart';
 import 'conversation_screen.dart';
 
 class FriendsScreen extends StatefulWidget {
@@ -57,6 +59,15 @@ class _FriendsScreenState extends State<FriendsScreen> with SingleTickerProvider
     return Scaffold(
       appBar: AppBar(
         title: Text(s.friends),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person_add_alt_1_outlined),
+            tooltip: s.isFr ? 'Inviter des amis' : 'Invite friends',
+            onPressed: () => ShareService.shareText(s.isFr
+                ? 'Rejoins-moi sur GlobeTrotter Yaoundé pour découvrir la ville ! ${ApiConstants.prodUrl}/app/'
+                : 'Join me on GlobeTrotter Yaoundé to explore the city! ${ApiConstants.prodUrl}/app/'),
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           tabs: [

@@ -466,7 +466,36 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
   }
 
   // ── Call ────────────────────────────────────────────────────────────────
-  Future<void> _joinGlobalCall() async {
+  Future<void> _pickCallTypeThenJoin() async {
+    if (_callActive) {
+      // Already someone in the room - join as-is, no need to ask again.
+      _joinGlobalCall(video: true);
+      return;
+    }
+    final video = await showModalBottomSheet<bool>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => SafeArea(
+        child: Wrap(children: [
+          ListTile(
+            leading: const Icon(Icons.call_outlined),
+            title: const Text('Appel audio'),
+            onTap: () => Navigator.of(ctx).pop(false),
+          ),
+          ListTile(
+            leading: const Icon(Icons.videocam_outlined),
+            title: const Text('Appel vidéo'),
+            onTap: () => Navigator.of(ctx).pop(true),
+          ),
+        ]),
+      ),
+    );
+    if (video == null) return;
+    _joinGlobalCall(video: video);
+  }
+
+  Future<void> _joinGlobalCall({required bool video}) async {
     setState(() => _startingCall = true);
     try {
       final res = await ApiClient.instance.dio.post('/chat/call/token');
@@ -479,6 +508,7 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
           userId: me?.id ?? '',
           userName: me?.fullName ?? '',
           title: 'Appel du Chat Global',
+          startWithVideo: video,
         ),
       ));
       _ws({'type': 'call_end'});
@@ -783,7 +813,7 @@ class _GlobalChatScreenState extends State<GlobalChatScreen> {
             icon: Icon(_callActive ? Icons.videocam : Icons.videocam_outlined,
                 color: _callActive ? Colors.greenAccent : null),
             tooltip: _callActive ? 'Rejoindre l\'appel en cours' : 'Démarrer un appel',
-            onPressed: _startingCall ? null : _joinGlobalCall,
+            onPressed: _startingCall ? null : _pickCallTypeThenJoin,
           ),
           Padding(
             padding: const EdgeInsets.only(right: 12),

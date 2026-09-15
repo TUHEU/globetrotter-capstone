@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../core/api_client.dart';
+import '../models/friend.dart';
 import '../providers/auth_provider.dart';
+import '../providers/friends_provider.dart';
 import '../providers/messages_provider.dart';
 import '../providers/settings_provider.dart';
+import '../services/global_call_listener.dart';
 import 'call_screen.dart';
 
 class ConversationScreen extends StatefulWidget {
@@ -31,9 +34,16 @@ class _ConversationScreenState extends State<ConversationScreen> {
           .post('/calls/dm-token', data: {'other_user_id': widget.partnerId});
       if (!mounted) return;
       final me = context.read<AuthProvider>().user;
+      final room = res.data['room'].toString();
+      // Ring the other person's device now, before we even open the call
+      // screen - this is what makes them see/hear the incoming call from
+      // wherever they are in the app, instead of the call only working if
+      // they happen to already be on a chat/call screen.
+      context.read<GlobalCallListener>().sendInvite(
+          targetUserId: widget.partnerId, room: room, video: video);
       await Navigator.of(context).push(MaterialPageRoute(
         builder: (_) => CallScreen(
-          callRoomId: res.data['room'].toString(),
+          callRoomId: room,
           userId: me?.id ?? '',
           userName: me?.fullName ?? '',
           title: widget.partnerName,
@@ -90,8 +100,16 @@ class _ConversationScreenState extends State<ConversationScreen> {
       setState(() => _sending = false);
       _scrollToBottom();
       if (err != null) {
-        final s = context.read<SettingsProvider>().s;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(s.messageFailed)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(err),
+          action: !context.read<FriendsProvider>().canMessage(widget.partnerId)
+              ? SnackBarAction(
+                  label: context.read<SettingsProvider>().s.isFr ? 'Suivre' : 'Follow',
+                  onPressed: () => context.read<FriendsProvider>().follow(
+                      Friend(id: widget.partnerId, fullName: widget.partnerName, email: '')),
+                )
+              : null,
+        ));
       }
     }
   }
@@ -122,6 +140,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       ),
       body: Column(
         children: [
+          _FollowToUnlockBanner(partnerId: widget.partnerId, partnerName: widget.partnerName, s: s),
           Expanded(
             child: loading
                 ? const Center(child: CircularProgressIndicator())
@@ -202,6 +221,38 @@ class _ConversationScreenState extends State<ConversationScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Shown at the top of a DM when the two of you don't follow each other
+/// yet - previously the ONLY sign this was blocked was a message quietly
+/// failing to send. Sending is only allowed once one of you follows the
+/// other (see user-service `_can_message`), so this puts the fix (Follow)
+/// directly where the problem is, instead of after a confusing failure.
+class _FollowToUnlockBanner extends StatelessWidget {
+  final String partnerId;
+  final String partnerName;
+  final dynamic s;
+  const _FollowToUnlockBanner({required this.partnerId, required this.partnerName, required this.s});
+
+  @override
+  Widget build(BuildContext context) {
+    final friends = context.watch<FriendsProvider>();
+    if (friends.canMessage(partnerId)) return const SizedBox.shrink();
+    return MaterialBanner(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      content: Text(s.isFr
+          ? 'Vous devez suivre $partnerName (ou être suivi par elle/lui) pour pouvoir discuter.'
+          : 'You need to follow $partnerName (or be followed by them) to message.'),
+      actions: [
+        TextButton(
+          onPressed: () => context
+              .read<FriendsProvider>()
+              .follow(Friend(id: partnerId, fullName: partnerName, email: '')),
+          child: Text(s.isFr ? 'Suivre' : 'Follow'),
+        ),
+      ],
     );
   }
 }
