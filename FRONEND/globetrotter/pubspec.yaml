@@ -1,7 +1,7 @@
 name: globetrotter
-description: "A new Flutter project."
+description: "GlobeTrotter - Your personal travel guide for Yaoundé, Cameroon. Discover destinations, create itineraries, connect with travelers, and get AI-powered recommendations."
 publish_to: 'none'
-version: 1.0.0+1
+version: 2.1.0+21
 
 environment:
   sdk: ^3.12.2
@@ -10,38 +10,62 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # UI & Design
   cupertino_icons: ^1.0.8
+  flutter_animate: ^4.5.2
+  
+  # State Management & Data
   provider: ^6.1.5+1
   shared_preferences: ^2.5.5
+  
+  # Networking
   dio: ^5.11.0
+  web_socket_channel: ^3.0.1
+  socket_io_client: ^3.1.6
+  
+  # Authentication
   google_sign_in: ^7.2.0
   google_sign_in_platform_interface: ^3.0.0
   google_sign_in_web: ^1.1.0
+  
+  # Mapping & Location
+  maplibre_gl: ^0.26.2
   geolocator: ^14.0.3
   flutter_compass: ^0.8.1
-  share_plus: ^13.3.0
-  maplibre_gl: ^0.26.2
+  
+  # Web & Platform Support
   web: ^1.1.0
   url_launcher: ^6.3.1
+  
+  # Media & Files
   image_picker: ^1.1.2
-  web_socket_channel: ^3.0.1
   file_picker: ^12.1.3
-  audioplayers: ^6.1.0
   video_player: ^2.9.2
   record: ^6.2.0
+  share_plus: ^13.3.0
+  
+  # Communication & Notifications
   emoji_picker_flutter: ^4.4.0
-  intl: ^0.20.3
-  path_provider: ^2.1.5
   flutter_local_notifications: ^22.3.0
+  
+  # Real-time Communication
   livekit_client: ^2.11.0
-  socket_io_client: ^3.1.6
   flutter_webrtc: ^1.6.0
+  
+  # QR & Scanning
   mobile_scanner: ^7.4.1
+  qr_flutter: ^4.1.0
+  
+  # Document Generation & Export
   pdf: ^3.13.0
   printing: ^5.15.0
-  qr_flutter: ^4.1.0
+  
+  # Internationalization & Time
+  intl: ^0.20.3
   timezone: ^0.11.1
-  flutter_animate: ^4.5.2
+  
+  # Storage & Paths
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
@@ -51,6 +75,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  
   assets:
     - assets/icon/
 
@@ -61,11 +86,13 @@ flutter_launcher_icons:
   min_sdk_android: 21
   adaptive_icon_background: "#0F5A2E"
   adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+  
   web:
     generate: true
     image_path: "assets/icon/app_icon.png"
     background_color: "#0F5A2E"
     theme_color: "#0F5A2E"
+  
   windows:
     generate: true
     image_path: "assets/icon/app_icon.png"
