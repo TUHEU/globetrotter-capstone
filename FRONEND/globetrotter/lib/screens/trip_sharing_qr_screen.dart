@@ -82,17 +82,14 @@ class _TripSharingQRScreenState extends State<TripSharingQRScreen> {
         Uri(
           scheme: 'mailto',
           path: '',
-          queryParameters: {
-            'subject': subject,
-            'body': body,
-          },
+          queryParameters: {'subject': subject, 'body': body},
         ),
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open email')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Could not open email')));
       }
     }
   }
@@ -103,17 +100,13 @@ class _TripSharingQRScreenState extends State<TripSharingQRScreen> {
 
     try {
       await launchUrl(
-        Uri(
-          scheme: 'sms',
-          path: '',
-          queryParameters: {'body': message},
-        ),
+        Uri(scheme: 'sms', path: '', queryParameters: {'body': message}),
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open SMS')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Could not open SMS')));
       }
     }
   }
@@ -159,8 +152,11 @@ class _TripSharingQRScreenState extends State<TripSharingQRScreen> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.flight,
-                              color: Colors.green, size: 28),
+                          const Icon(
+                            Icons.flight,
+                            color: Colors.green,
+                            size: 28,
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
@@ -224,9 +220,7 @@ class _TripSharingQRScreenState extends State<TripSharingQRScreen> {
                       height: 250,
                       width: 250,
                       color: Colors.white,
-                      child: QrImage(
-                        data: _shareLink,
-                      ),
+                      child: QrImageView(data: _shareLink),
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
@@ -311,11 +305,7 @@ class _TripSharingQRScreenState extends State<TripSharingQRScreen> {
                 onTap: _shareViaEmail,
               ),
               const SizedBox(height: 12),
-              _ShareButton(
-                icon: Icons.sms,
-                label: 'SMS',
-                onTap: _shareViaSMS,
-              ),
+              _ShareButton(icon: Icons.sms, label: 'SMS', onTap: _shareViaSMS),
               const SizedBox(height: 12),
               _ShareButton(
                 icon: Icons.share,
@@ -395,10 +385,7 @@ class _ShareButton extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
           ],
         ),
